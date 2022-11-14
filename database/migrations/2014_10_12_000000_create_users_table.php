@@ -17,8 +17,17 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('referral_code')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('phone')->nullable();
+            $table->string('country')->nullable();
+            $table->string('state')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->mediumText('image')->nullable();
+            $table->text('address')->nullable();
+            $table->string('email_verification_token')->nullable();
+            $table->timestamp('email_verification_token_expiry')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

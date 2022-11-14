@@ -2,11 +2,19 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Http\Traits\RespondWithHttpStatus;
 use Throwable;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class Handler extends ExceptionHandler
 {
+    use RespondWithHttpStatus;
     /**
      * A list of exception types with their corresponding custom log levels.
      *
@@ -47,4 +55,32 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $exception)
+	{
+		if ($request->expectsJson()){
+            if ($exception instanceof ModelNotFoundException){
+                return $this->failure('Model not found', 'the specied model could not be found.', 404);
+            }
+            if ($exception instanceof MethodNotAllowedHttpException){
+                return $this->failure('Method not allowed', 'the specified method is not allowed.', 405);
+            }
+            if ($exception instanceof NotFoundHttpException){
+                return $this->failure('Invalid route', 'the specified route is invalid.', 404);
+            }
+            if ($exception instanceof ThrottleRequestsException){
+                return $this->failure('Too many request', 'too many requests, try again later.', 429);
+            }
+            if ($exception instanceof AccessDeniedHttpException) {
+                return $this->failure('Unauthorized', 'this action is unauthorized.', 403);
+            }
+            if ($exception instanceof ConnectionException) {
+                return $this->failure('Bad request', 'an error was encountered', 400);
+            }
+            if ($exception instanceof AuthException) {
+                return $this->failure($exception->getMessage(), status: $exception->getCode());
+            }
+        }
+		return parent::render($request, $exception);
+	}
 }

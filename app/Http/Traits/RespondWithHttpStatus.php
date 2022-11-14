@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Http\Traits;
+
+use Illuminate\Http\JsonResponse;
+
+trait RespondWithHttpStatus
+{
+    protected function success($message = "Request Successful", $data = [], $meta = [], $status = 200): JsonResponse
+    {
+        $res = [
+            'message' => $message,
+        ];
+        if ($data) $res['data'] = $data;
+        if ($meta) $res['meta'] = $meta;
+        return response()->json($res, $status);
+    }
+
+    protected function failure($message, $details = null, $status = 422): JsonResponse
+    {
+        $res = [
+            'error' => $message,
+        ];
+        if ($details) $res['details'] = $details;
+        return response()->json($res, $status);
+    }
+}

@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\PasswordResetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +19,26 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::controller(AuthController::class)->group(function () {
+    Route::post('/register', 'register');
+    Route::post('/login', 'login');
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', 'logout');
+        Route::get('/user', 'me');
+        Route::put('/password/change', 'changePassword');
+    });
+});
+
+Route::controller(EmailVerificationController::class)->group(function () {
+    Route::post('/email/verify', 'verifyEmail');
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/email/resend-link', 'resendEmailVerificationLink')->middleware('throttle:3,1');
+    });
+});
+
+Route::controller(PasswordResetController::class)->group(function () {
+    Route::post('/password/reset/send-link', 'sendPasswordResetLink')->middleware('throttle:3,1');
+    Route::post('/password/reset', 'resetPassword');
 });
