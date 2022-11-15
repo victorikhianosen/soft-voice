@@ -7,11 +7,13 @@ use Illuminate\Support\Str;
 use App\Exceptions\AuthException;
 use App\Http\Factories\UserFactory;
 use App\Http\Factories\AdminFactory;
+use App\Http\Resources\AdminResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use App\Http\Services\NotificationService;
+use App\Models\Admin;
 use App\Notifications\EmailVerificationNotification;
 
 class AuthService
@@ -20,7 +22,7 @@ class AuthService
     {
     }
 
-    public function register(UserFactory|AdminFactory $factory, array $data): array
+    public function register(UserFactory $factory, array $data): array
     {
         $data['otp'] = sha1($data['email'].time());
         $user = $factory->create($data);
@@ -35,6 +37,15 @@ class AuthService
             throw new AuthException("Invalid login credentials", 400);
         }
         $user = User::where('email', $data['email'])->first();
+        return $this->getToken($user);
+    }
+
+    public function adminLogin(array $data): array
+    {
+        $user = Admin::where('email', $data['email'])->first();
+        if (!$user || !Hash::check($data['password'], $user->password)) {
+            throw new AuthException("Invalid login credentials", 400);
+        }
         return $this->getToken($user);
     }
 
@@ -76,18 +87,23 @@ class AuthService
         $user->save();
     }
 
-    public function sendPasswordResetLink(array $data)
+    public function sendPasswordResetLink(array $data, string $broker)
     {
-        $user = User::where('email', $data['email'])->first();
+        $user = $broker === 'users'
+                    ? User::where('email', $data['email'])->first()
+                    : Admin::where('email', $data['email'])->first();
+
         if (!$user) {
             throw new AuthException("We couldn't find a user with this email address", 404);
         }
-        Password::sendResetLink(['email' => $user->email]);
+
+        Password::broker($broker)
+            ->sendResetLink(['email' => $user->email]);
     }
 
-    public function resetPassword(array $data)
+    public function resetPassword(array $data, string $broker)
     {
-        $status = Password::reset($data, function ($user, $password) {
+        $status = Password::broker($broker)->reset($data, function ($user, $password) {
             $user->forceFill([
                 'password' => Hash::make($password)
             ])->setRememberToken(Str::random(60));
@@ -111,17 +127,18 @@ class AuthService
         $user->update(['password' => Hash::make($data['new_password'])]);
     }
 
-    public function getUser(): UserResource|array
+    public function getUser(): UserResource|AdminResource
     {
         $user = request()->user();
-        return $user instanceof User ? new UserResource($user) : $user;
+        return $user instanceof User ? new UserResource($user) : new AdminResource($user);
     }
 
     public function getToken($user): array
     {
+        $ability = $user instanceof User ? 'user' : 'admin';
         return [
-            'user'  => ($user instanceof User ? new UserResource($user) : $user),
-            'token' => $user->createToken('app')->plainTextToken
+            'user'  => ($user instanceof User ? new UserResource($user) : new AdminResource($user)),
+            'token' => $user->createToken($user->email, [$ability])->plainTextToken
         ];
     }
 }

@@ -18,13 +18,13 @@ class PasswordResetController extends Controller
 
     public function sendPasswordResetLink(PasswordResetLinkRequest $request)
     {
-        $this->authService->sendPasswordResetLink($request->all());
+        $this->authService->sendPasswordResetLink($request->all(), 'users');
         return $this->success('We have emailed you a password reset link');
     }
 
     public function resetPassword(ResetPasswordRequest $request)
     {
-        $this->authService->resetPassword($request->all());
+        $this->authService->resetPassword($request->all(), 'users');
         return $this->success('Password Reset Successful');
     }
 }

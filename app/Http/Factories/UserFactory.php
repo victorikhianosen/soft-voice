@@ -2,20 +2,21 @@
 
 namespace App\Http\Factories;
 
+use App\Http\Repositories\UserRepository;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
 class UserFactory
 {
+    public function __construct(protected UserRepository $userRepository)
+    {
+    }
+
     public function create(array $data): User
     {
-        $data['password'] = Hash::make($data['password']);
-        $data['email_verification_token'] = Hash::make($data['otp']);
-        $data['email_verification_token_expiry'] = now()->addHour();
         $data['referral_code'] = $this->getUniqueReferralCode();
-        unset($data['otp']);
-        $user = User::create($data);
+        $user = $this->userRepository->save($data);
 
         // create wallet
 

@@ -17,14 +17,10 @@ use App\Http\Controllers\Auth\PasswordResetController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::controller(AuthController::class)->group(function () {
     Route::post('/register', 'register');
     Route::post('/login', 'login');
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
         Route::post('/logout', 'logout');
         Route::get('/user', 'me');
         Route::put('/password/change', 'changePassword');
@@ -33,7 +29,7 @@ Route::controller(AuthController::class)->group(function () {
 
 Route::controller(EmailVerificationController::class)->group(function () {
     Route::post('/email/verify', 'verifyEmail');
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
         Route::post('/email/resend-link', 'resendEmailVerificationLink')->middleware('throttle:3,1');
     });
 });
