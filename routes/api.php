@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,4 +39,16 @@ Route::controller(EmailVerificationController::class)->group(function () {
 Route::controller(PasswordResetController::class)->group(function () {
     Route::post('/password/reset/send-link', 'sendPasswordResetLink')->middleware('throttle:3,1');
     Route::post('/password/reset', 'resetPassword');
+});
+
+Route::controller(CustomerController::class)->middleware(['auth:sanctum', 'ability:user'])->group(function () {
+    Route::get('/customers', 'index');
+    Route::post('/customers/store', 'store');
+    Route::get('/customers/{customer}/show', 'show');
+    Route::put('/customers/{customer}', 'update');
+    Route::delete('/customers/{customer}', 'delete');
+});
+
+Route::controller(InvoiceController::class)->middleware(['auth:sanctum', 'ability:user'])->group(function () {
+    Route::post('/invoices/store', 'store');
 });

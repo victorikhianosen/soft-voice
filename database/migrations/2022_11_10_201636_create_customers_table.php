@@ -15,6 +15,15 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('phone');
+            $table->text('address');
+            $table->string('category');
+            $table->string('website')->nullable();
+            $table->string('country')->nullable();
+            $table->string('state')->nullable();
             $table->timestamps();
         });
     }

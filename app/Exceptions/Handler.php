@@ -77,7 +77,7 @@ class Handler extends ExceptionHandler
             if ($exception instanceof ConnectionException) {
                 return $this->failure('Bad request', 'an error was encountered', 400);
             }
-            if ($exception instanceof AuthException) {
+            if ($exception instanceof AuthException || $exception instanceof CustomerException) {
                 return $this->failure($exception->getMessage(), status: $exception->getCode());
             }
         }

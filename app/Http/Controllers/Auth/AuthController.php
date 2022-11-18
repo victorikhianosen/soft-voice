@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Factories\UserFactory;
+use App\Http\Repositories\UserRepository;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ChangePasswordRequest;
@@ -15,7 +16,10 @@ class AuthController extends Controller
 {
     use RespondWithHttpStatus;
 
-    public function __construct(protected AuthService $authService)
+    public function __construct(
+        protected AuthService $authService,
+        protected UserRepository $userRepository
+    )
     {
     }
 
@@ -27,7 +31,7 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): JsonResponse
     {
-        $data = $this->authService->register(new UserFactory, $request->all());
+        $data = $this->authService->register(new UserFactory($this->userRepository), $request->all());
         return $this->success('Registration Successful', $data);
     }
 

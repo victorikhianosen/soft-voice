@@ -22,13 +22,19 @@ abstract class AbstractRepository
      * @return mixed
      */
     public function getAll(
-        array $columns = ['*'],
-        int $limit = 50,
+        int $page = 1,
+        int $perPage = 50,
+        array $conditions = [],
         string $order = 'created_at',
-        string $dir = 'desc'
+        string $dir = 'desc',
     ): mixed
     {
-        return $this->model->orderBy($order, $dir)->paginate($limit, $columns);
+        $data = $this->model->where($conditions);
+        $total = $data->count();
+        return [
+            'data'  => $data->orderBy($order, $dir)->offset(($page - 1) * $perPage)->limit($perPage)->get(),
+            'total' => $total
+        ];
     }
 
     /**
