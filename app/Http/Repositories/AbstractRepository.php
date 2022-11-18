@@ -81,9 +81,12 @@ abstract class AbstractRepository
      * @param array $data
      * @return boolean
      */
-    public function update(int $id, array $data): bool
+    public function update(Model|int $model, array $data): bool
     {
-        return $this->find($id)->update($data);
+        if ($model instanceof Model) {
+            return $model->update($data);
+        }
+        return $this->find($model)->update($data);
     }
 
     /**
@@ -92,10 +95,12 @@ abstract class AbstractRepository
      * @param integer $id
      * @return boolean
      */
-    public function destroy(int $id): bool
+    public function destroy(Model|int $model): bool
     {
-        $class = get_class($this->model);
-        return $class::destroy($id);
+        if ($model instanceof Model) {
+            return $model->delete();
+        }
+        return $this->find($model)->delete();
     }
 
     /**

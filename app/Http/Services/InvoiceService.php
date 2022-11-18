@@ -8,6 +8,5 @@ class InvoiceService
 {
     public function __construct(protected InvoiceRepository $invoiceRepository)
     {
-
     }
 }

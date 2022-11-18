@@ -20,7 +20,7 @@ class CustomerService
 
     public function getAll(array $data)
     {
-        $result = $this->customerRepository->search(
+        $result = $this->customerRepository->findAll(
             $data['current_page'] ?? 1,
             $data['per_page'] ?? 50,
             $data['query'] ?? '',
@@ -34,39 +34,19 @@ class CustomerService
 
     public function store(array $data): CustomerResource
     {
-        $customer = request()->user()->customers()->create(Arr::only($data, [
-            'name', 'email', 'phone', 'address',
-            'category', 'website', 'country', 'state'
-        ]));
+        $data['user_id'] = request()->user()->id;
+        $customer = $this->customerRepository->create($data);
         return new CustomerResource($customer);
     }
 
     public function update(Customer $customer, array $data): CustomerResource
     {
-        $customer->update(Arr::only($data, [
-            'name', 'email', 'phone', 'address',
-            'category', 'website', 'country', 'state'
-        ]));
-        return new CustomerResource($customer);
+        $this->customerRepository->update($customer->id, $data);
+        return new CustomerResource($customer->refresh());
     }
 
     public function delete(Customer $customer)
     {
-        $customer->delete();
-    }
-
-    protected function getAddresses(array $data): array
-    {
-        $shippingAddress = Arr::first($data["addresses"], fn($adr) => $adr['type'] === 'shipping');
-        $billiingAddress = Arr::first($data["addresses"], fn($adr) => $adr['type'] === 'billing');
-
-        if (!($shippingAddress && $billiingAddress)) {
-            throw new CustomerException("Shipping or billing address not present", 400);
-        }
-
-        return [
-            'shipping' => $shippingAddress,
-            'billing'  => $billiingAddress
-        ];
+        $this->customerRepository->destroy($customer);
     }
 }

@@ -16,7 +16,7 @@ class CustomerRepository extends AbstractRepository
         return app(Customer::class);
     }
 
-    public function search(
+    public function findAll(
         int $page = 1,
         int $perPage = 50,
         string $query = '',

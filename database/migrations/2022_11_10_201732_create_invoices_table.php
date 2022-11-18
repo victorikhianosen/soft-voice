@@ -24,14 +24,14 @@ return new class extends Migration
             $table->boolean('round_off');
             $table->boolean('accept_payment')->default(false);
             $table->string('currency');
-            $table->string('recurring_duration')->nullable();
+            $table->json('recurring_duration')->nullable('[]');
             $table->text('terms')->nullable();
             $table->text('notes')->nullable();
             $table->json('additional_charges')->default('[]');
             $table->json('more_discount')->default('[]');
             $table->string('signature')->nullable();
             $table->string('signatory_name')->nullable();
-            $table->string('status')->default('draft');
+            $table->string('status');
             $table->timestamps();
         });
     }
