@@ -50,5 +50,11 @@ Route::controller(CustomerController::class)->middleware(['auth:sanctum', 'abili
 });
 
 Route::controller(InvoiceController::class)->middleware(['auth:sanctum', 'ability:user'])->group(function () {
+    Route::get('/invoices', 'index');
     Route::post('/invoices/store', 'store');
+    Route::get('/invoices/{invoice}/show', 'show');
+    Route::put('/invoices/{invoice}', 'update');
+    Route::delete('/invoices/{invoice}', 'delete');
+    Route::put('/invoices/{invoice}/mark-as', 'markAs');
+    Route::post('/invoices/{invoice}/send', 'send')->middleware('throttle:3,1');
 });

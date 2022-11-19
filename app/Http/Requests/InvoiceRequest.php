@@ -8,6 +8,18 @@ use Illuminate\Foundation\Http\FormRequest;
 class InvoiceRequest extends FormRequest
 {
     /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return $this->invoice
+            ? $this->invoice->user_id === request()->user()->id
+            : true;
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -20,25 +32,25 @@ class InvoiceRequest extends FormRequest
             "date"           => ["required", "date", "date_format:Y/m/d"],
             "due_date"       => ["required", "date", "date_format:Y/m/d"],
             "tax_enabled"    => ["required", "boolean"],
-            "round_off"      => ["required", "boolean"],
             "terms"          => ["required", "string"],
             "notes"          => ["required", "string"],
+            "currency"       => ["required", "string"],
             "signatory_name" => ["required", "string"],
             "signature"      => ["file", "max:2048"],
-            "status"         => ["required", "string"],
+            "accept_payment" => ["boolean"],
 
             "recurring"                => ["required", "boolean"],
             "recurring_duration"       => ["required_if:recurring,true", "array"],
             "recurring_duration.mode"  => ["required_if:recurring,true", "string", "in:day,week,month,year"],
             "recurring_duration.value" => ["required_if:recurring,true", "numeric"],
 
-            "additional_charges.*.name"  => ["required", "string"],
-            "additional_charges.*.value" => ["required", "numeric"],
-            "additional_charges.*.mode"  => ["required", "string", "in:amount,percent"],
+            "additional_charges.*.description"  => ["required", "string"],
+            "additional_charges.*.value"        => ["required", "numeric"],
+            "additional_charges.*.mode"         => ["required", "string", "in:amount,percent"],
 
-            "more_discount.*.name"  => ["required", "string"],
-            "more_discount.*.value" => ["required", "numeric"],
-            "more_discount.*.mode"  => ["required", "string", "in:amount,percent"],
+            "more_discount.*.description"  => ["required", "string"],
+            "more_discount.*.value"        => ["required", "numeric"],
+            "more_discount.*.mode"         => ["required", "string", "in:amount,percent"],
         ];
     }
 }

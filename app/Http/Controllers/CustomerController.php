@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CustomerRequest;
-use App\Http\Requests\ListAllRequest;
+use App\Http\Requests\ListCustomersRequest;
 use App\Http\Resources\CustomerResource;
 use App\Http\Services\CustomerService;
 use App\Http\Traits\RespondWithHttpStatus;
 use App\Models\Customer;
+use Illuminate\Http\JsonResponse;
 
 class CustomerController extends Controller
 {
@@ -17,30 +18,30 @@ class CustomerController extends Controller
     {
     }
 
-    public function index(ListAllRequest $request)
+    public function index(ListCustomersRequest $request): JsonResponse
     {
         $result = $this->customerService->getAll($request->all());
         return $this->success(data: $result['data'], meta: $result['meta']);
     }
 
-    public function show(Customer $customer)
+    public function show(Customer $customer): JsonResponse
     {
         return $this->success(data: new CustomerResource($customer));
     }
 
-    public function store(CustomerRequest $request)
+    public function store(CustomerRequest $request): JsonResponse
     {
         $customer = $this->customerService->store($request->all());
         return $this->success("Customer created", $customer);
     }
 
-    public function update(Customer $customer, CustomerRequest $request)
+    public function update(Customer $customer, CustomerRequest $request): JsonResponse
     {
         $customer = $this->customerService->update($customer, $request->all());
         return $this->success("Customer updated", $customer);
     }
 
-    public function delete(Customer $customer)
+    public function delete(Customer $customer): JsonResponse
     {
         $customer = $this->customerService->delete($customer);
         return $this->success("Customer deleted");

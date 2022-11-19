@@ -2,14 +2,16 @@
 
 namespace App\Http\Services;
 
-use App\Models\User;
 use Exception;
-use Illuminate\Notifications\Notification;
+use App\Models\User;
+use App\Models\Customer;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Notifications\Notification;
 
 class NotificationService
 {
-    public function send(Notification $notification, User $user)
+    public function send(Notification $notification, Model $user)
     {
         try {
             $user->notify($notification);

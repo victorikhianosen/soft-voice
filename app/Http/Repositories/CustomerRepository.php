@@ -25,19 +25,17 @@ class CustomerRepository extends AbstractRepository
         string $dir = 'desc',
     ): array
     {
-        $data = $this->model->where($conditions);
+        $data = $this->model->where($conditions)
+                            ->when($query, function ($q) use ($query) {
+                                $q->where('name', 'LIKE', '%'.$query.'%')
+                                    ->orWhere('email', 'LIKE', '%'.$query.'%')
+                                    ->orWhere('phone', 'LIKE', '%'.$query.'%');
+                            })
+                            ->orderBy($order, $dir);
+
         $total = $data->count();
-        $data = $data->orderBy($order, $dir)
-                    ->where(function($q) use ($query) {
-                        $q->where('name', 'LIKE', '%'.$query.'%')
-                            ->orWhere('email', 'LIKE', '%'.$query.'%')
-                            ->orWhere('phone', 'LIKE', '%'.$query.'%');
-                    })
-                    ->offset(($page - 1) * $perPage)
-                    ->limit($perPage)
-                    ->get();
         return [
-            'data'  => $data,
+            'data'  => $data->offset(($page - 1) * $perPage)->limit($perPage)->get(),
             'total' => $total
         ];
     }

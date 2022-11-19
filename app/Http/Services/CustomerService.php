@@ -24,7 +24,9 @@ class CustomerService
             $data['current_page'] ?? 1,
             $data['per_page'] ?? 50,
             $data['query'] ?? '',
-            ['user_id' => request()->user()->id]
+            ['user_id' => request()->user()->id],
+            $data['sort']['column'] ?? null,
+            $data['sort']['dir'] ?? null,
         );
         return [
             'data' => CustomerResource::collection($result['data']),

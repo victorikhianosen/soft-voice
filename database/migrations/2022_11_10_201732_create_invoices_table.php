@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
             $table->string('invoice_id')->unique();
             $table->foreignId('customer_id')->constrained();
             $table->date('date');
             $table->date('due_date');
             $table->boolean('tax_enabled');
             $table->boolean('recurring');
-            $table->boolean('round_off');
             $table->boolean('accept_payment')->default(false);
             $table->string('currency');
             $table->json('recurring_duration')->nullable('[]');
