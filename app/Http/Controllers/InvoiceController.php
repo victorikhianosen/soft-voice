@@ -49,6 +49,12 @@ class InvoiceController extends Controller
         return $this->success("Invoice deleted");
     }
 
+    public function duplicate(Invoice $invoice): JsonResponse
+    {
+        $data = $this->invoiceService->duplicate($invoice);
+        return $this->success("Invoice duplicated", $data);
+    }
+
     public function markAs(Invoice $invoice, MarkInvoiceAsRequest $request): JsonResponse
     {
         $data = $this->invoiceService->markAs($invoice, Status::from($request->status));
@@ -59,5 +65,11 @@ class InvoiceController extends Controller
     {
         $this->invoiceService->send($invoice);
         return $this->success("Invoice sent");
+    }
+
+    public function sendReminder(Invoice $invoice): JsonResponse
+    {
+        $this->invoiceService->sendReminder($invoice);
+        return $this->success("Invoice reminder sent");
     }
 }

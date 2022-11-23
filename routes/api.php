@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Auth\EmailVerificationController;
-use App\Http\Controllers\Auth\PasswordResetController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,20 +41,38 @@ Route::controller(PasswordResetController::class)->group(function () {
     Route::post('/password/reset', 'resetPassword');
 });
 
-Route::controller(CustomerController::class)->middleware(['auth:sanctum', 'ability:user'])->group(function () {
-    Route::get('/customers', 'index');
-    Route::post('/customers/store', 'store');
-    Route::get('/customers/{customer}/show', 'show');
-    Route::put('/customers/{customer}', 'update');
-    Route::delete('/customers/{customer}', 'delete');
-});
+Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
+    Route::prefix('/customers')->group(function () {
+        Route::controller(CustomerController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store');
+            Route::get('/{customer}', 'show');
+            Route::put('/{customer}', 'update');
+            Route::delete('/{customer}', 'delete');
+        });
+    });
 
-Route::controller(InvoiceController::class)->middleware(['auth:sanctum', 'ability:user'])->group(function () {
-    Route::get('/invoices', 'index');
-    Route::post('/invoices/store', 'store');
-    Route::get('/invoices/{invoice}/show', 'show');
-    Route::put('/invoices/{invoice}', 'update');
-    Route::delete('/invoices/{invoice}', 'delete');
-    Route::put('/invoices/{invoice}/mark-as', 'markAs');
-    Route::post('/invoices/{invoice}/send', 'send')->middleware('throttle:3,1');
+    Route::prefix('/invoices')->group(function () {
+        Route::controller(InvoiceController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store');
+            Route::get('/{invoice}', 'show');
+            Route::put('/{invoice}', 'update');
+            Route::delete('/{invoice}', 'delete');
+            Route::put('/{invoice}/duplicate', 'duplicate');
+            Route::put('/{invoice}/mark-as', 'markAs');
+            Route::post('/{invoice}/send', 'send')->middleware('throttle:3,1');
+            Route::post('/{invoice}/send-reminder', 'sendReminder')->middleware('throttle:3,1');
+        });
+    });
+
+    Route::prefix('/payments')->group(function () {
+        Route::controller(PaymentController::class)->group(function () {
+            Route::get('', 'index');
+            Route::get('/{payment}', 'show');
+            Route::put('/{payment}', 'update');
+            Route::post('', 'store');
+            Route::delete('/{payment}', 'delete');
+        });
+    });
 });

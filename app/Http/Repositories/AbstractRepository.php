@@ -2,6 +2,7 @@
 
 namespace App\Http\Repositories;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 abstract class AbstractRepository
@@ -60,6 +61,17 @@ abstract class AbstractRepository
     public function find(int $id, array $columns = ['*']): Model
     {
         return $this->model->find($id, $columns);
+    }
+
+    /**
+     * Get all entries
+     *
+     * @param array $conditions
+     * @return Collection
+     */
+    public function all(array $conditions = []): Collection
+    {
+        return $this->model->where($conditions)->get();
     }
 
     /**
