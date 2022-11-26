@@ -54,6 +54,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
 
     Route::prefix('/invoices')->group(function () {
         Route::controller(InvoiceController::class)->group(function () {
+            Route::get('/summary', 'getSummary');
             Route::get('', 'index');
             Route::post('', 'store');
             Route::get('/{invoice}', 'show');
@@ -63,6 +64,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::put('/{invoice}/mark-as', 'markAs');
             Route::post('/{invoice}/send', 'send')->middleware('throttle:3,1');
             Route::post('/{invoice}/send-reminder', 'sendReminder')->middleware('throttle:3,1');
+            Route::post('/export', 'export');
         });
     });
 

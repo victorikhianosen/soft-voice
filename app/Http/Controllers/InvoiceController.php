@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Status;
+use App\Http\Repositories\InvoiceRepository;
+use App\Http\Requests\ExportRequest;
 use App\Models\Invoice;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\InvoiceRequest;
@@ -16,7 +18,10 @@ class InvoiceController extends Controller
 {
     use RespondWithHttpStatus;
 
-    public function __construct(protected InvoiceService $invoiceService)
+    public function __construct(
+        protected InvoiceService $invoiceService,
+        protected InvoiceRepository $invoiceRepository
+    )
     {
     }
 
@@ -71,5 +76,20 @@ class InvoiceController extends Controller
     {
         $this->invoiceService->sendReminder($invoice);
         return $this->success("Invoice reminder sent");
+    }
+
+    public function export(ExportRequest $request): JsonResponse
+    {
+        $url = $this->invoiceService->export($request['format']);
+        return $this->success(
+            "Temporary file generated, this file will be deleted in 10 minutes",
+            ['url' => $url]
+        );
+    }
+
+    public function getSummary()
+    {
+        $data = $this->invoiceRepository->getSummary();
+        return $this->success(data: $data);
     }
 }

@@ -2,15 +2,22 @@
 
 namespace App\Http\Services;
 
-use App\Enums\PaymentMethod;
+use XMLWriter;
 use App\Enums\Status;
 use App\Models\Invoice;
+use Illuminate\Support\Arr;
+use App\Enums\PaymentMethod;
+use App\Exports\InvoiceExport;
+use App\Models\InvoicePayment;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Traits\Paginatable;
+use Illuminate\Support\Facades\File;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\InvoiceResource;
+use App\Http\Resources\PaymentResource;
+
 use App\Http\Repositories\InvoiceRepository;
 use App\Http\Repositories\PaymentRepository;
-use App\Http\Resources\PaymentResource;
-use App\Models\InvoicePayment;
 use App\Notifications\SendInvoiceNotification;
 use App\Notifications\InvoiceReminderNotification;
 
@@ -48,12 +55,25 @@ class InvoiceService
         $data['user_id'] = request()->user()->id;
         $data['status'] = Status::DRAFT;
         $invoice = $this->invoiceRepository->create($data);
+        foreach ($data['items'] as $item) {
+            $invoice->items()->create($item);
+        }
         return new InvoiceResource($invoice);
     }
 
-    public function update(Invoice $invoice, array $data): InvoiceResource
+    public function update(Invoice $invoice, array $data)
     {
         $this->invoiceRepository->update($invoice, $data);
+        $itemIDs = [];
+        foreach ($data['items'] as $item) {
+            $id = $item['id'] ?? null;
+            if ($id) $itemIDs[] = $id;
+            $invoice->items()->updateOrCreate(
+                ['id' => $id, 'invoice_id' => $invoice->id ],
+                $item
+            );
+        }
+        $invoice->items()->whereNotIn('id', $itemIDs)->delete();
         return new InvoiceResource($invoice->refresh());
     }
 
@@ -110,5 +130,45 @@ class InvoiceService
     public function deletePayment(InvoicePayment $payment)
     {
         $this->paymentRepository->destroy($payment);
+    }
+
+    public function export(string $format): string
+    {
+        $userDirectory = 'exports/'.request()->user()->id;
+        $dir = storage_path("app/public/{$userDirectory}");
+        $invoices = request()->user()->invoices;
+        if (!File::isDirectory($dir)) {
+            File::makeDirectory($dir);
+        }
+        if ($format === 'pdf') {
+            $file = time().'.pdf';
+            Pdf::loadView('exports.invoice', ['invoices' => $invoices])
+                ->save("{$dir}/{$file}");
+        } else if ($format === 'excel') {
+            $file = time().'.xlsx';
+            Excel::store(new InvoiceExport($invoices), "public/{$userDirectory}/{$file}");
+        } else {
+            $file = time().'.xml';
+            $xml = new XMLWriter();
+            $xml->openURI("{$dir}/{$file}");
+
+            $xml->startDocument('1.0');
+            $xml->startElement('Invoices');
+            $xml->setIndent(4);
+            foreach ($invoices as $key => $invoice){
+                $xml->startElement('Invoice');
+                $xml->writeElement('invoice_id', $invoice->invoice_id);
+                $xml->writeElement('customer', $invoice->customer->name);
+                $xml->writeElement('amount', $invoice->amount);
+                $xml->writeElement('date_created', $invoice->created_at);
+                $xml->writeElement('due_date', $invoice->due_date);
+                $xml->writeElement('status', $invoice->status);
+                $xml->endElement();
+            }
+            $xml->endElement();
+            $xml->endDocument();
+            $xml->flush();
+        }
+        return asset("storage/{$userDirectory}/{$file}");
     }
 }

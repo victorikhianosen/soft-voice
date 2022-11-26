@@ -51,6 +51,12 @@ class InvoiceRequest extends FormRequest
             "more_discount.*.description"  => ["required", "string"],
             "more_discount.*.value"        => ["required", "numeric"],
             "more_discount.*.mode"         => ["required", "string", "in:amount,percent"],
+
+            "items.*.name"     => ["required", "string"],
+            "items.*.quantity" => ["required", "numeric"],
+            "items.*.price"    => ["required", "numeric"],
+            "items.*.amount"   => ["required", "numeric"],
+            "items.*.discount" => ["required", "numeric"],
         ];
     }
 }

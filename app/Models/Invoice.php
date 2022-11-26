@@ -12,6 +12,8 @@ class Invoice extends Model
 {
     use HasFactory;
 
+    protected $with = ['items', 'customer'];
+
     protected $fillable = [
         'user_id',
         'invoice_id',
@@ -40,6 +42,11 @@ class Invoice extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(InvoicePayment::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(InvoiceItem::class);
     }
 
     public function setRecurringDurationAttribute(array $data)
@@ -78,5 +85,10 @@ class Invoice extends Model
             $data,
             fn($item) => Arr::only($item, ['description', 'mode', 'value']))
         );
+    }
+
+    public function getAmountAttribute(): float|int
+    {
+        return $this->items()->sum('amount');
     }
 }

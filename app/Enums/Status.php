@@ -8,6 +8,7 @@ enum Status: string
     case SENT           = 'sent';
     case VIEWED         = 'viewed';
     case PAID           = 'paid';
+    case UNPAID         = 'unpaid';
     case PARTIALLY_PAID = 'partially_paid';
     case RECURRING      = 'recurring';
     case OVERDUE        = 'overdue';
@@ -20,6 +21,7 @@ enum Status: string
             self::SENT->value,
             self::VIEWED->value,
             self::PAID->value,
+            self::UNPAID->value,
             self::PARTIALLY_PAID->value,
             self::RECURRING->value,
             self::OVERDUE->value,
