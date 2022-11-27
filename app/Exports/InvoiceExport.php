@@ -18,12 +18,12 @@ class InvoiceExport implements FromArray, WithHeadings
     public function array(): array
     {
         return $this->invoices->map(fn($invoice) => [
-            'invoice_id' => $invoice->invoice_id,
-            'customer' => $invoice->customer->name,
-            'amount' => $invoice->amount,
-            'date_created' => $invoice->created_at,
-            'due_date' => $invoice->due_date,
-            'status' => $invoice->status,
+            'invoice_id'   => $invoice->invoice_id,
+            'customer'     => $invoice->customer->name,
+            'amount'       => $invoice->amount,
+            'date_created' => $invoice->date,
+            'due_date'     => $invoice->due_date,
+            'status'       => $invoice->status,
         ])->toArray();
     }
 

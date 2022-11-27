@@ -66,7 +66,7 @@
                     <td data-column="Invoice ID">{{ $invoice->invoice_id }}</td>
                     <td data-column="Customer">{{ $invoice->customer->name }}</td>
                     <td data-column="Amount">{{ $invoice->amount }}</td>
-                    <td data-column="Date Created">{{ $invoice->created_at }}</td>
+                    <td data-column="Date Created">{{ $invoice->date }}</td>
                     <td data-column="Due Date">{{ $invoice->due_date }}</td>
                     <td data-column="Status">{{ $invoice->status }}</td>
                 </tr>

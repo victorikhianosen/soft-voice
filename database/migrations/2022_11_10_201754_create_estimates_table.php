@@ -15,6 +15,17 @@ return new class extends Migration
     {
         Schema::create('estimates', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
+            $table->string('estimate_id')->unique();
+            $table->foreignId('customer_id')->constrained();
+            $table->date('date');
+            $table->date('due_date');
+            $table->string('currency');
+            $table->boolean('tax_enabled');
+            $table->text('notes')->nullable();
+            $table->json('additional_charges')->default('[]');
+            $table->json('more_discount')->default('[]');
+            $table->string('status');
             $table->timestamps();
         });
     }

@@ -69,7 +69,7 @@ class InvoiceService
             $id = $item['id'] ?? null;
             if ($id) $itemIDs[] = $id;
             $invoice->items()->updateOrCreate(
-                ['id' => $id, 'invoice_id' => $invoice->id ],
+                ['id' => $id],
                 $item
             );
         }
@@ -155,12 +155,12 @@ class InvoiceService
             $xml->startDocument('1.0');
             $xml->startElement('Invoices');
             $xml->setIndent(4);
-            foreach ($invoices as $key => $invoice){
+            foreach ($invoices as $invoice){
                 $xml->startElement('Invoice');
                 $xml->writeElement('invoice_id', $invoice->invoice_id);
                 $xml->writeElement('customer', $invoice->customer->name);
                 $xml->writeElement('amount', $invoice->amount);
-                $xml->writeElement('date_created', $invoice->created_at);
+                $xml->writeElement('date_created', $invoice->date);
                 $xml->writeElement('due_date', $invoice->due_date);
                 $xml->writeElement('status', $invoice->status);
                 $xml->endElement();
