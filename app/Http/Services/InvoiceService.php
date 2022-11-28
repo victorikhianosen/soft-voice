@@ -59,7 +59,7 @@ class InvoiceService
         $data['user_id'] = request()->user()->id;
         $data['status'] = Status::DRAFT;
         if ($file) {
-            $data['signature'] = $this->saveFIle($file, 'signature');
+            $data['signature'] = $this->saveFIle($file, 'signatures');
         }
         $invoice = $this->invoiceRepository->create($data);
         foreach ($data['items'] as $item) {
@@ -73,7 +73,7 @@ class InvoiceService
         $file = $data->file('signature');
         $data = $data->all();
         if ($file) {
-            $data['signature'] = $this->saveFIle($file, 'signature');
+            $data['signature'] = $this->saveFIle($file, 'signatures');
         }
         $this->invoiceRepository->update($invoice, $data);
 

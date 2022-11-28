@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Enums\Status;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Resources\Json\JsonResource;
 
