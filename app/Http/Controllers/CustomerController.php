@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CustomerRequest;
-use App\Http\Requests\ListCustomersRequest;
+use App\Http\Requests\ListCustomerRequest;
 use App\Http\Resources\CustomerResource;
 use App\Http\Services\CustomerService;
 use App\Http\Traits\RespondWithHttpStatus;
@@ -18,7 +18,7 @@ class CustomerController extends Controller
     {
     }
 
-    public function index(ListCustomersRequest $request): JsonResponse
+    public function index(ListCustomerRequest $request): JsonResponse
     {
         $result = $this->customerService->getAll($request->all());
         return $this->success(data: $result['data'], meta: $result['meta']);

@@ -7,7 +7,7 @@ use App\Models\Invoice;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ListInvoicesRequest extends FormRequest
+class ListInvoiceRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -30,7 +30,7 @@ class ListInvoicesRequest extends FormRequest
             "sort.dir"    => ["string", "in:asc,desc"],
 
             "filter.status"   => ["array"],
-            "filter.status.*" => ["string", Rule::in(Status::types())],
+            "filter.status.*" => ["string", Rule::in(Status::invoiceTypes())],
 
             "filter.customers"   => ["array"],
             "filter.customers.*" => ["numeric", "exists:customers,id"],

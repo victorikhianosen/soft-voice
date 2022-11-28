@@ -20,6 +20,7 @@ class InvoiceResource extends JsonResource
         $data['customer'] = new CustomerResource($this->customer);
         Arr::forget($data, ['customer_id']);
         $data['amount'] = $this->amount;
+        $data['signature'] = $this->signature ? asset($this->signature) : null;
         return $data;
     }
 }

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Details</title>
+    <title>Invoices</title>
 
     <style>
         table {
@@ -52,6 +52,7 @@
     <table style="position: relative; top: 50px;">
         <thead>
             <tr>
+                <th>S/N</th>
                 <th>Invoice ID</th>
                 <th>Customer</th>
                 <th>Amount</th>
@@ -61,8 +62,9 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($invoices as $invoice)
+            @foreach ($invoices as $key => $invoice)
                 <tr>
+                    <td data-column="S/N">{{ $key + 1 }}</td>
                     <td data-column="Invoice ID">{{ $invoice->invoice_id }}</td>
                     <td data-column="Customer">{{ $invoice->customer->name }}</td>
                     <td data-column="Amount">{{ $invoice->amount }}</td>

@@ -44,14 +44,17 @@ class InvoiceRequest extends FormRequest
             "recurring_duration.mode"  => ["required_if:recurring,true", "string", "in:day,week,month,year"],
             "recurring_duration.value" => ["required_if:recurring,true", "numeric"],
 
+            "additional_charges"                => ["nullable", "array"],
             "additional_charges.*.description"  => ["required", "string"],
             "additional_charges.*.value"        => ["required", "numeric"],
             "additional_charges.*.mode"         => ["required", "string", "in:amount,percent"],
 
+            "more_discount"                => ["nullable", "array"],
             "more_discount.*.description"  => ["required", "string"],
             "more_discount.*.value"        => ["required", "numeric"],
             "more_discount.*.mode"         => ["required", "string", "in:amount,percent"],
 
+            "items"            => ["required", "array"],
             "items.*.name"     => ["required", "string"],
             "items.*.quantity" => ["required", "numeric"],
             "items.*.price"    => ["required", "numeric"],

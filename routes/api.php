@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
@@ -64,6 +65,20 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::put('/{invoice}/mark-as', 'markAs');
             Route::post('/{invoice}/send', 'send')->middleware('throttle:3,1');
             Route::post('/{invoice}/send-reminder', 'sendReminder')->middleware('throttle:3,1');
+            Route::post('/export', 'export');
+        });
+    });
+
+    Route::prefix('/estimates')->group(function () {
+        Route::controller(EstimateController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store');
+            Route::get('/{estimate}', 'show');
+            Route::put('/{estimate}', 'update');
+            Route::delete('/{estimate}', 'delete');
+            Route::put('/{estimate}/duplicate', 'duplicate');
+            Route::put('/{estimate}/mark-as', 'markAs');
+            Route::post('/{estimate}/send', 'send')->middleware('throttle:3,1');
             Route::post('/export', 'export');
         });
     });

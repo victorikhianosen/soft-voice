@@ -6,7 +6,7 @@ use App\Models\Customer;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ListCustomersRequest extends FormRequest
+class ListCustomerRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.

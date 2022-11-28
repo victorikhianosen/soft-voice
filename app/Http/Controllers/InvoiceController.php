@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\InvoiceRequest;
 use App\Http\Services\InvoiceService;
 use App\Http\Resources\InvoiceResource;
-use App\Http\Requests\ListInvoicesRequest;
+use App\Http\Requests\ListInvoiceRequest;
 use App\Http\Traits\RespondWithHttpStatus;
 use App\Http\Requests\MarkInvoiceAsRequest;
 
@@ -25,7 +25,7 @@ class InvoiceController extends Controller
     {
     }
 
-    public function index(ListInvoicesRequest $request): JsonResponse
+    public function index(ListInvoiceRequest $request): JsonResponse
     {
         $result = $this->invoiceService->getAll($request->all());
         return $this->success(data: $result['data'], meta: $result['meta']);
@@ -38,13 +38,13 @@ class InvoiceController extends Controller
 
     public function store(InvoiceRequest $request): JsonResponse
     {
-        $data = $this->invoiceService->store($request->all());
+        $data = $this->invoiceService->store($request);
         return $this->success("Invoice saved", $data);
     }
 
     public function update(Invoice $invoice, InvoiceRequest $request): JsonResponse
     {
-        $data = $this->invoiceService->update($invoice, $request->all());
+        $data = $this->invoiceService->update($invoice, $request);
         return $this->success("Invoice updated", $data);
     }
 

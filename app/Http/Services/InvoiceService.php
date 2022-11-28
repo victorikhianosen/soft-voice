@@ -13,17 +13,19 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Traits\Paginatable;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\InvoiceRequest;
 use App\Http\Resources\InvoiceResource;
-use App\Http\Resources\PaymentResource;
 
+use App\Http\Resources\PaymentResource;
 use App\Http\Repositories\InvoiceRepository;
 use App\Http\Repositories\PaymentRepository;
+use App\Http\Traits\UploadsFile;
 use App\Notifications\SendInvoiceNotification;
 use App\Notifications\InvoiceReminderNotification;
 
 class InvoiceService
 {
-    use Paginatable;
+    use Paginatable, UploadsFile;
 
     public function __construct(
         protected InvoiceRepository $invoiceRepository,
@@ -50,10 +52,15 @@ class InvoiceService
         ];
     }
 
-    public function store(array $data): InvoiceResource
+    public function store(InvoiceRequest $data): InvoiceResource
     {
+        $file = $data->file('signature');
+        $data = $data->all();
         $data['user_id'] = request()->user()->id;
         $data['status'] = Status::DRAFT;
+        if ($file) {
+            $data['signature'] = $this->saveFIle($file, 'signature');
+        }
         $invoice = $this->invoiceRepository->create($data);
         foreach ($data['items'] as $item) {
             $invoice->items()->create($item);
@@ -61,19 +68,23 @@ class InvoiceService
         return new InvoiceResource($invoice);
     }
 
-    public function update(Invoice $invoice, array $data)
+    public function update(Invoice $invoice, InvoiceRequest $data)
     {
-        $this->invoiceRepository->update($invoice, $data);
-        $itemIDs = [];
-        foreach ($data['items'] as $item) {
-            $id = $item['id'] ?? null;
-            if ($id) $itemIDs[] = $id;
-            $invoice->items()->updateOrCreate(
-                ['id' => $id],
-                $item
-            );
+        $file = $data->file('signature');
+        $data = $data->all();
+        if ($file) {
+            $data['signature'] = $this->saveFIle($file, 'signature');
         }
-        $invoice->items()->whereNotIn('id', $itemIDs)->delete();
+        $this->invoiceRepository->update($invoice, $data);
+
+        $ids = [];
+        foreach ($data['items'] as $item) {
+            if (isset($item['id'])) $ids[] = $item['id'];
+        }
+        $invoice->items()->whereNotIn('id', $ids)->delete();
+        foreach ($data['items'] as $item) {
+            $invoice->items()->updateOrCreate(['id' => ($item['id'] ?? null)], $item);
+        }
         return new InvoiceResource($invoice->refresh());
     }
 
@@ -135,27 +146,18 @@ class InvoiceService
     public function export(string $format): string
     {
         $userDirectory = 'exports/'.request()->user()->id;
-        $dir = storage_path("app/public/{$userDirectory}");
+        $dir = $this->getExportDirectory($userDirectory);
         $invoices = request()->user()->invoices;
-        if (!File::isDirectory($dir)) {
-            File::makeDirectory($dir);
-        }
         if ($format === 'pdf') {
             $file = time().'.pdf';
-            Pdf::loadView('exports.invoice', ['invoices' => $invoices])
-                ->save("{$dir}/{$file}");
+            Pdf::loadView('exports.invoice', ['invoices' => $invoices])->save("{$dir}/{$file}");
         } else if ($format === 'excel') {
             $file = time().'.xlsx';
             Excel::store(new InvoiceExport($invoices), "public/{$userDirectory}/{$file}");
         } else {
             $file = time().'.xml';
-            $xml = new XMLWriter();
-            $xml->openURI("{$dir}/{$file}");
-
-            $xml->startDocument('1.0');
-            $xml->startElement('Invoices');
-            $xml->setIndent(4);
-            foreach ($invoices as $invoice){
+            $xml = $this->prepareXML("{$dir}/{$file}");
+            foreach ($invoices as $invoice) {
                 $xml->startElement('Invoice');
                 $xml->writeElement('invoice_id', $invoice->invoice_id);
                 $xml->writeElement('customer', $invoice->customer->name);
@@ -165,10 +167,8 @@ class InvoiceService
                 $xml->writeElement('status', $invoice->status);
                 $xml->endElement();
             }
-            $xml->endElement();
-            $xml->endDocument();
-            $xml->flush();
+            $this->closeXML($xml);
         }
-        return asset("storage/{$userDirectory}/{$file}");
+        return asset("/storage/{$userDirectory}/{$file}");
     }
 }

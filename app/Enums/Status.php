@@ -13,6 +13,9 @@ enum Status: string
     case RECURRING      = 'recurring';
     case OVERDUE        = 'overdue';
     case REFUNDED       = 'refunded';
+    case ACCEPTED       = 'accepted';
+    case REJECTED       = 'rejected';
+    case EXPIRED        = 'expired';
 
     public static function types(): array
     {
@@ -25,7 +28,37 @@ enum Status: string
             self::PARTIALLY_PAID->value,
             self::RECURRING->value,
             self::OVERDUE->value,
+            self::REFUNDED->value,
+            self::ACCEPTED->value,
+            self::REJECTED->value,
+            self::EXPIRED->value,
+        ];
+    }
+
+    public static function invoiceTypes(): array
+    {
+        return [
+            self::DRAFT->value,
+            self::SENT->value,
+            self::VIEWED->value,
+            self::PAID->value,
+            self::UNPAID->value,
+            self::PARTIALLY_PAID->value,
+            self::RECURRING->value,
+            self::OVERDUE->value,
             self::REFUNDED->value
+        ];
+    }
+
+    public static function estimateTypes(): array
+    {
+        return [
+            self::DRAFT->value,
+            self::SENT->value,
+            self::VIEWED->value,
+            self::ACCEPTED->value,
+            self::REJECTED->value,
+            self::EXPIRED->value,
         ];
     }
 }
