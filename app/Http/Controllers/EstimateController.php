@@ -33,6 +33,7 @@ class EstimateController extends Controller
 
     public function show(Estimate $estimate): JsonResponse
     {
+        $this->authorize('process', $estimate);
         return $this->success(data: new EstimateResource($estimate));
     }
 
@@ -44,30 +45,35 @@ class EstimateController extends Controller
 
     public function update(Estimate $estimate, EstimateRequest $request): JsonResponse
     {
+        $this->authorize('process', $estimate);
         $data = $this->estimateService->update($estimate, $request->all());
         return $this->success("Estimate updated", $data);
     }
 
     public function delete(Estimate $estimate): JsonResponse
     {
+        $this->authorize('process', $estimate);
         $this->estimateService->delete($estimate);
         return $this->success("Estimate deleted");
     }
 
     public function duplicate(Estimate $estimate): JsonResponse
     {
+        $this->authorize('process', $estimate);
         $data = $this->estimateService->duplicate($estimate);
         return $this->success("Estimate duplicated", $data);
     }
 
     public function markAs(Estimate $estimate, MarkEstimateAsRequest $request): JsonResponse
     {
+        $this->authorize('process', $estimate);
         $data = $this->estimateService->markAs($estimate, Status::from($request->status));
         return $this->success("Estimate status updated", $data);
     }
 
     public function send(Estimate $estimate): JsonResponse
     {
+        $this->authorize('process', $estimate);
         $this->estimateService->send($estimate);
         return $this->success("Estimate sent");
     }

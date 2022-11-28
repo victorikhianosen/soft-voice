@@ -2,9 +2,10 @@
 
 namespace App\Exceptions;
 
-use App\Http\Traits\RespondWithHttpStatus;
 use Throwable;
+use App\Http\Traits\RespondWithHttpStatus;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -71,14 +72,11 @@ class Handler extends ExceptionHandler
             if ($exception instanceof ThrottleRequestsException){
                 return $this->failure('Too many request', 'too many requests, try again later.', 429);
             }
-            if ($exception instanceof AccessDeniedHttpException) {
+            if ($exception instanceof AccessDeniedHttpException || $exception instanceof AuthorizationException) {
                 return $this->failure('Unauthorized', 'this action is unauthorized.', 403);
             }
             if ($exception instanceof ConnectionException) {
                 return $this->failure('Bad request', 'an error was encountered', 400);
-            }
-            if ($exception instanceof AuthException || $exception instanceof CustomerException) {
-                return $this->failure($exception->getMessage(), status: $exception->getCode());
             }
         }
 		return parent::render($request, $exception);

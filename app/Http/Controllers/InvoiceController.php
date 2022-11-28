@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Status;
-use App\Http\Repositories\InvoiceRepository;
-use App\Http\Requests\ExportRequest;
 use App\Models\Invoice;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\ExportRequest;
 use App\Http\Requests\InvoiceRequest;
 use App\Http\Services\InvoiceService;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Requests\ListInvoiceRequest;
 use App\Http\Traits\RespondWithHttpStatus;
 use App\Http\Requests\MarkInvoiceAsRequest;
+use App\Http\Repositories\InvoiceRepository;
 
 class InvoiceController extends Controller
 {
@@ -33,6 +33,7 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice): JsonResponse
     {
+        $this->authorize('process', $invoice);
         return $this->success(data: new InvoiceResource($invoice));
     }
 
@@ -44,36 +45,42 @@ class InvoiceController extends Controller
 
     public function update(Invoice $invoice, InvoiceRequest $request): JsonResponse
     {
+        $this->authorize('process', $invoice);
         $data = $this->invoiceService->update($invoice, $request);
         return $this->success("Invoice updated", $data);
     }
 
     public function delete(Invoice $invoice): JsonResponse
     {
+        $this->authorize('process', $invoice);
         $this->invoiceService->delete($invoice);
         return $this->success("Invoice deleted");
     }
 
     public function duplicate(Invoice $invoice): JsonResponse
     {
+        $this->authorize('process', $invoice);
         $data = $this->invoiceService->duplicate($invoice);
         return $this->success("Invoice duplicated", $data);
     }
 
     public function markAs(Invoice $invoice, MarkInvoiceAsRequest $request): JsonResponse
     {
+        $this->authorize('process', $invoice);
         $data = $this->invoiceService->markAs($invoice, Status::from($request->status));
         return $this->success("Invoice status updated", $data);
     }
 
     public function send(Invoice $invoice): JsonResponse
     {
+        $this->authorize('process', $invoice);
         $this->invoiceService->send($invoice);
         return $this->success("Invoice sent");
     }
 
     public function sendReminder(Invoice $invoice): JsonResponse
     {
+        $this->authorize('process', $invoice);
         $this->invoiceService->sendReminder($invoice);
         return $this->success("Invoice reminder sent");
     }

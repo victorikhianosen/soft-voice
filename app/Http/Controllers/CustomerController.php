@@ -26,6 +26,7 @@ class CustomerController extends Controller
 
     public function show(Customer $customer): JsonResponse
     {
+        $this->authorize('process', $customer);
         return $this->success(data: new CustomerResource($customer));
     }
 
@@ -37,12 +38,14 @@ class CustomerController extends Controller
 
     public function update(Customer $customer, CustomerRequest $request): JsonResponse
     {
+        $this->authorize('process', $customer);
         $customer = $this->customerService->update($customer, $request->all());
         return $this->success("Customer updated", $customer);
     }
 
     public function delete(Customer $customer): JsonResponse
     {
+        $this->authorize('process', $customer);
         $customer = $this->customerService->delete($customer);
         return $this->success("Customer deleted");
     }
