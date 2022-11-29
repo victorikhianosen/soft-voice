@@ -156,7 +156,7 @@ class InvoiceService
             Excel::store(new InvoiceExport($invoices), "public/{$userDirectory}/{$file}");
         } else {
             $file = time().'.xml';
-            $xml = $this->prepareXML("{$dir}/{$file}");
+            $xml = $this->prepareXML("{$dir}/{$file}", "Invoices");
             foreach ($invoices as $invoice) {
                 $xml->startElement('Invoice');
                 $xml->writeElement('invoice_id', $invoice->invoice_id);

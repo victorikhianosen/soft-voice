@@ -21,4 +21,11 @@ class Customer extends Model
         'country',
         'state'
     ];
+
+    public function scopeSearch($q, $query)
+    {
+        return $q->where('name', 'LIKE', '%'.$query.'%')
+            ->orWhere('email', 'LIKE', '%'.$query.'%')
+            ->orWhere('phone', 'LIKE', '%'.$query.'%');
+    }
 }

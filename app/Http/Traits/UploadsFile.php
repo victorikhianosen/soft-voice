@@ -27,12 +27,12 @@ trait UploadsFile
         return "/storage/{$dir}/{$fileName}.{$extension}";
     }
 
-    public function prepareXML($path): XMLWriter
+    public function prepareXML($path, $root): XMLWriter
     {
         $xml = new XMLWriter();
         $xml->openURI($path);
         $xml->startDocument('1.0');
-        $xml->startElement('Invoices');
+        $xml->startElement($root);
         $xml->setIndent(4);
         return $xml;
     }

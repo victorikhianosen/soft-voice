@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CustomerController;
@@ -79,6 +80,19 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::put('/{estimate}/duplicate', 'duplicate');
             Route::put('/{estimate}/mark-as', 'markAs');
             Route::post('/{estimate}/send', 'send')->middleware('throttle:3,1');
+            Route::post('/export', 'export');
+        });
+    });
+
+    Route::prefix('/expenses')->group(function () {
+        Route::controller(ExpenseController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store');
+            Route::get('/{expense}', 'show');
+            Route::put('/{expense}', 'update');
+            Route::delete('/{expense}', 'delete');
+            Route::put('/{expense}/duplicate', 'duplicate');
+            Route::put('/{expense}/mark-as', 'markAs');
             Route::post('/export', 'export');
         });
     });

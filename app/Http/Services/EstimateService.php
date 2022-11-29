@@ -105,7 +105,7 @@ class EstimateService
             Excel::store(new EstimateExport($estimates), "public/{$userDirectory}/{$file}");
         } else {
             $file = time().'.xml';
-            $xml = $this->prepareXML("{$dir}/{$file}");
+            $xml = $this->prepareXML("{$dir}/{$file}", "Estimates");
             foreach ($estimates as $estimate) {
                 $xml->startElement('Estimate');
                 $xml->writeElement('estimate_id', $estimate->estimate_id);

@@ -70,4 +70,13 @@ class Estimate extends Model
     {
         return $this->items()->sum('amount');
     }
+
+    public function scopeSearch($q, $query)
+    {
+        return $q->where('estimate_id', 'LIKE', '%'.$query.'%')
+            ->orWhereHas('customer', fn ($qr) => $qr->where('name', 'LIKE', '%'.$query.'%'))
+            ->orWhere('currency', 'LIKE', '%'.$query.'%')
+            ->orWhere('notes', 'LIKE', '%'.$query.'%')
+            ->orWhere('status', 'LIKE', '%'.$query.'%');
+    }
 }

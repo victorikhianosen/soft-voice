@@ -91,4 +91,15 @@ class Invoice extends Model
     {
         return $this->items()->sum('amount');
     }
+
+    public function scopeSearch($q, $query)
+    {
+        return $q->where('invoice_id', 'LIKE', '%'.$query.'%')
+            ->orWhereHas('customer', fn ($qr) => $qr->where('name', 'LIKE', '%'.$query.'%'))
+            ->orWhere('currency', 'LIKE', '%'.$query.'%')
+            ->orWhere('terms', 'LIKE', '%'.$query.'%')
+            ->orWhere('notes', 'LIKE', '%'.$query.'%')
+            ->orWhere('signatory_name', 'LIKE', '%'.$query.'%')
+            ->orWhere('status', 'LIKE', '%'.$query.'%');
+    }
 }

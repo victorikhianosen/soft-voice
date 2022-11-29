@@ -16,6 +16,7 @@ enum Status: string
     case ACCEPTED       = 'accepted';
     case REJECTED       = 'rejected';
     case EXPIRED        = 'expired';
+    case PENDING        = 'pending';
 
     public static function types(): array
     {
@@ -32,6 +33,7 @@ enum Status: string
             self::ACCEPTED->value,
             self::REJECTED->value,
             self::EXPIRED->value,
+            self::PENDING->value,
         ];
     }
 
@@ -59,6 +61,16 @@ enum Status: string
             self::ACCEPTED->value,
             self::REJECTED->value,
             self::EXPIRED->value,
+        ];
+    }
+
+    public static function expenseTypes(): array
+    {
+        return [
+            self::PENDING->value,
+            self::EXPIRED->value,
+            self::RECURRING->value,
+            self::REFUNDED->value,
         ];
     }
 }
