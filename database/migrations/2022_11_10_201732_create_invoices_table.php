@@ -24,7 +24,7 @@ return new class extends Migration
             $table->boolean('recurring');
             $table->boolean('accept_payment')->default(false);
             $table->string('currency');
-            $table->text('recurring_duration')->nullable('[]');
+            $table->text('recurring_duration')->default('[]');
             $table->text('terms')->nullable();
             $table->text('notes')->nullable();
             $table->text('additional_charges')->default('[]');
