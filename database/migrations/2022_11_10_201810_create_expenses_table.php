@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('date');
             $table->double('amount');
             $table->boolean('recurring');
-            $table->json('recurring_duration')->nullable('[]');
+            $table->text('recurring_duration')->nullable('[]');
             $table->text('notes')->nullable();
             $table->text('attachment')->nullable();
             $table->string('status');
