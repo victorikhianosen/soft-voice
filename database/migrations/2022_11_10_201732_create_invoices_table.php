@@ -24,11 +24,11 @@ return new class extends Migration
             $table->boolean('recurring');
             $table->boolean('accept_payment')->default(false);
             $table->string('currency');
-            $table->text('recurring_duration')->default('[]');
+            $table->text('recurring_duration')->nullable();
             $table->text('terms')->nullable();
             $table->text('notes')->nullable();
-            $table->text('additional_charges')->default('[]');
-            $table->text('more_discount')->default('[]');
+            $table->text('additional_charges')->nullable();
+            $table->text('more_discount')->nullable();
             $table->string('signature')->nullable();
             $table->string('signatory_name')->nullable();
             $table->string('status');

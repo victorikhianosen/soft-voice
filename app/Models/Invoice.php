@@ -56,7 +56,7 @@ class Invoice extends Model
 
     public function getRecurringDurationAttribute(): array
     {
-        return json_decode($this->attributes['recurring_duration'], true);
+        return json_decode($this->attributes['recurring_duration'], true) ?? [];
     }
 
     public function setAdditionalChargesAttribute(array $data)
@@ -66,7 +66,7 @@ class Invoice extends Model
 
     public function getAdditionalChargesAttribute(): array
     {
-        return json_decode($this->attributes['additional_charges'], true);
+        return json_decode($this->attributes['additional_charges'], true) ?? [];
     }
 
     public function setMoreDiscountAttribute(array $data)
@@ -76,7 +76,7 @@ class Invoice extends Model
 
     public function getMoreDiscountAttribute(): array
     {
-        return json_decode($this->attributes['more_discount'], true);
+        return json_decode($this->attributes['more_discount'], true) ?? [];
     }
 
     private function extractJSONField($data): string

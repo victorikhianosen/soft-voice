@@ -35,7 +35,7 @@ class Expense extends Model
 
     public function getRecurringDurationAttribute(): array
     {
-        return json_decode($this->attributes['recurring_duration'], true);
+        return json_decode($this->attributes['recurring_duration'], true) ?? [];
     }
 
     public function scopeSearch($q, $query)

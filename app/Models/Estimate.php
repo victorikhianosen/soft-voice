@@ -45,7 +45,7 @@ class Estimate extends Model
 
     public function getAdditionalChargesAttribute(): array
     {
-        return json_decode($this->attributes['additional_charges'], true);
+        return json_decode($this->attributes['additional_charges'], true) ?? [];
     }
 
     public function setMoreDiscountAttribute(array $data)

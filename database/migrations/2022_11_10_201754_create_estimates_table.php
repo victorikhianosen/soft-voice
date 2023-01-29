@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('currency');
             $table->boolean('tax_enabled');
             $table->text('notes')->nullable();
-            $table->text('additional_charges')->default('[]');
-            $table->text('more_discount')->default('[]');
+            $table->text('additional_charges')->nullable();
+            $table->text('more_discount')->nullable();
             $table->string('status');
             $table->timestamps();
         });
