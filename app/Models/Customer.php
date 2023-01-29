@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 
 class Customer extends Model
@@ -27,5 +28,20 @@ class Customer extends Model
         return $q->where('name', 'LIKE', '%'.$query.'%')
             ->orWhere('email', 'LIKE', '%'.$query.'%')
             ->orWhere('phone', 'LIKE', '%'.$query.'%');
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function estimates(): HasMany
+    {
+        return $this->hasMany(Estimate::class);
+    }
+
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class);
     }
 }

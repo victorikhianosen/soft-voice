@@ -49,6 +49,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::get('', 'index');
             Route::post('', 'store');
             Route::get('/{customer}', 'show');
+            Route::get('/{customer}/history', 'getHistory');
             Route::put('/{customer}', 'update');
             Route::delete('/{customer}', 'delete');
         });

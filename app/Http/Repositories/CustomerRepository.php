@@ -15,4 +15,11 @@ class CustomerRepository extends AbstractRepository
     {
         return app(Customer::class);
     }
+
+    public function getHistoryById(int $id)
+    {
+        return $this->model()->where('id', $id)
+                    ->with(['invoices', 'expenses', 'estimates'])
+                    ->first();
+    }
 }

@@ -36,6 +36,13 @@ class CustomerController extends Controller
         return $this->success("Customer created", $customer);
     }
 
+    public function getHistory(Customer $customer): JsonResponse
+    {
+        $this->authorize('process', $customer);
+        $data = $this->customerService->getHistory($customer->id);
+        return $this->success(data: $data);
+    }
+
     public function update(Customer $customer, CustomerRequest $request): JsonResponse
     {
         $this->authorize('process', $customer);

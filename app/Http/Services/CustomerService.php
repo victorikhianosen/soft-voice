@@ -51,4 +51,9 @@ class CustomerService
     {
         $this->customerRepository->destroy($customer);
     }
+
+    public function getHistory(int $id): Customer
+    {
+        return $this->customerRepository->getHistoryById($id);
+    }
 }
