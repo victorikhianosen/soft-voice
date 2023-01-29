@@ -16,4 +16,13 @@ class ExpenseRepository extends AbstractRepository
     {
         return app(Expense::class);
     }
+
+    public function getUserExpenses()
+    {
+        return request()->user()
+            ->expenses()
+            ->get()
+            ->groupBy(fn($el) => Carbon::parse($el->created_at)->format('M Y'))
+            ->toArray();
+    }
 }

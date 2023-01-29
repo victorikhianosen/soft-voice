@@ -9,6 +9,7 @@ use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +106,14 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::put('/{payment}', 'update');
             Route::post('', 'store');
             Route::delete('/{payment}', 'delete');
+        });
+    });
+
+    Route::prefix('/report')->group(function () {
+        Route::controller(ReportController::class)->group(function () {
+            Route::get('/profit-and-loss', 'getProfitAndLoss');
+            Route::get('/sales', 'getSales');
+            Route::get('/expenses', 'getExpenses');
         });
     });
 });

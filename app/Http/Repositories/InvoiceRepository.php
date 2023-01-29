@@ -2,10 +2,10 @@
 
 namespace App\Http\Repositories;
 
-use App\Enums\Status;
 use Carbon\Carbon;
+use App\Enums\Status;
 use App\Models\Invoice;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\InvoicePayment;
 
 class InvoiceRepository extends AbstractRepository
 {
@@ -28,5 +28,23 @@ class InvoiceRepository extends AbstractRepository
             'unpaid' => $invoices->where('status', Status::UNPAID)->sum('amount'),
             'refunded' => $invoices->where('status', Status::REFUNDED)->sum('amount'),
         ];
+    }
+
+    public function getUserInvoicePayments()
+    {
+        return InvoicePayment::whereHas('invoice', function ($q) {
+                $q->whereHas('user', fn ($q) => $q->where('id', request()->user()->id));
+            })->get()
+            ->groupBy(fn($el) => Carbon::parse($el->created_at)->format('M Y'))
+            ->toArray();
+    }
+
+    public function getUserInvoices()
+    {
+        return request()->user()
+            ->invoices()
+            ->get()
+            ->groupBy(fn($el) => Carbon::parse($el->created_at)->format('M Y'))
+            ->toArray();
     }
 }
