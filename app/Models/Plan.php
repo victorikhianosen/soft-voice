@@ -11,6 +11,8 @@ class Plan extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
@@ -18,6 +20,6 @@ class Plan extends Model
 
     public function restrictions(): BelongsToMany
     {
-        return $this->belongsToMany(Restriction::class);
+        return $this->belongsToMany(Restriction::class)->withTimestamps();
     }
 }

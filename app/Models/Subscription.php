@@ -10,6 +10,8 @@ class Subscription extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);

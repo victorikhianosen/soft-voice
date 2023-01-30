@@ -2,10 +2,11 @@
 
 namespace App\Http\Factories;
 
-use App\Http\Repositories\UserRepository;
+use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Repositories\UserRepository;
 
 class UserFactory
 {
@@ -17,6 +18,14 @@ class UserFactory
     {
         $data['referral_code'] = $this->getUniqueReferralCode();
         $user = $this->userRepository->save($data);
+        
+        $plan = Plan::where('slug', 'basic')->first();
+        $user->subscriptions()->create([
+            'plan_id'   => $plan->id,
+            'starts_at' => now(),
+            'amount'    => 0,
+            'active'    => true,
+        ]);
 
         // create wallet
 
