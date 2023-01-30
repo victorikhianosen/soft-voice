@@ -73,6 +73,11 @@ class User extends Authenticatable
         return $this->hasMany(Customer::class);
     }
 
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
     public function sendPasswordResetNotification($token)
     {
         $url = env('SPA_URL').'/password/reset?email='.$this->email.'&token='.$token;
