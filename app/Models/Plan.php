@@ -20,6 +20,8 @@ class Plan extends Model
 
     public function restrictions(): BelongsToMany
     {
-        return $this->belongsToMany(Restriction::class)->withTimestamps();
+        return $this->belongsToMany(Restriction::class)
+                    ->withPivot('value')
+                    ->withTimestamps();
     }
 }

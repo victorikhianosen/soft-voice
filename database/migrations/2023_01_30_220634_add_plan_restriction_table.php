@@ -25,15 +25,15 @@ return new class extends Migration
 
         $basic = Plan::where('slug', 'basic')->first();
         $basic->restrictions()->attach(1, ['value' => 10]);
-        $basic->restrictions()->attach(1, ['value' => 10]);
-        $basic->restrictions()->attach(1, ['value' => 10]);
-        $basic->restrictions()->attach(1, ['value' => 50]);
+        $basic->restrictions()->attach(2, ['value' => 10]);
+        $basic->restrictions()->attach(3, ['value' => 10]);
+        $basic->restrictions()->attach(4, ['value' => 50]);
 
         $premium = Plan::where('slug', 'premium')->first();
         $premium->restrictions()->attach(1, ['value' => -1]);
-        $premium->restrictions()->attach(1, ['value' => -1]);
-        $premium->restrictions()->attach(1, ['value' => -1]);
-        $premium->restrictions()->attach(1, ['value' => -1]);
+        $premium->restrictions()->attach(2, ['value' => -1]);
+        $premium->restrictions()->attach(3, ['value' => -1]);
+        $premium->restrictions()->attach(4, ['value' => -1]);
     }
 
     /**
