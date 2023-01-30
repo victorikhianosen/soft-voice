@@ -9,7 +9,9 @@ use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,6 +116,18 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::get('/profit-and-loss', 'getProfitAndLoss');
             Route::get('/sales', 'getSales');
             Route::get('/expenses', 'getExpenses');
+        });
+    });
+
+    Route::prefix('/subscriptions')->group(function () {
+        Route::controller(SubscriptionController::class)->group(function () {
+            Route::get('', 'index');
+        });
+    });
+
+    Route::prefix('/plans')->group(function () {
+        Route::controller(PlanController::class)->group(function () {
+            Route::get('', 'index');
         });
     });
 });

@@ -16,7 +16,8 @@ class RestrictionResource extends JsonResource
     public function toArray($request)
     {
         $data = parent::toArray($request);
-        Arr::set($data, 'value', $data['pivot']['value']);
+        $value = $data['pivot']['value'];
+        Arr::set($data, 'value', $value === -1 ? 'unlimited' : $value);
         Arr::forget($data, ['created_at', 'updated_at', 'pivot']);
         return $data;
     }
