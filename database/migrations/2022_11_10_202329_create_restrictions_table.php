@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('restrictions', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->enum('unit', ['count']);
             $table->timestamps();
         });
     }

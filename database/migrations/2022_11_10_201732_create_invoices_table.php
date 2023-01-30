@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->string('invoice_id')->unique();
-            $table->foreignId('customer_id')->constrained();
+            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->date('due_date');
             $table->boolean('tax_enabled');

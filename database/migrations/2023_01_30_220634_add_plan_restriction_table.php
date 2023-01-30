@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('plans', function (Blueprint $table) {
+        Schema::create('plan_restriction', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('plan_id');
+            $table->foreignId('restriction_id');
+            $table->integer('value');
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('plans');
+        Schema::dropIfExists('plan_restriction');
     }
 };
