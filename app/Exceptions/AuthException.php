@@ -5,13 +5,14 @@ namespace App\Exceptions;
 use Exception;
 use Throwable;
 use App\Http\Traits\RespondWithHttpStatus;
+use Illuminate\Http\Request;
 
 class AuthException extends Exception
 {
     use RespondWithHttpStatus;
-    
-    public function render($request, Throwable $exception)
+
+    public function render(Request $request)
 	{
-        return $this->failure($exception->getMessage(), status: $exception->getCode());
+        return $this->failure($this->message, status: $this->code);
 	}
 }
