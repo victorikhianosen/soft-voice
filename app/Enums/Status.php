@@ -17,6 +17,8 @@ enum Status: string
     case REJECTED       = 'rejected';
     case EXPIRED        = 'expired';
     case PENDING        = 'pending';
+    case APPOVED        = 'approved';
+    case DECLINED       = 'declined';
 
     public static function types(): array
     {

@@ -15,6 +15,11 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
+            $table->enum('type', ['credit', 'debit']);
+            $table->double('amount');
+            $table->text('description')->nullable();
+            $table->string('status');
             $table->timestamps();
         });
     }

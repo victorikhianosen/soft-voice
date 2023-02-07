@@ -10,8 +10,8 @@ class CustomerException extends Exception
 {
     use RespondWithHttpStatus;
 
-    public function render($request, Throwable $exception)
+    public function render($request)
 	{
-        return $this->failure($exception->getMessage(), status: $exception->getCode());
+        return $this->failure($this->getMessage(), status: $this->getCode());
 	}
 }

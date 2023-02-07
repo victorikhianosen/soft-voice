@@ -12,6 +12,8 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\WalletController;
 
 /*
 |--------------------------------------------------------------------------
@@ -128,6 +130,20 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
     Route::prefix('/plans')->group(function () {
         Route::controller(PlanController::class)->group(function () {
             Route::get('', 'index');
+        });
+    });
+
+    Route::prefix('/wallet')->group(function () {
+        Route::controller(WalletController::class)->group(function () {
+            Route::get('/balance', 'getBalance');
+            Route::post('/withdraw', 'withdraw');
+        });
+    });
+
+    Route::prefix('/transactions')->group(function () {
+        Route::controller(TransactionController::class)->group(function () {
+            Route::get('', 'index');
+            Route::get('/{transaction}', 'show');
         });
     });
 });

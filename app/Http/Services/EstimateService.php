@@ -31,8 +31,8 @@ class EstimateService
             $data['per_page'] ?? 50,
             $data['query'] ?? '',
             ['user_id' => request()->user()->id],
-            $data['sort']['column'] ?? null,
-            $data['sort']['dir'] ?? null,
+            $data['sort']['column'] ?? 'created_at',
+            $data['sort']['dir'] ?? 'desc',
             $data['filter'] ?? []
         );
         return [

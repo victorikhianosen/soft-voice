@@ -18,7 +18,7 @@ class UserFactory
     {
         $data['referral_code'] = $this->getUniqueReferralCode();
         $user = $this->userRepository->save($data);
-        
+
         $plan = Plan::where('slug', 'basic')->first();
         $user->subscriptions()->create([
             'plan_id'   => $plan->id,
@@ -27,7 +27,7 @@ class UserFactory
             'active'    => true,
         ]);
 
-        // create wallet
+        $user->wallet()->create();
 
         return $user;
     }

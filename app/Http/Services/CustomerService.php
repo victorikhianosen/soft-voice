@@ -2,10 +2,7 @@
 
 namespace App\Http\Services;
 
-use App\Models\Address;
 use App\Models\Customer;
-use Illuminate\Support\Arr;
-use App\Exceptions\CustomerException;
 use App\Http\Resources\CustomerResource;
 use App\Http\Repositories\CustomerRepository;
 use App\Http\Traits\Paginatable;
@@ -25,8 +22,8 @@ class CustomerService
             $data['per_page'] ?? 50,
             $data['query'] ?? '',
             ['user_id' => request()->user()->id],
-            $data['sort']['column'] ?? null,
-            $data['sort']['dir'] ?? null,
+            $data['sort']['column'] ?? 'created_at',
+            $data['sort']['dir'] ?? 'desc',
         );
         return [
             'data' => CustomerResource::collection($result['data']),
