@@ -29,6 +29,9 @@ class SettingUpdateRequest extends FormRequest
             'auto_enable_bank_account' => ['required', 'boolean'],
             'tax_percentage' => ['required', 'numeric'],
             'theme' => ['required', 'string'],
+            'timezone' => ['nullable', 'string'],
+            'date_format' => ['nullable', 'string'],
+            'financial_year' => ['nullable', 'string'],
         ];
     }
 }

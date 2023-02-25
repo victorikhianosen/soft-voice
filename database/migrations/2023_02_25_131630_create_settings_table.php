@@ -30,6 +30,9 @@ return new class extends Migration
             $table->foreignId('preferred_bank_id')->nullable()->constrained('bank_accounts')->nullOnDelete();
             $table->double('tax_percentage')->default(0);
             $table->string('theme')->default('light');
+            $table->string('timezone')->nullable();
+            $table->string('date_format')->nullable();
+            $table->string('financial_year')->nullable();
             $table->timestamps();
         });
     }
