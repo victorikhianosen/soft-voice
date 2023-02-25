@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WalletController;
@@ -124,6 +125,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
     Route::prefix('/subscriptions')->group(function () {
         Route::controller(SubscriptionController::class)->group(function () {
             Route::get('', 'index');
+            Route::get('/active', 'getActive');
         });
     });
 
@@ -144,6 +146,13 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
         Route::controller(TransactionController::class)->group(function () {
             Route::get('', 'index');
             Route::get('/{transaction}', 'show');
+        });
+    });
+
+    Route::prefix('/settings')->group(function () {
+        Route::controller(SettingController::class)->group(function () {
+            Route::get('', 'getSetting');
+            Route::put('', 'updateSetting');
         });
     });
 });

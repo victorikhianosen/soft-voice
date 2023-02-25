@@ -89,6 +89,11 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
+    public function setting(): HasOne
+    {
+        return $this->hasOne(Setting::class);
+    }
+
     public function getActiveSubscriptionAttribute()
     {
         return $this->subscriptions->where('active', true)->first();

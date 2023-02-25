@@ -20,7 +20,6 @@ class UserResource extends JsonResource
             'email_verified_at', 'email_verification_token',
             'email_verification_token_expiry', 'updated_at'
         ]);
-        Arr::set($data, 'subscription', new SubscriptionResource($this->activeSubscription));
         return $data;
     }
 }

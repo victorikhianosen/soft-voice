@@ -28,6 +28,7 @@ class UserFactory
         ]);
 
         $user->wallet()->create();
+        $user->setting()->create();
 
         return $user;
     }

@@ -16,8 +16,13 @@ class SubscriptionRepository extends AbstractRepository
         return app(Subscription::class);
     }
 
-    public function getAllByUser()
+    public function getAllByUser(int $userId)
     {
-        return request()->user()->subscriptions()->get();
+        return $this->model()->where('user_id', $userId)->get();
+    }
+
+    public function getActive(int $userId)
+    {
+        return $this->model()->where('user_id', $userId)->where('active', 1)->first();
     }
 }

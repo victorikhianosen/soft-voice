@@ -11,7 +11,6 @@ class SubscriptionController extends Controller
 {
     use RespondWithHttpStatus;
 
-
     public function __construct(
         protected SubscriptionRepository $subscriptionRepository,
     ){
@@ -19,7 +18,13 @@ class SubscriptionController extends Controller
 
     public function index(): JsonResponse
     {
-        $data = $this->subscriptionRepository->getAllByUser();
+        $data = $this->subscriptionRepository->getAllByUser(request()->user()->id);
         return $this->success(data: SubscriptionResource::collection($data));
+    }
+
+    public function getActive(): JsonResponse
+    {
+        $data = $this->subscriptionRepository->getActive(request()->user()->id);
+        return $this->success(data: new SubscriptionResource($data));
     }
 }
