@@ -9,6 +9,7 @@ use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
@@ -153,6 +154,18 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
         Route::controller(SettingController::class)->group(function () {
             Route::get('', 'getSetting');
             Route::put('', 'updateSetting');
+        });
+    });
+
+    Route::prefix('/bank-accounts')->group(function () {
+        Route::controller(BankAccountController::class)->group(function () {
+            Route::get('/get-preferred', 'getPreferred');
+            Route::get('', 'index');
+            Route::post('', 'store');
+            Route::get('/{bank_account}', 'show');
+            Route::put('/{bank_account}', 'update');
+            Route::delete('/{bank_account}', 'delete');
+            Route::put('/{bank_account}/set-preferred', 'setPreferred');
         });
     });
 });

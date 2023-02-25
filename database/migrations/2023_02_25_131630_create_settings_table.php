@@ -27,7 +27,7 @@ return new class extends Migration
             $table->boolean('payment_history_on_invoice_page')->default(false);
             $table->boolean('auto_enable_tax')->default(false);
             $table->boolean('auto_enable_bank_account')->default(false);
-            $table->foreignId('preferred_bank_id')->nullable();
+            $table->foreignId('preferred_bank_id')->nullable()->constrained('bank_accounts')->nullOnDelete();
             $table->double('tax_percentage')->default(0);
             $table->string('theme')->default('light');
             $table->timestamps();

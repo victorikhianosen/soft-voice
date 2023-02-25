@@ -94,6 +94,11 @@ class User extends Authenticatable
         return $this->hasOne(Setting::class);
     }
 
+    public function bank_accounts(): HasMany
+    {
+        return $this->hasMany(BankAccount::class);
+    }
+
     public function getActiveSubscriptionAttribute()
     {
         return $this->subscriptions->where('active', true)->first();

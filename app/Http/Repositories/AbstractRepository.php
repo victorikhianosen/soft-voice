@@ -24,7 +24,7 @@ abstract class AbstractRepository
      * @return mixed
      */
     public function getAll(
-        int $page = 1,
+        int|string $page = 1,
         int $perPage = 50,
         array $conditions = [],
         string $order = 'created_at',
@@ -32,6 +32,9 @@ abstract class AbstractRepository
     ): mixed
     {
         $data = $this->model->where($conditions);
+        if ($page === '*') {
+            return $data->orderBy($order, $dir)->get();
+        }
         $total = $data->count();
         return [
             'data'  => $data->orderBy($order, $dir)->offset(($page - 1) * $perPage)->limit($perPage)->get(),
