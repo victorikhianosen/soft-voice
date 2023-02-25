@@ -11,7 +11,13 @@ class Plan extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'slug',
+        'duration',
+        'amount',
+        'active',
+    ];
 
     public function subscriptions(): HasMany
     {

@@ -9,5 +9,24 @@ class Setting extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'currency',
+        'auto_payment_reminder',
+        'invoice_prefix',
+        'estimate_prefix',
+        'service_category',
+        'signature',
+        'signatory_name',
+        'preferred_due_date',
+        'payment_history_on_invoice_page',
+        'auto_enable_tax',
+        'auto_enable_bank_account',
+        'preferred_bank_id',
+        'tax_percentage',
+        'theme',
+        'timezone',
+        'date_format',
+        'financial_year',
+    ];
 }
