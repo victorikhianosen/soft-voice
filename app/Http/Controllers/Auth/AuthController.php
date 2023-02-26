@@ -8,6 +8,7 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ChangePasswordRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Services\AuthService;
 use App\Http\Traits\RespondWithHttpStatus;
 use Illuminate\Http\JsonResponse;
@@ -78,5 +79,17 @@ class AuthController extends Controller
     {
         $this->authService->changePassword($request->all());
         return $this->success('Password updated successfully');
+    }
+
+    /**
+     * Update profile
+     *
+     * @param UpdateProfileRequest $request
+     * @return void
+     */
+    public function updateProfile(UpdateProfileRequest $request)
+    {
+        $this->authService->updateProfile($request);
+        return $this->success('Profile updated successfully');
     }
 }

@@ -3,21 +3,26 @@
 namespace App\Http\Services;
 
 use App\Models\User;
+use App\Models\Admin;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use App\Exceptions\AuthException;
 use App\Http\Factories\UserFactory;
 use App\Http\Factories\AdminFactory;
-use App\Http\Resources\AdminResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\AdminResource;
 use Illuminate\Support\Facades\Password;
 use App\Http\Services\NotificationService;
-use App\Models\Admin;
+use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Traits\UploadsFile;
 use App\Notifications\EmailVerificationNotification;
 
 class AuthService
 {
+    use UploadsFile;
+
     public function __construct(protected NotificationService $notificationService)
     {
     }
@@ -125,6 +130,16 @@ class AuthService
             throw new AuthException("Please enter a different new password", 400);
         }
         $user->update(['password' => Hash::make($data['new_password'])]);
+    }
+
+    public function updateProfile(UpdateProfileRequest $data)
+    {
+        $image = $data->file('image');
+        if ($image) {
+            $data['image'] = $this->saveFIle($image, 'images');
+        }
+        $data = Arr::only($data->all(), ['name', 'image', 'phone', 'address', 'country', 'state', 'postal_code']);
+        request()->user()->update($data);
     }
 
     public function getUser(): UserResource|AdminResource

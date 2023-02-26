@@ -5,7 +5,6 @@ namespace App\Http\Factories;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Repositories\UserRepository;
 
 class UserFactory

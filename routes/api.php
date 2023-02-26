@@ -35,6 +35,7 @@ Route::controller(AuthController::class)->group(function () {
         Route::post('/logout', 'logout');
         Route::get('/user', 'me');
         Route::put('/password/change', 'changePassword');
+        Route::put('/profile/update', 'updateProfile');
     });
 });
 
