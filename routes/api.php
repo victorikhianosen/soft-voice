@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\PaymentKeyController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
@@ -167,6 +168,13 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::put('/{bank_account}', 'update');
             Route::delete('/{bank_account}', 'delete');
             Route::put('/{bank_account}/set-preferred', 'setPreferred');
+        });
+    });
+
+    Route::prefix('/payment-keys')->group(function () {
+        Route::controller(PaymentKeyController::class)->group(function () {
+            Route::get('', 'getKeys');
+            Route::put('', 'updateKeys');
         });
     });
 });

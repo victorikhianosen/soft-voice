@@ -99,6 +99,26 @@ class User extends Authenticatable
         return $this->hasMany(BankAccount::class);
     }
 
+    public function stripeKey(): HasOne
+    {
+        return $this->hasOne(StripeKey::class);
+    }
+
+    public function payStackKey(): HasOne
+    {
+        return $this->hasOne(PaystackKey::class);
+    }
+
+    public function flutterwaveKey(): HasOne
+    {
+        return $this->hasOne(FlutterwaveKey::class);
+    }
+
+    public function payPalKey(): HasOne
+    {
+        return $this->hasOne(PaypalKey::class);
+    }
+
     public function getActiveSubscriptionAttribute()
     {
         return $this->subscriptions->where('active', true)->first();

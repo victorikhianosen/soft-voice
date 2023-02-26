@@ -29,6 +29,11 @@ class UserFactory
         $user->wallet()->create();
         $user->setting()->create();
 
+        $user->payStackKey()->create();
+        $user->stripeKey()->create();
+        $user->payPalKey()->create();
+        $user->flutterwaveKey()->create();
+
         return $user;
     }
 
