@@ -119,6 +119,11 @@ class User extends Authenticatable
         return $this->hasOne(PaypalKey::class);
     }
 
+    public function referred(): HasMany
+    {
+        return $this->hasMany(Referral::class, 'referrer_id');
+    }
+
     public function getActiveSubscriptionAttribute()
     {
         return $this->subscriptions->where('active', true)->first();

@@ -1,22 +1,24 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PlanController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\WalletController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EstimateController;
+use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\PaymentKeyController;
+use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
-use App\Http\Controllers\BankAccountController;
-use App\Http\Controllers\PaymentKeyController;
-use App\Http\Controllers\PlanController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\SubscriptionController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\WalletController;
 
 /*
 |--------------------------------------------------------------------------
@@ -176,5 +178,13 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::get('', 'getKeys');
             Route::put('', 'updateKeys');
         });
+    });
+
+    Route::controller(ReferralController::class)->group(function () {
+        Route::get('/referred', 'index');
+    });
+
+    Route::controller(HomeController::class)->group(function () {
+        Route::get('/currencies', 'getCurrencies');
     });
 });

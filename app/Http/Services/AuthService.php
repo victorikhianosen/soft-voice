@@ -31,6 +31,12 @@ class AuthService
     {
         $data['otp'] = sha1($data['email'].time());
         $user = $factory->create($data);
+        if (isset($data['referrer']) && $data['referrer']){
+            $referrer = User::where('referral_code', $data['referrer'])->first();
+            if ($referrer){
+                $referrer->referred()->create(['referred_id' => $user['id']]);
+            }
+        }
         $url = config('env.spa_url').'/email/verify?email='.$user->email.'&token='.$data['otp'];
         $this->notificationService->send(new EmailVerificationNotification($url), $user);
         return $this->getToken($user);
