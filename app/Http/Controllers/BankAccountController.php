@@ -22,7 +22,7 @@ class BankAccountController extends Controller
 
     public function index()
     {
-        $data = $this->bankAccountRepository->getAll('*');
+        $data = $this->bankAccountRepository->getAll('*', conditions: ['user_id' => request()->user()->id]);
         return $this->success(data: BankAccountResource::collection($data));
     }
 

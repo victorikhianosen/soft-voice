@@ -20,7 +20,7 @@ class CustomerController extends Controller
 
     public function index(ListCustomerRequest $request): JsonResponse
     {
-        $result = $this->customerService->getAll($request->all());
+        $result = $this->customerService->getAll($request->all(), request()->user()->id);
         return $this->success(data: $result['data'], meta: $result['meta']);
     }
 

@@ -162,13 +162,15 @@ abstract class AbstractRepository
         array $conditions = [],
         string $order = 'created_at',
         string $dir = 'desc',
-        array $filter = []
+        array $filter = [],
+        array $with = [],
     ): mixed
     {
         $status = $filter['status'] ?? null;
         $date = $filter['date'] ?? null;
         $customers = $filter['customer'] ?? null;
         $data = $this->model->where($conditions)
+                            ->with($with)
                             ->when($status, fn($q) => $q->whereIn('status', $status))
                             ->when($customers, fn($q) => $q->whereIn('customer_id', $customers))
                             ->when($date && isset($date['mode']), function ($q) use ($date) {

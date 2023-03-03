@@ -33,13 +33,13 @@ class InvoiceService
     {
     }
 
-    public function getAll(array $data): array
+    public function getAll(array $data, int $userId): array
     {
         $result = $this->invoiceRepository->findAll(
             $data['current_page'] ?? 1,
             $data['per_page'] ?? 50,
             $data['query'] ?? '',
-            ['user_id' => request()->user()->id],
+            ['user_id' => $userId],
             $data['sort']['column'] ?? 'created_at',
             $data['sort']['dir'] ?? 'desc',
             $data['filter'] ?? []

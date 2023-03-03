@@ -158,7 +158,7 @@ class AuthService
     {
         $ability = $user instanceof User ? 'user' : 'admin';
         return [
-            'user'  => ($user instanceof User ? new UserResource($user) : new AdminResource($user)),
+            'user'  => ($user instanceof User ? new UserResource($user->fresh()) : new AdminResource($user)),
             'token' => $user->createToken($user->email, [$ability])->plainTextToken
         ];
     }

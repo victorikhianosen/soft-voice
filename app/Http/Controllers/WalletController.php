@@ -7,6 +7,7 @@ use App\Http\Services\WalletService;
 use App\Http\Requests\WithdrawalRequest;
 use App\Http\Traits\RespondWithHttpStatus;
 use App\Http\Repositories\WalletRepository;
+use App\Http\Requests\DepositRequest;
 
 class WalletController extends Controller
 {
@@ -28,5 +29,11 @@ class WalletController extends Controller
     {
         $this->walletService->processWithdrawal(request()->user()->id, $request->amount);
         return $this->success("Withdrawal Queued Successfully");
+    }
+
+    public function deposit(DepositRequest $request): JsonResponse
+    {
+        $this->walletService->processDeposit(request()->user()->id, $request->amount);
+        return $this->success("Deposit Queued Successfully");
     }
 }

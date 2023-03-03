@@ -19,13 +19,27 @@ class WalletService
     {
         $balance = $this->walletRepository->getUserBalance($userId);
         if ($amount > $balance) {
-            throw new CustomerException("Insufficient wallet balance", 400);
+            abort(400, "Insufficient wallet balance");
         }
+        $this->walletRepository->debitUserWallet($userId, $amount);
         $this->transactionRepository->create([
-            'user_id' => request()->user()->id,
-            'type'    => 'debit',
+            'user_id' => $userId,
+            'type'    => 'withdrawal',
             'amount'  => $amount,
             'description' => 'Withdrawal Request',
+            'method'   => 'wallet',
+            'status'  => Status::PENDING->value,
+        ]);
+    }
+
+    public function processDeposit(int $userId, float $amount)
+    {
+        $this->transactionRepository->create([
+            'user_id' => $userId,
+            'type'    => 'deposit',
+            'amount'  => $amount,
+            'description' => 'Deposit Request',
+            'method'   => 'deposit',
             'status'  => Status::PENDING->value,
         ]);
     }

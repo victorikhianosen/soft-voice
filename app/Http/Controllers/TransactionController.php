@@ -22,7 +22,7 @@ class TransactionController extends Controller
 
     public function index(ListTransactionRequest $request): JsonResponse
     {
-        $result = $this->transactionService->getAll($request->all());
+        $result = $this->transactionService->getAll($request->all(), request()->user()->id);
         return $this->success(data: $result['data'], meta: $result['meta']);
     }
 

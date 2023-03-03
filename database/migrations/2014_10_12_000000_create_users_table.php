@@ -28,6 +28,7 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('email_verification_token')->nullable();
             $table->timestamp('email_verification_token_expiry')->nullable();
+            $table->boolean('active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

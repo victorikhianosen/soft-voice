@@ -144,6 +144,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
         Route::controller(WalletController::class)->group(function () {
             Route::get('/balance', 'getBalance');
             Route::post('/withdraw', 'withdraw');
+            Route::post('/deposit', 'deposit');
         });
     });
 

@@ -17,7 +17,7 @@ class BankAccountResource extends JsonResource
     {
         $data = parent::toArray($request);
         Arr::forget($data, ['user_id']);
-        $data['preferred'] = $data['id'] === request()->user()->setting->preferred_bank_id;
+        $data['preferred'] = $data['id'] === $this->user->setting->preferred_bank_id;
 
         return $data;
     }

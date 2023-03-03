@@ -8,6 +8,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -77,6 +78,9 @@ class Handler extends ExceptionHandler
             }
             if ($exception instanceof ConnectionException) {
                 return $this->failure('Bad request', 'an error was encountered', 400);
+            }
+            if ($exception instanceof HttpException) {
+                return $this->failure($exception->getMessage(), $exception->getCode());
             }
         }
 		return parent::render($request, $exception);

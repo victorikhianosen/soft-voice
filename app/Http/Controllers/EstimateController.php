@@ -27,7 +27,7 @@ class EstimateController extends Controller
 
     public function index(ListEstimateRequest $request): JsonResponse
     {
-        $result = $this->estimateService->getAll($request->all());
+        $result = $this->estimateService->getAll($request->all(), request()->user()->id);
         return $this->success(data: $result['data'], meta: $result['meta']);
     }
 

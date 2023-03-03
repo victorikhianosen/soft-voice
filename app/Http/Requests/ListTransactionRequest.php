@@ -21,6 +21,7 @@ class ListTransactionRequest extends FormRequest
             "current_page" => ["numeric"],
             "per_page"     => ["numeric"],
             "query"        => ["nullable", "string"],
+            "type"         => ["nullable", "in:withdrawal,deposit"],
             "sort"         => ["array"],
             "sort.column"  => ["string", Rule::in($columns)],
             "sort.dir"     => ["string", "in:asc,desc"],

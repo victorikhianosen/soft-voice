@@ -11,6 +11,11 @@ class Transaction extends Model
 
     protected $guarded = [];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function scopeSearch($q, $query)
     {
         return $q->where('amount', 'LIKE', '%'.$query.'%')

@@ -2,26 +2,30 @@
 
 namespace App\Http\Services;
 
+use App\Exports\CustomerExport;
 use App\Models\Customer;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Traits\Paginatable;
+use App\Http\Traits\UploadsFile;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\CustomerResource;
 use App\Http\Repositories\CustomerRepository;
-use App\Http\Traits\Paginatable;
 
 class CustomerService
 {
-    use Paginatable;
+    use Paginatable, UploadsFile;
 
     public function __construct(protected CustomerRepository $customerRepository)
     {
     }
 
-    public function getAll(array $data)
+    public function getAll(array $data, int $userId)
     {
         $result = $this->customerRepository->findAll(
             $data['current_page'] ?? 1,
             $data['per_page'] ?? 50,
             $data['query'] ?? '',
-            ['user_id' => request()->user()->id],
+            ['user_id' => $userId],
             $data['sort']['column'] ?? 'created_at',
             $data['sort']['dir'] ?? 'desc',
         );
@@ -52,5 +56,38 @@ class CustomerService
     public function getHistory(int $id): Customer
     {
         return $this->customerRepository->getHistoryById($id);
+    }
+
+    public function export(string $format, int $userId, string|int $dirName): string
+    {
+        $directory = 'exports/'.$dirName;
+        $dir = $this->getExportDirectory($directory);
+        $customers = $this->customerRepository->getAll('*', conditions: ['user_id' => $userId]);
+        if ($format === 'pdf') {
+            $file = time().'.pdf';
+            Pdf::loadView('exports.customer', ['customers' => $customers])->save("{$dir}/{$file}");
+        } else if ($format === 'excel') {
+            $file = time().'.xlsx';
+            Excel::store(new CustomerExport($customers), "public/{$directory}/{$file}");
+        } else {
+            $file = time().'.xml';
+            $xml = $this->prepareXML("{$dir}/{$file}", "Customers");
+            foreach ($customers as $customer) {
+                $xml->startElement('Customer');
+                $xml->writeElement('customer_id', $customer->id);
+                $xml->writeElement('name', $customer->name);
+                $xml->writeElement('email', $customer->email);
+                $xml->writeElement('phone', $customer->phone);
+                $xml->writeElement('address', $customer->address);
+                $xml->writeElement('category', $customer->category);
+                $xml->writeElement('website', $customer->website);
+                $xml->writeElement('country', $customer->country);
+                $xml->writeElement('state', $customer->state);
+                $xml->writeElement('date_created', $customer->created_at);
+                $xml->endElement();
+            }
+            $this->closeXML($xml);
+        }
+        return asset("/storage/{$directory}/{$file}");
     }
 }

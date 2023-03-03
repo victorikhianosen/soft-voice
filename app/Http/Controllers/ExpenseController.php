@@ -28,7 +28,7 @@ class ExpenseController extends Controller
 
     public function index(ListExpenseRequest $request): JsonResponse
     {
-        $result = $this->expenseService->getAll($request->all());
+        $result = $this->expenseService->getAll($request->all(), request()->user()->id);
         return $this->success(data: $result['data'], meta: $result['meta']);
     }
 

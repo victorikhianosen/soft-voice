@@ -27,7 +27,7 @@ class InvoiceController extends Controller
 
     public function index(ListInvoiceRequest $request): JsonResponse
     {
-        $result = $this->invoiceService->getAll($request->all());
+        $result = $this->invoiceService->getAll($request->all(), request()->user()->id);
         return $this->success(data: $result['data'], meta: $result['meta']);
     }
 
