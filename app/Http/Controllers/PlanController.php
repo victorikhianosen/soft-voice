@@ -10,7 +10,6 @@ class PlanController extends Controller
 {
     use RespondWithHttpStatus;
 
-
     public function __construct(
         protected PlanRepository $planRepository
     ){

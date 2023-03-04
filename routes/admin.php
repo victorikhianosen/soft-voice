@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PlanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\Admin\AuthController;
 use App\Http\Controllers\Admin\TransactionController;
@@ -57,6 +58,13 @@ Route::middleware(['auth:sanctum', 'ability:admin'])->group(function () {
             Route::get('/{user}/expenses', 'expenses');
             Route::post('/{user}/customers/export', 'exportCustomers');
             Route::get('/{user}/settings', 'settings');
+        });
+    });
+
+    Route::prefix('/plans')->group(function () {
+        Route::controller(PlanController::class)->group(function () {
+            Route::get('', 'index');
+            Route::get('{plan}', 'show');
         });
     });
 });
