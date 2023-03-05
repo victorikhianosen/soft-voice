@@ -15,9 +15,4 @@ class PlanRepository extends AbstractRepository
     {
         return app(Plan::class);
     }
-
-    public function fetchAll()
-    {
-        return $this->model->get();
-    }
 }

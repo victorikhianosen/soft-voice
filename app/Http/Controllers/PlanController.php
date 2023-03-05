@@ -17,7 +17,7 @@ class PlanController extends Controller
 
     public function index()
     {
-        $data = $this->planRepository->fetchAll();
+        $data = $this->planRepository->getAll('*');
         return $this->success(data: PlanResource::collection($data));
     }
 }

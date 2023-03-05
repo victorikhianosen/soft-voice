@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\RoleController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\Admin\AuthController;
 use App\Http\Controllers\Admin\TransactionController;
@@ -64,7 +66,24 @@ Route::middleware(['auth:sanctum', 'ability:admin'])->group(function () {
     Route::prefix('/plans')->group(function () {
         Route::controller(PlanController::class)->group(function () {
             Route::get('', 'index');
-            Route::get('{plan}', 'show');
+            Route::get('/{plan}', 'show');
+        });
+    });
+
+    Route::prefix('/permissions')->group(function () {
+        Route::controller(PermissionController::class)->group(function () {
+            Route::get('', 'index');
+            Route::get('/{permission}', 'show');
+        });
+    });
+
+    Route::prefix('/roles')->group(function () {
+        Route::controller(RoleController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store');
+            Route::get('/{role}', 'show');
+            Route::put('/{role}', 'update');
+            Route::delete('/{role}', 'delete');
         });
     });
 });
