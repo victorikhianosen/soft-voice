@@ -122,7 +122,12 @@ class CreatePermissionTables extends Migration
             ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)
             ->forget(config('permission.cache.key'));
 
-            DB::table('roles')->insert(['name' => 'Super Admin', 'guard_name' => 'admin']);
+            DB::table('roles')->insert([
+                'name' => 'Super Admin',
+                'guard_name' => 'admin',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
             DB::table('permissions')->insert([
                 ['name' => 'View Transactions', 'guard_name' => 'admin'],
                 ['name' => 'Export Transactions', 'guard_name' => 'admin'],
