@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CouponController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PlanController;
@@ -107,6 +108,16 @@ Route::middleware(['auth:sanctum', 'ability:admin'])->group(function () {
             Route::delete('/{admin}', 'delete');
             Route::put('/{admin}/restrict', 'restrict');
             Route::put('/{admin}/reinstate', 'reinstate');
+        });
+    });
+
+    Route::prefix('/coupons')->group(function () {
+        Route::controller(CouponController::class)->group(function () {
+            Route::get('', 'index');
+            Route::get('/{coupon}', 'show');
+            Route::post('', 'store');
+            Route::put('/{coupon}', 'update');
+            Route::delete('/{coupon}', 'delete');
         });
     });
 });
