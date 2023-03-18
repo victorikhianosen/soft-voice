@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\Admin\PermissionController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\RoleController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\Admin\AuthController;
-use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Auth\Admin\AuthController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Auth\Admin\PasswordResetController;
 
 /*
@@ -84,6 +85,15 @@ Route::middleware(['auth:sanctum', 'ability:admin'])->group(function () {
             Route::get('/{role}', 'show');
             Route::put('/{role}', 'update');
             Route::delete('/{role}', 'delete');
+        });
+    });
+
+    Route::prefix('/notifications')->group(function () {
+        Route::controller(MessageController::class)->group(function () {
+            Route::get('', 'index');
+            Route::post('', 'store');
+            Route::post('/{message}', 'resend');
+            Route::delete('/{message}', 'delete');
         });
     });
 });
