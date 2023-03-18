@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Http\Controllers\NotificationController;
 use App\Models\Admin;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -40,6 +41,7 @@ class AdminService
         $data['password'] = bcrypt($password);
         $admin = $this->adminRepository->create($data);
         $admin->assignRole($data['role_id']);
+        NotificationController::sendAdminRegisteredEmail($admin, $password);
         return new AdminResource($admin->fresh());
     }
 
