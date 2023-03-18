@@ -16,8 +16,9 @@ class AdminResource extends JsonResource
     public function toArray($request)
     {
         $data = parent::toArray($request);
-        Arr::forget($data, ['updated_at']);
+        Arr::forget($data, ['updated_at', 'password', 'remember_token', 'roles']);
         $data['role'] = new RoleResource($this->roles->first());
+        $data['active'] = $data['active'] === 1;
         return $data;
     }
 }

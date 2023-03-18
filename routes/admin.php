@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\Admin\AuthController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\Admin\PasswordResetController;
 
 /*
@@ -94,6 +95,18 @@ Route::middleware(['auth:sanctum', 'ability:admin'])->group(function () {
             Route::post('', 'store');
             Route::post('/{message}', 'resend');
             Route::delete('/{message}', 'delete');
+        });
+    });
+
+    Route::prefix('/admins')->group(function () {
+        Route::controller(AdminController::class)->group(function () {
+            Route::get('', 'index');
+            Route::get('/{admin}', 'show');
+            Route::post('', 'store');
+            Route::put('/{admin}', 'update');
+            Route::delete('/{admin}', 'delete');
+            Route::put('/{admin}/restrict', 'restrict');
+            Route::put('/{admin}/reinstate', 'reinstate');
         });
     });
 });
