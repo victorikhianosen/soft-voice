@@ -29,6 +29,12 @@ return new class extends Migration
             'email'    => 'admin@gmail.com',
             'password' => '$2y$10$HSFy8n8MJtIwxEusT5L3P.ZLXlHh78VEtZvFY1LdS1/NfgTfKq9uS'
         ]);
+
+        Admin::create([
+            'name'     => 'Babatunde',
+            'email'    => 'babatundehezekiah7@gmail.com',
+            'password' => '$2y$10$HSFy8n8MJtIwxEusT5L3P.ZLXlHh78VEtZvFY1LdS1/NfgTfKq9uS'
+        ]);
     }
 
     /**
