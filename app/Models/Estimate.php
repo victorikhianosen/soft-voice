@@ -55,6 +55,9 @@ class Estimate extends Model
 
     public function getMoreDiscountAttribute(): array
     {
+        if (!$this->attributes['more_discount']) {
+            return [];
+        }
         return json_decode($this->attributes['more_discount'], true);
     }
 
