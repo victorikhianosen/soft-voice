@@ -83,6 +83,7 @@ class TransactionService
             foreach ($transactions as $transaction) {
                 $xml->startElement('Transaction');
                 $xml->writeElement('transaction_id', $transaction->id);
+                $xml->writeElement('reference', $transaction->reference);
                 $xml->writeElement('user', $transaction->user->name);
                 $xml->writeElement('type', $transaction->type);
                 $xml->writeElement('amount', $transaction->amount);
@@ -95,5 +96,25 @@ class TransactionService
             $this->closeXML($xml);
         }
         return asset("/storage/{$directory}/{$file}");
+    }
+
+    public function generateReference()
+    {
+        $ref = $this->getRefCode();
+        while ($this->transactionRepository->getAll(
+            '*',
+            conditions: ['reference' => $ref]
+            )->count() > 0
+        ) {
+            $ref = $this->getRefCode();
+        }
+        return $ref;
+    }
+
+    private function getRefCode()
+    {
+        $ref = "";
+        for ($i = 0; $i<10; $i++) $ref .= mt_rand(0,9);
+        return $ref;
     }
 }

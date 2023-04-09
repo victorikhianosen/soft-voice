@@ -14,6 +14,7 @@
     <thead>
         <tr>
             <th>S/N</th>
+            <th>Reference</th>
             <th>User</th>
             <th>Type</th>
             <th>Amount</th>
@@ -27,6 +28,7 @@
         @foreach ($transactions as $key => $transaction)
             <tr>
                 <td data-column="S/N">{{ $key + 1 }}</td>
+                <td data-column="Reference">{{ $transaction->reference }}</td>
                 <td data-column="User">{{ $transaction->user->name }}</td>
                 <td data-column="Type">{{ $transaction->type }}</td>
                 <td data-column="Amount">{{ number_format($transaction->amount, 2) }}</td>

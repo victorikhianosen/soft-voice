@@ -19,6 +19,7 @@ class TransactionExport implements FromArray, WithHeadings
     {
         return $this->transactions->map(fn($transaction) => [
             'id'   => $transaction->id,
+            'reference'   => $transaction->reference,
             'user'   => $transaction->user->name,
             'type'   => $transaction->type,
             'amount'   => number_format($transaction->amount, 2),
@@ -33,6 +34,7 @@ class TransactionExport implements FromArray, WithHeadings
     {
         return [
             'Transaction ID',
+            'Reference ID',
             'User',
             'Type',
             'Amount',

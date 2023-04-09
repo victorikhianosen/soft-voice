@@ -18,6 +18,7 @@ class TransactionFactory extends Factory
     {
         return [
             'user_id' => fake()->numberBetween(1, 5),
+            'reference' => fake()->unique()->randomNumber(6),
             'type' => fake()->randomElement(['deposit', 'withdrawal', 'others']),
             'amount' => fake()->randomNumber(6),
             'description' => fake()->sentence(),

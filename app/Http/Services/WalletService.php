@@ -11,6 +11,7 @@ class WalletService
 {
     public function __construct(
         protected WalletRepository $walletRepository,
+        protected TransactionService $transactionService,
         protected TransactionRepository $transactionRepository
     ){
     }
@@ -24,6 +25,7 @@ class WalletService
         $this->walletRepository->debitUserWallet($userId, $amount);
         $this->transactionRepository->create([
             'user_id' => $userId,
+            'reference' => $this->transactionService->generateReference(),
             'type'    => 'withdrawal',
             'amount'  => $amount,
             'description' => 'Withdrawal Request',
@@ -36,6 +38,7 @@ class WalletService
     {
         $this->transactionRepository->create([
             'user_id' => $userId,
+            'reference' => $this->transactionService->generateReference(),
             'type'    => 'deposit',
             'amount'  => $amount,
             'description' => 'Deposit Request',
