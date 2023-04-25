@@ -16,7 +16,7 @@ class PermissionResource extends JsonResource
     public function toArray($request)
     {
         $data = parent::toArray($request);
-        Arr::forget($data, ['guard_name', 'created_at', 'updated_at']);
+        Arr::forget($data, ['guard_name', 'created_at', 'updated_at', 'pivot']);
         return $data;
     }
 }

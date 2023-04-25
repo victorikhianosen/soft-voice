@@ -16,7 +16,7 @@ class RoleResource extends JsonResource
     public function toArray($request)
     {
         $data = parent::toArray($request);
-        $data['permissions'] = $this->permissions->pluck('name')->toArray();
+        $data['permissions'] = PermissionResource::collection($this->permissions);
         $data['admins'] = $this->users->count();
         Arr::forget($data, ['pivot']);
         return $data;
