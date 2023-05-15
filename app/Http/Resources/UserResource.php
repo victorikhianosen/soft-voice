@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'email_verified_at', 'email_verification_token',
             'email_verification_token_expiry', 'updated_at'
         ]);
+        $data['image'] = $data['image'] ? asset($data['image']) : null;
         return $data;
     }
 }
