@@ -140,7 +140,7 @@ class AuthService
 
     public function updateProfile(UpdateProfileRequest $data)
     {
-        $image = $data->file('avatar');
+        $image = $data->file('image');
         $path = null;
         if ($image) $path = $this->saveFIle($image, 'images');
         $data = Arr::only($data->all(), ['name', 'phone', 'address', 'country', 'state', 'postal_code']);
