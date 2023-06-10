@@ -101,7 +101,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::get('', 'index');
             Route::post('', 'store');
             Route::get('/{expense}', 'show');
-            Route::put('/{expense}', 'update');
+            Route::post('/{expense}/update', 'update');
             Route::delete('/{expense}', 'delete');
             Route::put('/{expense}/duplicate', 'duplicate');
             Route::put('/{expense}/mark-as', 'markAs');
