@@ -175,10 +175,13 @@ abstract class AbstractRepository
                             ->when($customers, fn($q) => $q->whereIn('customer_id', $customers))
                             ->when($date && isset($date['mode']), function ($q) use ($date) {
                                 $q->when($date['mode'] === "range", function ($q) use ($date) {
-                                    $q->whereDate('created_at', '>=', $date['range']['from'])
-                                        ->whereDate('created_at', '<=',  $date['range']['to']);
+                                    $q->when(isset($date['range']['from']) && $date['range']['from'],
+                                        fn($q) => $q->whereDate('created_at', '>=', $date['range']['from'])
+                                    )->when(isset($date['range']['to']) && $date['range']['to'],
+                                        fn($q) => $q->whereDate('created_at', '<=',  $date['range']['to'])
+                                    );
                                 });
-                                $q->when($date['mode'] === "fixed", function ($q) use ($date) {
+                                $q->when(($date['mode'] === "fixed" && isset($date['fixed']) && $date['fixed']), function ($q) use ($date) {
                                     $today = Carbon::today();
                                     $q->when($date['fixed'] === 'today', fn($q) => $q->whereDate('created_at', $today));
                                     $q->when($date['fixed'] === 'yesterday', fn($q) => $q->whereDate('created_at', $today->subDay()));
