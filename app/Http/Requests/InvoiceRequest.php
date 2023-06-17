@@ -29,8 +29,8 @@ class InvoiceRequest extends FormRequest
         return [
             "invoice_id"     => ["required", "string", Rule::unique('invoices')->ignore(optional($this->invoice)->id)],
             "customer_id"    => ["required", "numeric", "exists:customers,id"],
-            "date"           => ["required", "date", "date_format:Y/m/d"],
-            "due_date"       => ["required", "date", "date_format:Y/m/d"],
+            "date"           => ["required", "date", "date_format:Y-m-d"],
+            "due_date"       => ["required", "date", "date_format:Y-m-d"],
             "tax_enabled"    => ["required", "boolean"],
             "terms"          => ["required", "string"],
             "notes"          => ["required", "string"],

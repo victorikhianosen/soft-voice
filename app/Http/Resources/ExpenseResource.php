@@ -18,7 +18,6 @@ class ExpenseResource extends JsonResource
     {
         $data = parent::toArray($request);
         $data['customer'] = new CustomerResource($this->customer);
-        $data['date'] = Carbon::parse($this->date)->format('Y/m/d');
         Arr::forget($data, ['customer_id']);
         $data['attachment'] = $this->attachment ? asset($this->attachment) : null;
         return $data;
