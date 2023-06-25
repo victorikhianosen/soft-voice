@@ -18,7 +18,6 @@ class EstimateResource extends JsonResource
         $data = parent::toArray($request);
         $data['customer'] = new CustomerResource($this->customer);
         Arr::forget($data, ['customer_id']);
-        $data['amount'] = $this->amount;
         return $data;
     }
 }

@@ -14,6 +14,8 @@ class Estimate extends Model
 
     protected $with = ['items', 'customer'];
 
+    protected $appends = ['amount'];
+
     protected $fillable = [
         'user_id',
         'estimate_id',

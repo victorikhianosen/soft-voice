@@ -28,6 +28,7 @@ class CustomerService
             ['user_id' => $userId],
             $data['sort']['column'] ?? 'created_at',
             $data['sort']['dir'] ?? 'desc',
+            with: ['invoices']
         );
         return [
             'data' => CustomerResource::collection($result['data']),
@@ -55,7 +56,15 @@ class CustomerService
 
     public function getHistory(int $id): Customer
     {
-        return $this->customerRepository->getHistoryById($id);
+        $data = $this->customerRepository->getHistoryById($id);
+        $data['summary'] = [
+            'total' => $data->invoices->sum('amount'),
+            'amount_paid' => $data->invoices->whereNotIn('status', ['refunded', 'pending'])->sum('amount_paid'),
+            'amount_due' => $data->invoices->whereNotIn('status', ['refunded', 'pending'])->sum('amount_due'),
+            'pending' => $data->invoices->where('status', 'pending')->sum('amount'),
+            'refunded' => $data->invoices->where('status', 'refunded')->sum('amount'),
+        ];
+        return $data;
     }
 
     public function export(string $format, int $userId, string|int $dirName): string

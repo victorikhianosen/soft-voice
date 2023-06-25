@@ -14,6 +14,8 @@ class Invoice extends Model
 
     protected $with = ['items', 'customer'];
 
+    protected $appends = ['amount', 'amount_paid', 'amount_due'];
+
     protected $fillable = [
         'user_id',
         'invoice_id',
@@ -95,6 +97,16 @@ class Invoice extends Model
     public function getAmountAttribute(): float|int
     {
         return $this->items()->sum('amount');
+    }
+
+    public function getAmountPaidAttribute(): float|int
+    {
+        return $this->payments()->sum('amount');
+    }
+
+    public function getAmountDueAttribute(): float|int
+    {
+        return max(0, $this->amount - $this->amount_paid);
     }
 
     public function scopeSearch($q, $query)
