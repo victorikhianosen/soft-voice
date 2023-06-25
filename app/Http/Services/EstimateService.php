@@ -3,14 +3,15 @@
 namespace App\Http\Services;
 
 use App\Enums\Status;
-use App\Exports\EstimateExport;
 use App\Models\Estimate;
+use App\Exports\EstimateExport;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Traits\Paginatable;
+use App\Http\Traits\UploadsFile;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\EstimateResource;
+use Haruncpi\LaravelIdGenerator\IdGenerator;
 use App\Http\Repositories\EstimateRepository;
-use App\Http\Traits\UploadsFile;
 use App\Notifications\SendEstimateNotification;
 
 class EstimateService
@@ -45,6 +46,7 @@ class EstimateService
     {
         $data['user_id'] = request()->user()->id;
         $data['status'] = Status::DRAFT;
+        $data['estimate_id'] = IdGenerator::generate(['table' => 'estimates', 'field' => 'estimate_id', 'length' => 10, 'prefix' => 'EST-']);
         $estimate = $this->estimateRepository->create($data);
         foreach ($data['items'] as $item) {
             $estimate->items()->create($item);

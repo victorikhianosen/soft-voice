@@ -15,7 +15,6 @@ class EstimateRequest extends FormRequest
     public function rules()
     {
         return [
-            "estimate_id" => ["required", "string", Rule::unique('estimates')->ignore(optional($this->estimate)->id)],
             "customer_id" => ["required", "numeric", "exists:customers,id"],
             "date"        => ["required", "date", "date_format:Y-m-d"],
             "due_date"    => ["required", "date", "date_format:Y-m-d"],

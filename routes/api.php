@@ -72,7 +72,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::get('', 'index');
             Route::post('', 'store');
             Route::get('/{invoice}', 'show');
-            Route::put('/{invoice}', 'update');
+            Route::post('/{invoice}/update', 'update');
             Route::delete('/{invoice}', 'delete');
             Route::put('/{invoice}/duplicate', 'duplicate');
             Route::put('/{invoice}/mark-as', 'markAs');
