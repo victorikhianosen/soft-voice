@@ -92,6 +92,7 @@ class EstimateService
     public function send(Estimate $estimate)
     {
         $this->notificationService->send(new SendEstimateNotification($estimate), $estimate->customer);
+        $this->estimateRepository->update($estimate, ['status' => 'sent']);
     }
 
     public function export(string $format): string
