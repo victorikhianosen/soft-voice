@@ -16,22 +16,8 @@ class SettingUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'currency' => ['required', Rule::in(Currency::currencies())],
-            'auto_payment_reminder' => ['required', 'boolean'],
-            'invoice_prefix' => ['nullable', 'string'],
-            'estimate_prefix' => ['nullable', 'string'],
-            'service_category' => ['nullable', 'string'],
-            'signature' => ['nullable', 'image', 'max:5120'],
-            'signatory_name' => ['nullable', 'string'],
-            'preferred_due_date' => ['nullable', 'date', 'date_format:Y-m-d'],
-            'payment_history_on_invoice_page' => ['required', 'boolean'],
-            'auto_enable_tax' => ['required', 'boolean'],
             'auto_enable_bank_account' => ['required', 'boolean'],
-            'tax_percentage' => ['required', 'numeric'],
             'theme' => ['required', 'string'],
-            'timezone' => ['nullable', 'string'],
-            'date_format' => ['nullable', 'string'],
-            'financial_year' => ['nullable', 'string'],
         ];
     }
 }

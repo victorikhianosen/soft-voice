@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('currency')->default('NGN');
             $table->boolean('auto_payment_reminder')->default(false);
-            $table->string('invoice_prefix')->nullable();
-            $table->string('estimate_prefix')->nullable();
+            $table->string('invoice_prefix')->default('INV');
+            $table->string('estimate_prefix')->default('EST');
             $table->string('service_category')->nullable();
             $table->mediumText('signature')->nullable();
             $table->string('signatory_name')->nullable();
@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('timezone')->nullable();
             $table->string('date_format')->nullable();
             $table->string('financial_year')->nullable();
+            $table->text('notifications')->nullable();
             $table->timestamps();
         });
     }

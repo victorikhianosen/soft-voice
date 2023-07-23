@@ -28,5 +28,16 @@ class Setting extends Model
         'timezone',
         'date_format',
         'financial_year',
+        'notifications',
     ];
+
+    public function setNotificationsAttribute(array $value)
+    {
+        $this->attributes['notifications'] = json_encode($value);
+    }
+
+    public function getNotificationsAttribute()
+    {
+        return json_decode($this->attributes['notifications']);
+    }
 }

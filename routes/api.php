@@ -158,7 +158,12 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
     Route::prefix('/settings')->group(function () {
         Route::controller(SettingController::class)->group(function () {
             Route::get('', 'getSetting');
-            Route::put('', 'updateSetting');
+            Route::put('/preferences', 'updatePreferences');
+            Route::put('/notifications', 'updateNotifications');
+            Route::prefix('/invoice')->group(function () {
+                Route::post('/general', 'updateInvoice');
+                Route::put('/tax', 'updateTax');
+            });
         });
     });
 

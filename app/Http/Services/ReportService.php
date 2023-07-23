@@ -16,10 +16,10 @@ class ReportService
 
     }
 
-    public function computeProfitAndLoss(): array
+    public function computeProfitAndLoss($filter): array
     {
-        $payments = $this->invoiceRepository->getUserInvoicePayments();
-        $expenses = $this->expenseRepository->getUserExpenses();
+        $payments = $this->invoiceRepository->getUserInvoicePayments($filter);
+        $expenses = $this->expenseRepository->getUserExpenses($filter);
         $dates = array_unique(array_merge(array_keys($payments), array_keys($expenses)));
         $data = [];
         foreach ($dates as $date) {
@@ -35,9 +35,9 @@ class ReportService
         return $data;
     }
 
-    public function computeSales()
+    public function computeSales($filter): array
     {
-        $invoices = $this->invoiceRepository->getUserInvoices();
+        $invoices = $this->invoiceRepository->getUserInvoices($filter);
         $dates = array_keys($invoices);
         $data = [];
         foreach ($dates as $date) {
@@ -57,16 +57,19 @@ class ReportService
         return $data;
     }
 
-    public function computeExpense(): array
+    public function computeExpense($filter): array
     {
-        $expenses = $this->expenseRepository->getUserExpenses();
+        $expenses = $this->expenseRepository->getUserExpenses($filter);
         $dates = array_keys($expenses);
         $data = [];
         foreach ($dates as $date) {
-            $exp = $this->getSumByDate($expenses, $date);
             $data[] = [
                 'date'    => $date,
-                'amount'  => $exp,
+                'total'  => $this->getSumByDate($expenses, $date),
+                'pending'  => collect($expenses[$date])->where('status', 'pending')->sum('amount'),
+                'expired'  => collect($expenses[$date])->where('status', 'expired')->sum('amount'),
+                'recurring'  => collect($expenses[$date])->where('status', 'recurring')->sum('amount'),
+                'refunded'  => collect($expenses[$date])->where('status', 'refunded')->sum('amount'),
             ];
         }
         return $data;
