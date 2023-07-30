@@ -39,13 +39,32 @@ class InvoiceRepository extends AbstractRepository
             ->toArray();
     }
 
-    public function getUserInvoices($filter)
+    public function getAllUserInvoices($filter)
     {
         return request()->user()
             ->invoices()
-            ->whereBetween('created_at', [$filter['start_date'], $filter['end_date']])->get()
-            ->get()
+            ->whereDate('created_at', '>=', $filter['start_date'])
+            ->whereDate('created_at', '<=', $filter['end_date'])
+            ->get();
+    }
+
+    public function getUserInvoices($filter)
+    {
+        return $this->getAllUserInvoices($filter)
             ->groupBy(fn($el) => Carbon::parse($el->created_at)->format('M Y'))
             ->toArray();
+    }
+
+    public function getUserInvoicesCount()
+    {
+        return request()->user()->invoices()->count();
+    }
+
+    public function getUserDueInvoices()
+    {
+        return request()->user()
+            ->invoices()
+            ->get()
+            ->sum('amount_due');
     }
 }

@@ -22,4 +22,9 @@ class CustomerRepository extends AbstractRepository
                     ->with(['invoices', 'expenses', 'estimates'])
                     ->first();
     }
+
+    public function getUserCustomersCount()
+    {
+        return request()->user()->customers()->count();
+    }
 }

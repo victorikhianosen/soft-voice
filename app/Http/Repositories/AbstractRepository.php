@@ -75,7 +75,7 @@ abstract class AbstractRepository
      */
     public function all(array $conditions = []): Collection
     {
-        return $this->model->where($conditions)->get();
+        return $this->model->where($conditions)->latest()->get();
     }
 
     /**
