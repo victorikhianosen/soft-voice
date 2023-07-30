@@ -93,12 +93,14 @@ class InvoiceService
 
     public function duplicate(Invoice $data)
     {
-        $data['invoice_id'] = "[COPY] {$data['invoice_id']}";
-        while (count($this->invoiceRepository->all(['invoice_id' => $data['invoice_id']])->toArray()) > 0) {
-            $data['invoice_id'] = "[COPY] {$data['invoice_id']}";
+        $data = $data->toArray();
+        $data['invoice_id'] = Invoice::getNextInvoiceId();
+        $data['status'] = Status::DRAFT;
+        $invoice = $this->invoiceRepository->create($data);
+        foreach ($data['items'] as $item) {
+            $invoice->items()->create($item);
         }
-        $invoice = $this->invoiceRepository->create($data->toArray());
-        return new InvoiceResource($invoice);
+        return new InvoiceResource($invoice->fresh());
     }
 
     public function markAs(Invoice $invoice, Status $status)
@@ -109,6 +111,7 @@ class InvoiceService
 
     public function send(Invoice $invoice)
     {
+        $this->invoiceRepository->update($invoice, ['status' => 'sent']);
         $this->notificationService->send(new SendInvoiceNotification($invoice), $invoice->customer);
     }
 

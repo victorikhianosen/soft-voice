@@ -27,16 +27,20 @@ class InvoiceRequest extends FormRequest
     public function rules()
     {
         return [
-            "invoice_id"     => ["required", "string", Rule::unique('invoices')->ignore(optional($this->invoice)->id)],
+            'invoice_id' => [
+                'required',
+                'string',
+                Rule::unique('invoices')->where('user_id', $this->user()->id)->ignore(optional($this->invoice)->id, 'id'),
+            ],
             "customer_id"    => ["required", "numeric", "exists:customers,id"],
             "date"           => ["required", "date", "date_format:Y-m-d"],
             "due_date"       => ["required", "date", "date_format:Y-m-d"],
             "tax_enabled"    => ["required", "boolean"],
-            "terms"          => ["required", "string"],
+            "terms"          => ["nullable", "string"],
             "notes"          => ["required", "string"],
             "currency"       => ["required", "string"],
             "signatory_name" => ["required", "string"],
-            "signature"      => ["file", "max:2048"],
+            "signature"      => ["nullable", "file", "max:2048"],
             "accept_payment" => ["boolean"],
 
             "recurring"                => ["required", "boolean"],
@@ -61,5 +65,14 @@ class InvoiceRequest extends FormRequest
             "items.*.amount"   => ["required", "numeric"],
             "items.*.discount" => ["required", "numeric"],
         ];
+    }
+
+
+    public function validationData()
+    {
+        $data = $this->all();
+        $invoicePrefix = $this->user()->setting->invoice_prefix;
+        $data['invoice_id'] = $invoicePrefix . $data['invoice_id'];
+        return $data;
     }
 }

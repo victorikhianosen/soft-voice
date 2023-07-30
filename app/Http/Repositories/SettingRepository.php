@@ -18,15 +18,11 @@ class SettingRepository extends AbstractRepository
 
     public function getSetting(int $userId)
     {
-        $setting = $this->model()->where('user_id', $userId)->first();
-        if (!$setting) return $this->create(['user_id' => $userId])->fresh();
-        return $setting;
+        return $this->model()->where('user_id', $userId)->first();
     }
 
     public function updateSetting(int $userId, array $data)
     {
-        $setting = $this->model()->where('user_id', $userId)->first();
-        if (!$setting) $setting = $this->create(['user_id' => $userId])->fresh();
-        return $setting->update($data);
+        return $this->model()->where('user_id', $userId)->update($data);
     }
 }

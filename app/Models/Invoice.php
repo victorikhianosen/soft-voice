@@ -109,6 +109,30 @@ class Invoice extends Model
         return max(0, $this->amount - $this->amount_paid);
     }
 
+    public function setInvoiceIdAttribute(string $value)
+    {
+        $prefix = request()->user()->setting->invoice_prefix;
+        $this->attributes['invoice_id'] = $prefix . $value;
+    }
+
+    public static function getNextInvoiceId()
+    {
+        $user = request()->user();
+        $prefix = $user->setting->invoice_prefix;
+        $lastInvoice = $user->invoices()->latest()->first();
+        if ($lastInvoice) {
+            $id = (int) last(explode($prefix, $lastInvoice['invoice_id']));
+            if ($id) {
+                $newId = null;
+                do {
+                    $newId = str_pad(++$id, 6, '0', STR_PAD_LEFT);
+                } while ($user->invoices()->where('invoice_id', $prefix . $newId)->exists());
+                return $newId;
+            }
+        }
+        return str_pad(1, 6, '0', STR_PAD_LEFT);
+    }
+
     public function scopeSearch($q, $query)
     {
         return $q->where('invoice_id', 'LIKE', '%'.$query.'%')

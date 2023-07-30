@@ -15,6 +15,11 @@ class EstimateRequest extends FormRequest
     public function rules()
     {
         return [
+            'estimate_id' => [
+                'required',
+                'string',
+                Rule::unique('estimates')->where('user_id', $this->user()->id)->ignore(optional($this->invoice)->id, 'id'),
+            ],
             "customer_id" => ["required", "numeric", "exists:customers,id"],
             "date"        => ["required", "date", "date_format:Y-m-d"],
             "due_date"    => ["required", "date", "date_format:Y-m-d"],
@@ -39,5 +44,13 @@ class EstimateRequest extends FormRequest
             "items.*.amount"   => ["required", "numeric"],
             "items.*.discount" => ["required", "numeric"],
         ];
+    }
+
+    public function validationData()
+    {
+        $data = $this->all();
+        $invoicePrefix = $this->user()->setting->estimate_prefix;
+        $data['estimate_id'] = $invoicePrefix . $data['estimate_id'];
+        return $data;
     }
 }
