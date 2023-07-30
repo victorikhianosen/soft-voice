@@ -78,7 +78,8 @@ class Estimate extends Model
 
     public function setEstimateIdAttribute(string $value)
     {
-        $prefix = auth()->user()->setting->estimate_prefix;
+        $user = request()->user();
+        $prefix = $user?->setting?->estimate_prefix ?? 'EST';
         $this->attributes['estimate_id'] = $prefix . $value;
     }
 

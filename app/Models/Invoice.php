@@ -111,7 +111,8 @@ class Invoice extends Model
 
     public function setInvoiceIdAttribute(string $value)
     {
-        $prefix = request()->user()->setting->invoice_prefix;
+        $user = request()->user();
+        $prefix = $user?->setting?->invoice_prefix ?? 'INV';
         $this->attributes['invoice_id'] = $prefix . $value;
     }
 
