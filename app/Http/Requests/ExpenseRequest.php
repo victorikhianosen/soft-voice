@@ -18,7 +18,7 @@ class ExpenseRequest extends FormRequest
             "date"        => ["required", "date", "date_format:Y-m-d"],
             "notes"       => ["required", "string"],
             "amount"      => ["required", "numeric"],
-            "attachment"  => ["file", "max:5120"],
+            "attachment"  => ["nullable", "file", "max:5120"],
             'currency'    => ["required", "string"],
 
             "recurring"                => ["required", "boolean"],
