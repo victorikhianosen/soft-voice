@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('currency');
             $table->boolean('tax_enabled');
             $table->text('notes')->nullable();
+            $table->text('description');
             $table->text('additional_charges')->nullable();
             $table->text('more_discount')->nullable();
             $table->string('status');

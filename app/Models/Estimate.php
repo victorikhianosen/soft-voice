@@ -27,6 +27,7 @@ class Estimate extends Model
         'tax_enabled',
         'currency',
         'notes',
+        'description',
         'additional_charges',
         'more_discount',
         'status'

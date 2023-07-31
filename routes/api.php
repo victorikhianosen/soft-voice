@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AnalyticsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PlanController;
@@ -13,6 +12,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\ReferralController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\PaymentKeyController;
 use App\Http\Controllers\BankAccountController;
@@ -53,6 +53,12 @@ Route::controller(EmailVerificationController::class)->group(function () {
 Route::controller(PasswordResetController::class)->group(function () {
     Route::post('/password/reset/send-link', 'sendPasswordResetLink')->middleware('throttle:3,1');
     Route::post('/password/reset', 'resetPassword');
+});
+
+Route::prefix('/view')->group(function () {
+    Route::controller(InvoiceController::class)->group(function () {
+        Route::get('/invoice/{invoice}', 'showPublic');
+    });
 });
 
 Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {

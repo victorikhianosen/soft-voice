@@ -20,6 +20,7 @@ class Expense extends Model
         'amount',
         'notes',
         'attachment',
+        'currency',
         'status'
     ];
 
