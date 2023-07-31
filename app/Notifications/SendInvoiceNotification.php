@@ -40,10 +40,12 @@ class SendInvoiceNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        $url = config('env.spa_url') . 'customer-invoice/' . $this->invoice->id;
+
         return (new MailMessage)
                     ->subject('New Invoice')
                     ->line('The introduction to the notification.')
-                    ->action('View Invoice', url('/'))
+                    ->action('View Invoice', $url)
                     ->line('Thank you for using our application!');
     }
 

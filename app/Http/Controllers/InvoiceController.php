@@ -37,6 +37,11 @@ class InvoiceController extends Controller
         return $this->success(data: new InvoiceResource($invoice));
     }
 
+    public function showPublic(Invoice $invoice): JsonResponse
+    {
+        return $this->success(data: new InvoiceResource($invoice));
+    }
+
     public function store(InvoiceRequest $request): JsonResponse
     {
         $data = $this->invoiceService->store($request);

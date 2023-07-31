@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('recurring');
             $table->text('recurring_duration')->nullable();
             $table->text('notes')->nullable();
+            $table->string('currency');
             $table->text('attachment')->nullable();
             $table->string('status');
             $table->timestamps();

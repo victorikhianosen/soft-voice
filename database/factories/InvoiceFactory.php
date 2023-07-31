@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Status;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
