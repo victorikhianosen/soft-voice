@@ -17,4 +17,9 @@ class EstimateRepository extends AbstractRepository
     {
         return app(Estimate::class);
     }
+
+    public function getUserEstimatesCount()
+    {
+        return request()->user()->estimates()->count();
+    }
 }

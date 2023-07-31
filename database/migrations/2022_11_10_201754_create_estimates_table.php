@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('estimates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->string('estimate_id')->unique();
+            $table->string('estimate_id');
             $table->foreignId('customer_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->date('due_date');
@@ -27,6 +27,8 @@ return new class extends Migration
             $table->text('more_discount')->nullable();
             $table->string('status');
             $table->timestamps();
+
+            $table->unique(['estimate_id', 'user_id']);
         });
     }
 

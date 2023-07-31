@@ -7,18 +7,18 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Coupon;
 use App\Models\Wallet;
-use App\Models\Customer;
-use App\Models\Estimate;
-use App\Models\EstimateItem;
 use App\Models\Expense;
 use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\InvoicePayment;
 use App\Models\Message;
-use App\Models\Subscription;
+use App\Models\Setting;
+use App\Models\Customer;
+use App\Models\Estimate;
+use App\Models\InvoiceItem;
 use App\Models\Transaction;
+use App\Models\EstimateItem;
+use App\Models\Subscription;
+use App\Models\InvoicePayment;
 use Illuminate\Database\Seeder;
-use Database\Factories\CustomerFactory;
 
 class DatabaseSeeder extends Seeder
 {
@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
         User::factory(5)->create()->each(function ($user) {
             Wallet::factory()->create(['user_id' => $user->id]);
             Subscription::factory()->create(['user_id' => $user->id]);
+            Setting::factory()->create(['user_id' => $user->id]);
         });
 
         Customer::factory(200)->create();

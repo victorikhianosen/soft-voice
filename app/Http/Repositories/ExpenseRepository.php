@@ -17,11 +17,18 @@ class ExpenseRepository extends AbstractRepository
         return app(Expense::class);
     }
 
-    public function getUserExpenses($filter)
+    public function getAllUserExpenses($filter)
     {
         return request()->user()
             ->expenses()
-            ->whereBetween('created_at', [$filter['start_date'], $filter['end_date']])->get()
+            ->whereDate('created_at', '>=', $filter['start_date'])
+            ->whereDate('created_at', '<=', $filter['end_date'])
+            ->get();
+    }
+
+    public function getUserExpenses($filter)
+    {
+        return $this->getAllUserExpenses($filter)
             ->groupBy(fn($el) => Carbon::parse($el->created_at)->format('M Y'))
             ->toArray();
     }

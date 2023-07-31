@@ -10,7 +10,6 @@ use App\Http\Traits\Paginatable;
 use App\Http\Traits\UploadsFile;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\EstimateResource;
-use Haruncpi\LaravelIdGenerator\IdGenerator;
 use App\Http\Repositories\EstimateRepository;
 use App\Notifications\SendEstimateNotification;
 
@@ -46,7 +45,6 @@ class EstimateService
     {
         $data['user_id'] = request()->user()->id;
         $data['status'] = Status::DRAFT;
-        $data['estimate_id'] = IdGenerator::generate(['table' => 'estimates', 'field' => 'estimate_id', 'length' => 10, 'prefix' => 'EST-']);
         $estimate = $this->estimateRepository->create($data);
         foreach ($data['items'] as $item) {
             $estimate->items()->create($item);
@@ -75,12 +73,14 @@ class EstimateService
 
     public function duplicate(Estimate $data)
     {
-        $data['estimate_id'] = "[COPY] {$data['estimate_id']}";
-        while (count($this->estimateRepository->all(['estimate_id' => $data['estimate_id']])->toArray()) > 0) {
-            $data['estimate_id'] = "[COPY] {$data['estimate_id']}";
+        $data = $data->toArray();
+        $data['estimate_id'] = Estimate::getNextEstimateId();
+        $data['status'] = Status::DRAFT;
+        $estimate = $this->estimateRepository->create($data);
+        foreach ($data['items'] as $item) {
+            $estimate->items()->create($item);
         }
-        $estimate = $this->estimateRepository->create($data->toArray());
-        return new EstimateResource($estimate);
+        return new EstimateResource($estimate->fresh());
     }
 
     public function markAs(Estimate $estimate, Status $status)
@@ -91,8 +91,8 @@ class EstimateService
 
     public function send(Estimate $estimate)
     {
-        $this->notificationService->send(new SendEstimateNotification($estimate), $estimate->customer);
         $this->estimateRepository->update($estimate, ['status' => 'sent']);
+        $this->notificationService->send(new SendEstimateNotification($estimate), $estimate->customer);
     }
 
     public function export(string $format): string

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PlanController;
@@ -61,6 +62,10 @@ Route::prefix('/invoice')->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
+    Route::controller(AnalyticsController::class)->prefix('/analytics')->group(function () {
+        Route::get('/', 'getAllAnalytics');
+    });
+
     Route::prefix('/customers')->group(function () {
         Route::controller(CustomerController::class)->group(function () {
             Route::get('', 'index');

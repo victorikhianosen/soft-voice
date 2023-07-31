@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->string('invoice_id')->unique();
+            $table->string('invoice_id');
             $table->foreignId('customer_id')->constrained()->onDelete('cascade');
             $table->date('date');
             $table->date('due_date');
@@ -33,6 +33,8 @@ return new class extends Migration
             $table->string('signatory_name')->nullable();
             $table->string('status');
             $table->timestamps();
+
+            $table->unique(['invoice_id', 'user_id']);
         });
     }
 
