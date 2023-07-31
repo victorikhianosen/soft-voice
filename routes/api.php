@@ -12,6 +12,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EstimateController;
 use App\Http\Controllers\ReferralController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\PaymentKeyController;
 use App\Http\Controllers\BankAccountController;
@@ -56,11 +57,15 @@ Route::controller(PasswordResetController::class)->group(function () {
 
 Route::prefix('/view')->group(function () {
     Route::controller(InvoiceController::class)->group(function () {
-        Route::get('/invoice/{invoice:id}', 'showPublic');
+        Route::get('/invoice/{invoice}', 'showPublic');
     });
 });
 
 Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
+    Route::controller(AnalyticsController::class)->prefix('/analytics')->group(function () {
+        Route::get('/', 'getAllAnalytics');
+    });
+
     Route::prefix('/customers')->group(function () {
         Route::controller(CustomerController::class)->group(function () {
             Route::get('', 'index');

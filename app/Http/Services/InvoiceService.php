@@ -57,7 +57,6 @@ class InvoiceService
         $data = $data->all();
         $data['user_id'] = request()->user()->id;
         $data['status'] = Status::DRAFT;
-        $data['code'] = Str::random(10);
         if ($file) {
             $data['signature'] = $this->saveFIle($file, 'signatures');
         }
