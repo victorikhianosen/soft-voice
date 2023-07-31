@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Status;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,11 +20,13 @@ class EstimateFactory extends Factory
     {
         return [
             'user_id' => fake()->numberBetween(1, 5),
+            'code' => Str::random(10),
             'estimate_id' => fake()->unique()->randomNumber(6),
             'customer_id' => fake()->numberBetween(1, 200),
             'date' => fake()->date(),
             'due_date' => fake()->date(),
             'currency' => fake()->currencyCode(),
+            'description' => fake()->sentence(),
             'tax_enabled' => fake()->boolean(),
             'status' => fake()->randomElement(Status::types()),
         ];

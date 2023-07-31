@@ -56,6 +56,7 @@ class InvoiceService
         $file = $data->file('signature');
         $data = $data->all();
         $data['user_id'] = request()->user()->id;
+        $data['code'] = Invoice::getUniqueCode();
         $data['status'] = Status::DRAFT;
         if ($file) {
             $data['signature'] = $this->saveFIle($file, 'signatures');
@@ -96,6 +97,7 @@ class InvoiceService
     {
         $data = $data->toArray();
         $data['invoice_id'] = Invoice::getNextInvoiceId();
+        $data['code'] = Invoice::getUniqueCode();
         $data['status'] = Status::DRAFT;
         $invoice = $this->invoiceRepository->create($data);
         foreach ($data['items'] as $item) {

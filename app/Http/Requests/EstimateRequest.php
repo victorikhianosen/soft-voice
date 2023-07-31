@@ -46,12 +46,4 @@ class EstimateRequest extends FormRequest
             "items.*.discount" => ["required", "numeric"],
         ];
     }
-
-    public function validationData()
-    {
-        $data = $this->all();
-        $invoicePrefix = $this->user()->setting->estimate_prefix;
-        $data['estimate_id'] = $invoicePrefix . $data['estimate_id'];
-        return $data;
-    }
 }

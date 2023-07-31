@@ -37,6 +37,11 @@ class EstimateController extends Controller
         return $this->success(data: new EstimateResource($estimate));
     }
 
+    public function showPublic(Estimate $estimate): JsonResponse
+    {
+        return $this->success(data: new EstimateResource($estimate));
+    }
+
     public function store(EstimateRequest $request): JsonResponse
     {
         $data = $this->estimateService->store($request->all());
