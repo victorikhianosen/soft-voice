@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AnalyticsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PlanController;
@@ -55,17 +54,13 @@ Route::controller(PasswordResetController::class)->group(function () {
     Route::post('/password/reset', 'resetPassword');
 });
 
-Route::prefix('/invoice')->group(function () {
+Route::prefix('/view')->group(function () {
     Route::controller(InvoiceController::class)->group(function () {
-        Route::get('/{invoice:code}', 'showPublic');
+        Route::get('/invoice/{invoice:id}', 'showPublic');
     });
 });
 
 Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
-    Route::controller(AnalyticsController::class)->prefix('/analytics')->group(function () {
-        Route::get('/', 'getAllAnalytics');
-    });
-
     Route::prefix('/customers')->group(function () {
         Route::controller(CustomerController::class)->group(function () {
             Route::get('', 'index');

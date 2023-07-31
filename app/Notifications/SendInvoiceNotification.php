@@ -43,7 +43,7 @@ class SendInvoiceNotification extends Notification
     {
         $domain = env('APP_DOMAIN');
 
-        $url = $domain . '/soft-web/customer-invoice/' . $this->invoice->code;
+        $url = $domain . '/soft-web/customer-invoice/' . $this->invoice->id;
 
         return (new MailMessage)
                     ->subject('New Invoice')
