@@ -5,19 +5,20 @@ namespace App\Http\Services;
 use XMLWriter;
 use App\Enums\Status;
 use App\Models\Invoice;
+use Illuminate\Support\Str;
 use App\Enums\PaymentMethod;
 use App\Exports\InvoiceExport;
 use App\Models\InvoicePayment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Traits\Paginatable;
+use App\Http\Traits\UploadsFile;
 use Maatwebsite\Excel\Facades\Excel;
+
 use App\Http\Requests\InvoiceRequest;
 use App\Http\Resources\InvoiceResource;
-
 use App\Http\Resources\PaymentResource;
 use App\Http\Repositories\InvoiceRepository;
 use App\Http\Repositories\PaymentRepository;
-use App\Http\Traits\UploadsFile;
 use App\Notifications\SendInvoiceNotification;
 use App\Notifications\InvoiceReminderNotification;
 
@@ -56,6 +57,7 @@ class InvoiceService
         $data = $data->all();
         $data['user_id'] = request()->user()->id;
         $data['status'] = Status::DRAFT;
+        $data['code'] = Str::random(10);
         if ($file) {
             $data['signature'] = $this->saveFIle($file, 'signatures');
         }

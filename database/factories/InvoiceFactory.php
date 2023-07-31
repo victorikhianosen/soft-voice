@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Status;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,6 +25,7 @@ class InvoiceFactory extends Factory
             'date' => fake()->date(),
             'due_date' => fake()->date(),
             'currency' => fake()->currencyCode(),
+            'code' => Str::random(10),
             'tax_enabled' => fake()->boolean(),
             'recurring' => fake()->boolean(),
             'currency' => fake()->currencyCode(),

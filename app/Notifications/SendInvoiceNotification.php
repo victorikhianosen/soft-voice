@@ -19,6 +19,7 @@ class SendInvoiceNotification extends Notification
      */
     public function __construct(protected Invoice $invoice)
     {
+        $this->invoice = $invoice;
     }
 
     /**
@@ -40,10 +41,14 @@ class SendInvoiceNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        $domain = env('APP_DOMAIN');
+
+        $url = $domain . '/soft-web/customer-invoice/' . $this->invoice->code;
+
         return (new MailMessage)
                     ->subject('New Invoice')
                     ->line('The introduction to the notification.')
-                    ->action('View Invoice', url('/'))
+                    ->action('View Invoice', $url)
                     ->line('Thank you for using our application!');
     }
 

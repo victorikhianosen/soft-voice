@@ -26,6 +26,7 @@ class Invoice extends Model
         'recurring',
         'accept_payment',
         'currency',
+        'code',
         'recurring_duration',
         'terms',
         'notes',

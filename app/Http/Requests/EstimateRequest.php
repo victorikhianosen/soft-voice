@@ -21,6 +21,7 @@ class EstimateRequest extends FormRequest
             "tax_enabled" => ["required", "boolean"],
             "notes"       => ["required", "string"],
             "currency"    => ["required", "string"],
+            "description"    => ["required", "string"],
 
             "additional_charges"                => ["nullable", "array"],
             "additional_charges.*.description"  => ["required", "string"],

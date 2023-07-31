@@ -54,6 +54,12 @@ Route::controller(PasswordResetController::class)->group(function () {
     Route::post('/password/reset', 'resetPassword');
 });
 
+Route::prefix('/invoice')->group(function () {
+    Route::controller(InvoiceController::class)->group(function () {
+        Route::get('/{invoice:code}', 'showPublic');
+    });
+});
+
 Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
     Route::prefix('/customers')->group(function () {
         Route::controller(CustomerController::class)->group(function () {

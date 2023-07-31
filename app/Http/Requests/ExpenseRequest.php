@@ -19,6 +19,7 @@ class ExpenseRequest extends FormRequest
             "notes"       => ["required", "string"],
             "amount"      => ["required", "numeric"],
             "attachment"  => ["file", "max:5120"],
+            "currency"       => ["required", "string"],
 
             "recurring"                => ["required", "boolean"],
             "recurring_duration"       => ["required_if:recurring,true", "array"],
