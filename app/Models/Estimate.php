@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,6 +18,7 @@ class Estimate extends Model
     protected $appends = ['amount'];
 
     protected $fillable = [
+        'code',
         'user_id',
         'estimate_id',
         'customer_id',
@@ -76,29 +78,26 @@ class Estimate extends Model
         return $this->items()->sum('amount');
     }
 
-    public function setEstimateIdAttribute(string $value)
-    {
-        $user = request()->user();
-        $prefix = $user?->setting?->estimate_prefix ?? 'EST';
-        $this->attributes['estimate_id'] = $prefix . $value;
-    }
-
     public static function getNextEstimateId()
     {
         $user = request()->user();
         $prefix = $user->setting->estimate_prefix;
-        $lastEstimate = $user->estimates()->latest()->first();
-        if ($lastEstimate) {
-            $id = (int) last(explode($prefix, $lastEstimate['estimate_id']));
-            if ($id) {
-                $newId = null;
-                do {
-                    $newId = str_pad(++$id, 6, '0', STR_PAD_LEFT);
-                } while ($user->estimates()->where('estimate_id', $prefix . $newId)->exists());
-                return $newId;
-            }
-        }
-        return str_pad(1, 6, '0', STR_PAD_LEFT);
+        $estimatesCount = $user->estimates()->count();
+
+        $newId = null;
+        do {
+            $newId = $prefix . str_pad(++$estimatesCount, 6, '0', STR_PAD_LEFT);
+        } while ($user->estimates()->where('estimate_id', $newId)->exists());
+        return $newId;
+    }
+
+    public static function getUniqueCode()
+    {
+        $code = null;
+        do {
+            $code = Str::random(10);
+        } while (Estimate::where('code', $code)->exists());
+        return $code;
     }
 
     public function scopeSearch($q, $query)

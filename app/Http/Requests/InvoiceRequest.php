@@ -66,13 +66,4 @@ class InvoiceRequest extends FormRequest
             "items.*.discount" => ["required", "numeric"],
         ];
     }
-
-
-    public function validationData()
-    {
-        $data = $this->all();
-        $invoicePrefix = $this->user()->setting->invoice_prefix;
-        $data['invoice_id'] = $invoicePrefix . $data['invoice_id'];
-        return $data;
-    }
 }

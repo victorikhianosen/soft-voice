@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Invoice extends Model
 {
@@ -17,6 +18,7 @@ class Invoice extends Model
     protected $appends = ['amount', 'amount_paid', 'amount_due'];
 
     protected $fillable = [
+        'code',
         'user_id',
         'invoice_id',
         'customer_id',
@@ -109,29 +111,26 @@ class Invoice extends Model
         return max(0, $this->amount - $this->amount_paid);
     }
 
-    public function setInvoiceIdAttribute(string $value)
-    {
-        $user = request()->user();
-        $prefix = $user?->setting?->invoice_prefix ?? 'INV';
-        $this->attributes['invoice_id'] = $prefix . $value;
-    }
-
     public static function getNextInvoiceId()
     {
         $user = request()->user();
         $prefix = $user->setting->invoice_prefix;
-        $lastInvoice = $user->invoices()->latest()->first();
-        if ($lastInvoice) {
-            $id = (int) last(explode($prefix, $lastInvoice['invoice_id']));
-            if ($id) {
-                $newId = null;
-                do {
-                    $newId = str_pad(++$id, 6, '0', STR_PAD_LEFT);
-                } while ($user->invoices()->where('invoice_id', $prefix . $newId)->exists());
-                return $newId;
-            }
-        }
-        return str_pad(1, 6, '0', STR_PAD_LEFT);
+        $invoicesCount = $user->invoices()->count();
+
+        $newId = null;
+        do {
+            $newId = $prefix . str_pad(++$invoicesCount, 6, '0', STR_PAD_LEFT);
+        } while ($user->invoices()->where('invoice_id', $newId)->exists());
+        return $newId;
+    }
+
+    public static function getUniqueCode()
+    {
+        $code = null;
+        do {
+            $code = Str::random(10);
+        } while (Invoice::where('code', $code)->exists());
+        return $code;
     }
 
     public function scopeSearch($q, $query)

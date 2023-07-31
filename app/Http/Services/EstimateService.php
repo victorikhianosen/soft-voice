@@ -44,6 +44,7 @@ class EstimateService
     public function store(array $data): EstimateResource
     {
         $data['user_id'] = request()->user()->id;
+        $data['code'] = Estimate::getUniqueCode();
         $data['status'] = Status::DRAFT;
         $estimate = $this->estimateRepository->create($data);
         foreach ($data['items'] as $item) {
@@ -75,6 +76,7 @@ class EstimateService
     {
         $data = $data->toArray();
         $data['estimate_id'] = Estimate::getNextEstimateId();
+        $data['code'] = Estimate::getUniqueCode();
         $data['status'] = Status::DRAFT;
         $estimate = $this->estimateRepository->create($data);
         foreach ($data['items'] as $item) {
