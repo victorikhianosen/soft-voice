@@ -23,6 +23,7 @@ class ExpenseFactory extends Factory
             'date' => fake()->date(),
             'amount' => fake()->randomNumber(6),
             'recurring' => fake()->boolean(),
+            'currency' => fake()->currencyCode(),
             'status' => fake()->randomElement(Status::types()),
         ];
     }

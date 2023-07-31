@@ -57,7 +57,10 @@ Route::controller(PasswordResetController::class)->group(function () {
 
 Route::prefix('/view')->group(function () {
     Route::controller(InvoiceController::class)->group(function () {
-        Route::get('/invoice/{invoice}', 'showPublic');
+        Route::get('/invoice/{invoice:code}', 'showPublic');
+    });
+    Route::controller(EstimateController::class)->group(function () {
+        Route::get('/estimate/{estimate:code}', 'showPublic');
     });
 });
 

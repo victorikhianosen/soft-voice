@@ -26,6 +26,7 @@ class EstimateFactory extends Factory
             'date' => fake()->date(),
             'due_date' => fake()->date(),
             'currency' => fake()->currencyCode(),
+            'description' => fake()->sentence(),
             'tax_enabled' => fake()->boolean(),
             'status' => fake()->randomElement(Status::types()),
         ];
