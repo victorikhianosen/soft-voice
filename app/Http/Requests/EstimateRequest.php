@@ -18,7 +18,7 @@ class EstimateRequest extends FormRequest
             'estimate_id' => [
                 'required',
                 'string',
-                Rule::unique('estimates')->where('user_id', $this->user()->id)->ignore(optional($this->invoice)->id, 'id'),
+                Rule::unique('estimates')->where('user_id', $this->user()->id)->ignore(optional($this->estimate)->id, 'id'),
             ],
             "customer_id" => ["required", "numeric", "exists:customers,id"],
             "date"        => ["required", "date", "date_format:Y-m-d"],

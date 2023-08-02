@@ -39,7 +39,7 @@ class InvoiceRequest extends FormRequest
             "terms"          => ["nullable", "string"],
             "notes"          => ["required", "string"],
             "currency"       => ["required", "string"],
-            "signatory_name" => ["required", "string"],
+            "signatory_name" => ["nullable", "string"],
             "signature"      => ["nullable", "file", "max:2048"],
             "accept_payment" => ["boolean"],
 
