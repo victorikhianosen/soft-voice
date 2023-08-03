@@ -43,6 +43,11 @@ class Estimate extends Model
         return $this->hasMany(EstimateItem::class);
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function setAdditionalChargesAttribute(array $data)
     {
         $this->attributes['additional_charges'] = $this->extractJSONField($data);
