@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('phone');
-            $table->string('whatsapp_number');
+            $table->string('whatsapp_number')->nullable();
             $table->text('address')->nullable();
             $table->string('category')->nullable();
             $table->string('website')->nullable();
