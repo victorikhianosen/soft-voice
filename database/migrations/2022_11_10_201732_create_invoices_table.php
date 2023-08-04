@@ -32,6 +32,7 @@ return new class extends Migration
             $table->text('more_discount')->nullable();
             $table->string('signature')->nullable();
             $table->string('signatory_name')->nullable();
+            $table->text('description');
             $table->string('status');
             $table->timestamps();
 

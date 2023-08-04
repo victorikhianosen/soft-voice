@@ -20,7 +20,7 @@ class SettingInvoiceUpdateRequest extends FormRequest
             'service_category' => ['nullable', 'string'],
             'signature' => ['nullable', 'image', 'max:5120'],
             'signatory_name' => ['nullable', 'string'],
-            'preferred_due_date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'preferred_due_date' => ['nullable', 'string'],
             'payment_history_on_invoice_page' => ['required', 'boolean'],
         ];
     }

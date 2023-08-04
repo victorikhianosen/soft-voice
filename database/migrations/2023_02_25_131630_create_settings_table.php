@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('service_category')->nullable();
             $table->mediumText('signature')->nullable();
             $table->string('signatory_name')->nullable();
-            $table->dateTime('preferred_due_date')->nullable();
+            $table->string('preferred_due_date')->nullable();
             $table->boolean('payment_history_on_invoice_page')->default(false);
             $table->boolean('auto_enable_tax')->default(false);
             $table->boolean('auto_enable_bank_account')->default(false);

@@ -31,6 +31,7 @@ class Invoice extends Model
         'recurring_duration',
         'terms',
         'notes',
+        'description',
         'additional_charges',
         'more_discount',
         'signature',

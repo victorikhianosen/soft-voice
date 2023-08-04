@@ -21,6 +21,7 @@ class CustomerFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->email(),
             'phone' => fake()->phoneNumber(),
+            'whatsapp_number' => fake()->phoneNumber(),
             'address' => fake()->address(),
             'category' => fake()->word
         ];
