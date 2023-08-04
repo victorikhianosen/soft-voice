@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('currency')->default('NGN');
+            $table->mediumText('business_logo')->nullable();
             $table->boolean('auto_payment_reminder')->default(false);
             $table->string('invoice_prefix')->default('INV-');
             $table->string('estimate_prefix')->default('EST-');

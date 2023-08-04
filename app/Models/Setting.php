@@ -29,6 +29,7 @@ class Setting extends Model
         'date_format',
         'financial_year',
         'notifications',
+        'business_logo',
     ];
 
     public function setNotificationsAttribute(array $value)
