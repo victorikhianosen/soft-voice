@@ -17,7 +17,7 @@ class InvoiceResource extends JsonResource
     {
         $data = parent::toArray($request);
         $data['customer'] = new CustomerResource($this->customer);
-        $data['user'] = new UserResource($this->user);
+        $data['user'] = new UserResource($this->user, $this->user->setting);
         Arr::forget($data, ['customer_id']);
         $data['amount'] = $this->amount;
         $data['signature'] = $this->signature ? asset($this->signature) : null;
