@@ -43,7 +43,6 @@ class InvoiceRequest extends FormRequest
             "signature"      => ["nullable", "file", "max:2048"],
             "accept_payment" => ["boolean"],
             "description"    => ["required", "string"],
-            "total_amount"    => ["required", "numeric"],
 
             "recurring"                => ["required", "boolean"],
             "recurring_duration"       => ["required_if:recurring,true", "array"],

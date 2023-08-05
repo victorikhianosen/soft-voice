@@ -28,7 +28,6 @@ class Estimate extends Model
         'currency',
         'notes',
         'description',
-        'total_amount',
         'additional_charges',
         'more_discount',
         'status'

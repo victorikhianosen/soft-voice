@@ -30,7 +30,6 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->text('additional_charges')->nullable();
             $table->text('more_discount')->nullable();
-            $table->text('total_amount')->nullable();
             $table->string('signature')->nullable();
             $table->string('signatory_name')->nullable();
             $table->text('description');
