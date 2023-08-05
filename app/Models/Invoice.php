@@ -155,7 +155,7 @@ class Invoice extends Model
 
         // Calculate additional charges
         foreach ($this->additional_charges as $charge) {
-            if ($charge['mode'] === 'percent') { // Access the property using ['mode']
+            if ($charge['mode'] === 'percent') { 
                 $totalAmount += ($charge['value'] / 100) * $totalAmount;
             } elseif ($charge['mode'] === 'amount') {
                 $totalAmount += $charge['value'];
