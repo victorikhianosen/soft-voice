@@ -15,7 +15,7 @@ class Invoice extends Model
 
     protected $with = ['items', 'customer'];
 
-    protected $appends = ['amount', 'amount_paid', 'amount_due'];
+    protected $appends = ['amount', 'amount_paid', 'amount_due', 'total_amount'];
 
     protected $fillable = [
         'code',
@@ -143,5 +143,38 @@ class Invoice extends Model
             ->orWhere('notes', 'LIKE', '%'.$query.'%')
             ->orWhere('signatory_name', 'LIKE', '%'.$query.'%')
             ->orWhere('status', 'LIKE', '%'.$query.'%');
+    }
+
+    public function getTotalAmountAttribute()
+    {
+        $totalAmount = 0;
+
+        foreach ($this->items as $item) {
+            $totalAmount += $item->amount;
+        }
+
+        // Calculate additional charges
+        foreach ($this->additional_charges as $charge) {
+            if ($charge['mode'] === 'percent') { 
+                $totalAmount += ($charge['value'] / 100) * $totalAmount;
+            } elseif ($charge['mode'] === 'amount') {
+                $totalAmount += $charge['value'];
+            }
+        }
+
+        // Calculate more discounts
+        foreach ($this->more_discount as $discount) {
+            if ($discount['mode'] === 'amount') {
+                $totalAmount -= $discount['value'];
+            }
+        }
+
+        // Calculate tax if enabled
+        if ($this->tax_enabled) {
+            $taxPercentage = $this->user->setting->tax_percentage;
+            $totalAmount += ($taxPercentage / 100) * $totalAmount;
+        }
+
+        return $totalAmount;
     }
 }
