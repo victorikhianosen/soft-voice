@@ -17,13 +17,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('currency')->default('NGN');
+            $table->mediumText('business_logo')->nullable();
             $table->boolean('auto_payment_reminder')->default(false);
             $table->string('invoice_prefix')->default('INV-');
             $table->string('estimate_prefix')->default('EST-');
             $table->string('service_category')->nullable();
             $table->mediumText('signature')->nullable();
             $table->string('signatory_name')->nullable();
-            $table->dateTime('preferred_due_date')->nullable();
+            $table->string('preferred_due_date')->nullable();
             $table->boolean('payment_history_on_invoice_page')->default(false);
             $table->boolean('auto_enable_tax')->default(false);
             $table->boolean('auto_enable_bank_account')->default(false);

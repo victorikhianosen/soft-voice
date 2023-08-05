@@ -20,7 +20,8 @@ class Customer extends Model
         'category',
         'website',
         'country',
-        'state'
+        'state',
+        'whatsapp_number'
     ];
 
     public function scopeSearch($q, $query)

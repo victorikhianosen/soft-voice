@@ -29,6 +29,7 @@ class InvoiceFactory extends Factory
             'tax_enabled' => fake()->boolean(),
             'recurring' => fake()->boolean(),
             'currency' => fake()->currencyCode(),
+            'description' => fake()->sentence(),
             'status' => fake()->randomElement(Status::types()),
         ];
     }
