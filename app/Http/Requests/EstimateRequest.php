@@ -27,6 +27,7 @@ class EstimateRequest extends FormRequest
             "notes"       => ["required", "string"],
             "currency"    => ["required", "string"],
             "description"    => ["required", "string"],
+            "total_amount"    => ["required", "numeric"],
 
             "additional_charges"                => ["nullable", "array"],
             "additional_charges.*.description"  => ["required", "string"],

@@ -32,6 +32,7 @@ class Invoice extends Model
         'terms',
         'notes',
         'description',
+        'total_amount',
         'additional_charges',
         'more_discount',
         'signature',
