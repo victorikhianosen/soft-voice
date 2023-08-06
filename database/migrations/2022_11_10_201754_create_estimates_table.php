@@ -27,6 +27,7 @@ return new class extends Migration
             $table->text('description');
             $table->text('additional_charges')->nullable();
             $table->text('more_discount')->nullable();
+            $table->double('tax_percentage')->default(0);
             $table->string('status');
             $table->timestamps();
 

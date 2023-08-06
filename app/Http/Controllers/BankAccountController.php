@@ -6,7 +6,7 @@ use App\Http\Repositories\BankAccountRepository;
 use App\Http\Requests\BankAccountRequest;
 use App\Http\Resources\BankAccountResource;
 use App\Http\Services\BankAccountService;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Models\BankAccount;
 
 class BankAccountController extends Controller

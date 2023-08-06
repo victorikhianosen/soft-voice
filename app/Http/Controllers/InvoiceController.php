@@ -10,7 +10,7 @@ use App\Http\Requests\InvoiceRequest;
 use App\Http\Services\InvoiceService;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Requests\ListInvoiceRequest;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Http\Requests\MarkInvoiceAsRequest;
 use App\Http\Repositories\InvoiceRepository;
 

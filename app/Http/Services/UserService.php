@@ -5,7 +5,7 @@ namespace App\Http\Services;
 use App\Http\Repositories\UserRepository;
 use App\Http\Resources\ListUserResource;
 use App\Http\Resources\UserResource;
-use App\Http\Traits\Paginatable;
+use App\Traits\Paginatable;
 
 class UserService
 {

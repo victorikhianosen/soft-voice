@@ -10,7 +10,7 @@ use App\Http\Requests\ListAdminRequest;
 use App\Http\Repositories\AdminRepository;
 use App\Http\Requests\AdminRequest;
 use App\Http\Resources\AdminResource;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 
 class AdminController extends Controller
 {

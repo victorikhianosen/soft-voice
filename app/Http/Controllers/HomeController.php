@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Currency;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller

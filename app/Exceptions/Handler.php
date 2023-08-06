@@ -3,7 +3,7 @@
 namespace App\Exceptions;
 
 use Throwable;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

@@ -4,14 +4,14 @@ namespace App\Http\Services;
 
 use App\Enums\Status;
 use App\Models\Estimate;
+use App\Traits\Paginatable;
+use App\Traits\UploadsFile;
+use Illuminate\Support\Arr;
 use App\Exports\EstimateExport;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Http\Traits\Paginatable;
-use App\Http\Traits\UploadsFile;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\EstimateResource;
 use App\Http\Repositories\EstimateRepository;
-use App\Notifications\SendEstimateNotification;
 
 class EstimateService
 {
@@ -43,9 +43,12 @@ class EstimateService
 
     public function store(array $data): EstimateResource
     {
-        $data['user_id'] = request()->user()->id;
-        $data['code'] = Estimate::getUniqueCode();
-        $data['status'] = Status::DRAFT;
+        $data += [
+            'code'           => Estimate::getUniqueCode(),
+            'status'         => Status::DRAFT,
+            'user_id'        => request()->user()->id,
+            'tax_percentage' => request()->user()->setting->tax_percentage,
+        ];
         $estimate = $this->estimateRepository->create($data);
         foreach ($data['items'] as $item) {
             $estimate->items()->create($item);
@@ -75,9 +78,13 @@ class EstimateService
     public function duplicate(Estimate $data)
     {
         $data = $data->toArray();
-        $data['estimate_id'] = Estimate::getNextEstimateId();
-        $data['code'] = Estimate::getUniqueCode();
-        $data['status'] = Status::DRAFT;
+        Arr::forget($data, ['code', 'status', 'estimate_id', 'tax_percentage']);
+        $data += [
+            'code'           => Estimate::getUniqueCode(),
+            'status'         => Status::DRAFT,
+            'estimate_id'    => Estimate::nextId(),
+            'tax_percentage' => request()->user()->setting->tax_percentage,
+        ];
         $estimate = $this->estimateRepository->create($data);
         foreach ($data['items'] as $item) {
             $estimate->items()->create($item);
@@ -94,7 +101,7 @@ class EstimateService
     public function send(Estimate $estimate)
     {
         $this->estimateRepository->update($estimate, ['status' => 'sent']);
-        $this->notificationService->send(new SendEstimateNotification($estimate), $estimate->customer);
+        $this->notificationService->sendEstimateToCustomer($estimate);
     }
 
     public function export(string $format): string
@@ -115,7 +122,7 @@ class EstimateService
                 $xml->startElement('Estimate');
                 $xml->writeElement('estimate_id', $estimate->estimate_id);
                 $xml->writeElement('customer', $estimate->customer->name);
-                $xml->writeElement('amount', $estimate->amount);
+                $xml->writeElement('total_amount', $estimate->total_amount);
                 $xml->writeElement('date_created', $estimate->date);
                 $xml->writeElement('due_date', $estimate->due_date);
                 $xml->writeElement('status', $estimate->status);

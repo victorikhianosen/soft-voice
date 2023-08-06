@@ -2,11 +2,10 @@
 
 namespace App\Http\Services;
 
-use App\Http\Controllers\NotificationController;
 use App\Models\Admin;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use App\Http\Traits\Paginatable;
+use App\Traits\Paginatable;
 use App\Http\Resources\AdminResource;
 use App\Http\Repositories\AdminRepository;
 
@@ -16,6 +15,7 @@ class AdminService
 
     public function __construct(
         protected AdminRepository $adminRepository,
+        protected NotificationService $notificationService,
     ) {
     }
 
@@ -41,7 +41,7 @@ class AdminService
         $data['password'] = bcrypt($password);
         $admin = $this->adminRepository->create($data);
         $admin->assignRole($data['role_id']);
-        NotificationController::sendAdminRegisteredEmail($admin, $password);
+        $this->notificationService->sendAdminWelcomeNotification($admin, $password);
         return new AdminResource($admin->fresh());
     }
 

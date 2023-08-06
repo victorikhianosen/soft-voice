@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ExportRequest;
 use App\Http\Services\TransactionService;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Http\Resources\TransactionResource;
 use App\Http\Requests\ListTransactionRequest;
 

@@ -5,22 +5,20 @@ namespace App\Http\Services;
 use XMLWriter;
 use App\Enums\Status;
 use App\Models\Invoice;
-use Illuminate\Support\Str;
+use App\Traits\Paginatable;
+use App\Traits\UploadsFile;
+use Illuminate\Support\Arr;
 use App\Enums\PaymentMethod;
 use App\Exports\InvoiceExport;
 use App\Models\InvoicePayment;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Http\Traits\Paginatable;
-use App\Http\Traits\UploadsFile;
-use Maatwebsite\Excel\Facades\Excel;
 
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\InvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PaymentResource;
 use App\Http\Repositories\InvoiceRepository;
 use App\Http\Repositories\PaymentRepository;
-use App\Notifications\SendInvoiceNotification;
-use App\Notifications\InvoiceReminderNotification;
 
 class InvoiceService
 {
@@ -55,9 +53,12 @@ class InvoiceService
     {
         $file = $data->file('signature');
         $data = $data->all();
-        $data['user_id'] = request()->user()->id;
-        $data['code'] = Invoice::getUniqueCode();
-        $data['status'] = Status::DRAFT;
+        $data += [
+            'code'           => Invoice::getUniqueCode(),
+            'user_id'        => request()->user()->id,
+            'status'         => Status::DRAFT,
+            'tax_percentage' => request()->user()->setting->tax_percentage,
+        ];
         if ($file) {
             $data['signature'] = $this->saveFIle($file, 'signatures');
         }
@@ -96,9 +97,13 @@ class InvoiceService
     public function duplicate(Invoice $data)
     {
         $data = $data->toArray();
-        $data['invoice_id'] = Invoice::getNextInvoiceId();
-        $data['code'] = Invoice::getUniqueCode();
-        $data['status'] = Status::DRAFT;
+        Arr::forget($data, ['code', 'status', 'invoice_id', 'tax_percentage']);
+        $data += [
+            'code'           => Invoice::getUniqueCode(),
+            'status'         => Status::DRAFT,
+            'invoice_id'     => Invoice::nextId(),
+            'tax_percentage' => request()->user()->setting->tax_percentage,
+        ];
         $invoice = $this->invoiceRepository->create($data);
         foreach ($data['items'] as $item) {
             $invoice->items()->create($item);
@@ -115,19 +120,20 @@ class InvoiceService
     public function send(Invoice $invoice)
     {
         $this->invoiceRepository->update($invoice, ['status' => 'sent']);
-        $this->notificationService->send(new SendInvoiceNotification($invoice), $invoice->customer);
+        $this->notificationService->sendInvoiceToCustomer($invoice);
     }
 
     public function sendReminder(Invoice $invoice)
     {
-        $this->notificationService->send(new InvoiceReminderNotification($invoice), $invoice->customer);
+        $this->notificationService->sendInvoiceReminderNotification($invoice);
     }
 
     public function recordPayment(array $data)
     {
         $data['method'] = PaymentMethod::from($data['method']);
-        $invoice = $this->paymentRepository->create($data);
-        return new PaymentResource($invoice);
+        $payment = $this->paymentRepository->create($data);
+        $this->updateInvoiceStatusByPayments($data['invoice_id']);
+        return new PaymentResource($payment);
     }
 
     public function getPayments(array $data)
@@ -139,12 +145,14 @@ class InvoiceService
     public function updatePayment(InvoicePayment $payment, array $data)
     {
         $this->paymentRepository->update($payment, $data);
+        $this->updateInvoiceStatusByPayments($payment->invoice_id);
         return new PaymentResource($payment->refresh());
     }
 
     public function deletePayment(InvoicePayment $payment)
     {
         $this->paymentRepository->destroy($payment);
+        $this->updateInvoiceStatusByPayments($payment->invoice_id);
     }
 
     public function export(string $format): string
@@ -165,7 +173,7 @@ class InvoiceService
                 $xml->startElement('Invoice');
                 $xml->writeElement('invoice_id', $invoice->invoice_id);
                 $xml->writeElement('customer', $invoice->customer->name);
-                $xml->writeElement('amount', $invoice->amount);
+                $xml->writeElement('total_amount', $invoice->total_amount);
                 $xml->writeElement('date_created', $invoice->date);
                 $xml->writeElement('due_date', $invoice->due_date);
                 $xml->writeElement('status', $invoice->status);
@@ -174,5 +182,12 @@ class InvoiceService
             $this->closeXML($xml);
         }
         return asset("/storage/{$userDirectory}/{$file}");
+    }
+
+    public function updateInvoiceStatusByPayments($invoiceId)
+    {
+        $invoice = Invoice::find($invoiceId);
+        $status = $invoice->amount_due > 0 ? Status::PARTIALLY_PAID : Status::PAID;
+        $this->invoiceRepository->update($invoice, ['status' => $status]);
     }
 }

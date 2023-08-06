@@ -6,7 +6,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Services\AuthService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 
 class AuthController extends Controller

@@ -20,7 +20,7 @@ class InvoiceExport implements FromArray, WithHeadings
         return $this->invoices->map(fn($invoice) => [
             'invoice_id'   => $invoice->invoice_id,
             'customer'     => $invoice->customer->name,
-            'amount'       => $invoice->amount,
+            'total_amount' => $invoice->total_amount,
             'date_created' => $invoice->date,
             'due_date'     => $invoice->due_date,
             'status'       => $invoice->status,
@@ -32,7 +32,7 @@ class InvoiceExport implements FromArray, WithHeadings
         return [
             'Invoice ID',
             'Customer',
-            'Amount',
+            'Total Amount',
             'Date Created',
             'Due Date',
             'Status',
