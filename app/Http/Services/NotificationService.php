@@ -22,32 +22,54 @@ class NotificationService
     ) {
     }
 
-    public function sendAdminWelcomeNotification(Admin $admin, string $password)
-    {
-        $this->send($admin, $this->adminNotificationBuilder->welcome($admin, $password));
+    public function sendAdminWelcomeNotification(
+        Admin $admin, string $password, $channel = ['mail', 'database']
+    ) {
+        $this->send(
+            $admin,
+            $this->adminNotificationBuilder->welcome($admin, $password),
+            $channel
+        );
     }
 
-    public function sendInvoiceReminderNotification(Invoice $invoice)
-    {
-        $this->send($invoice->customer, $this->customerNotificationBuilder->invoiceReminder($invoice));
+    public function sendInvoiceReminderNotification(
+        Invoice $invoice, $channel = ['mail']
+    ) {
+        $this->send(
+            $invoice->customer,
+            $this->customerNotificationBuilder->invoiceReminder($invoice),
+            $channel
+        );
     }
 
-    public function sendInvoiceToCustomer(Invoice $invoice)
-    {
-        $this->send($invoice->customer, $this->customerNotificationBuilder->invoiceSent($invoice));
+    public function sendInvoiceToCustomer(
+        Invoice $invoice, $channel = ['mail']
+    ) {
+        $this->send(
+            $invoice->customer,
+            $this->customerNotificationBuilder->invoiceSent($invoice),
+            $channel
+        );
     }
 
-    public function sendEstimateToCustomer(Estimate $estimate)
-    {
-        $this->send($estimate->customer, $this->customerNotificationBuilder->estimateSent($estimate));
+    public function sendEstimateToCustomer(
+        Estimate $estimate, $channel = ['mail']
+    ) {
+        $this->send(
+            $estimate->customer,
+            $this->customerNotificationBuilder->estimateSent($estimate),
+            $channel
+        );
     }
 
-    private function send(Model $recipient, $data, $channel = ['mail', 'database'])
-    {
+    private function send(
+        Model $recipient, $data, $channel = ['mail', 'database']
+    ) {
         $title = $data['title'] ?? null;
         $body = $data['body'] ?? null;
         $action = $data['action'] ?? null;
         if (in_array('mail', $channel) || in_array('database', $channel)) {
+            $channel = array_filter($channel, fn ($c) => in_array($c, $channel));
             try {
                 $recipient->notify(new CustomNotification($title, $body, $action, $channel));
             } catch (Exception $e) {

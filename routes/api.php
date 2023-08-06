@@ -20,6 +20,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\InAppNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -206,5 +207,11 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
 
     Route::controller(HomeController::class)->group(function () {
         Route::get('/currencies', 'getCurrencies');
+    });
+
+    Route::controller(InAppNotificationController::class)->prefix('/notifications')->group(function () {
+        Route::get('/', 'getNotifications');
+        Route::get('/{id}/show', 'showNotification');
+        Route::get('/mark-all-as-read', 'markAllNotificationsAsRead');
     });
 });
