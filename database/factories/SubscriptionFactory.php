@@ -19,8 +19,9 @@ class SubscriptionFactory extends Factory
         return [
             'plan_id' => 1,
             'starts_at' => now(),
-            'amount' => 0,
-            'active' => true
+            'ends_at' => now()->addDecade(),
+            'status' => 'active',
+            'gateway' => 'paystack'
         ];
     }
 }

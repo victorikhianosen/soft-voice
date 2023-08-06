@@ -146,6 +146,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
         Route::controller(SubscriptionController::class)->group(function () {
             Route::get('', 'index');
             Route::get('/active', 'getActive');
+            Route::post('/plan/{plan}/get-link', 'getPaymentLink');
         });
     });
 
