@@ -6,7 +6,7 @@ use App\Models\Coupon;
 use App\Http\Controllers\Controller;
 use App\Http\Services\CouponService;
 use App\Http\Resources\CouponResource;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Http\Repositories\CouponRepository;
 use App\Http\Requests\CouponRequest;
 

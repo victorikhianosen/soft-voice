@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Repositories\SubscriptionRepository;
 use App\Http\Resources\SubscriptionResource;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use Illuminate\Http\JsonResponse;
 
 class SubscriptionController extends Controller

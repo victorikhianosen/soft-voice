@@ -8,7 +8,7 @@ use App\Http\Resources\RoleResource;
 use App\Http\Repositories\RoleRepository;
 use App\Http\Requests\RoleRequest;
 use App\Http\Services\RoleService;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 
 class RoleController extends Controller
 {

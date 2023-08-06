@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ListTransactionRequest;
 use App\Http\Resources\TransactionResource;
 use App\Http\Services\TransactionService;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

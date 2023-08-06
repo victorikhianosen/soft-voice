@@ -6,7 +6,7 @@ use App\Http\Requests\CustomerRequest;
 use App\Http\Requests\ListCustomerRequest;
 use App\Http\Resources\CustomerResource;
 use App\Http\Services\CustomerService;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 

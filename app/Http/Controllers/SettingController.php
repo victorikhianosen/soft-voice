@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\SettingResource;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Http\Repositories\SettingRepository;
 use App\Http\Requests\SettingInvoiceUpdateRequest;
 use App\Http\Requests\SettingNotificationsUpdateRequest;

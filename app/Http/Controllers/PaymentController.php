@@ -8,7 +8,7 @@ use App\Http\Requests\InvoicePaymentRequest;
 use App\Http\Requests\ListInvoicePaymentRequest;
 use App\Http\Services\InvoiceService;
 use App\Http\Resources\PaymentResource;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 
 class PaymentController extends Controller
 {

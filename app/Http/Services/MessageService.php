@@ -4,7 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\Message;
 use Illuminate\Support\Arr;
-use App\Http\Traits\Paginatable;
+use App\Traits\Paginatable;
 use App\Http\Resources\MessageResource;
 use App\Http\Repositories\MessageRepository;
 

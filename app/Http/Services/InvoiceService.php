@@ -10,8 +10,8 @@ use App\Enums\PaymentMethod;
 use App\Exports\InvoiceExport;
 use App\Models\InvoicePayment;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Http\Traits\Paginatable;
-use App\Http\Traits\UploadsFile;
+use App\Traits\Paginatable;
+use App\Traits\UploadsFile;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Http\Requests\InvoiceRequest;

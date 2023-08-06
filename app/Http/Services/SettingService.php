@@ -5,7 +5,7 @@ namespace App\Http\Services;
 use App\Http\Requests\SettingUpdateRequest;
 use App\Http\Repositories\SettingRepository;
 use App\Http\Requests\SettingPreferencesUpdateRequest;
-use App\Http\Traits\UploadsFile;
+use App\Traits\UploadsFile;
 
 class SettingService
 {

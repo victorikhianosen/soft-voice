@@ -6,7 +6,7 @@ use App\Http\Controllers\NotificationController;
 use App\Models\Admin;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use App\Http\Traits\Paginatable;
+use App\Traits\Paginatable;
 use App\Http\Resources\AdminResource;
 use App\Http\Repositories\AdminRepository;
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Services\ReferralService;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 
 class ReferralController extends Controller
 {
