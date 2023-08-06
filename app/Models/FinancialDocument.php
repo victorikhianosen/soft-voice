@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 abstract class FinancialDocument extends Model
 {
-	abstract protected static function getPrefix();
+	abstract protected static function modelName(): string;
 
 	public function customer(): BelongsTo
 	{
@@ -48,14 +48,15 @@ abstract class FinancialDocument extends Model
 	public static function nextId()
 	{
 		$user = request()->user();
-		$prefix = static::getPrefix();
+		$modelName = static::modelName();
+		$prefix = $user->setting->{$modelName.'_prefix'};
 		$count = static::where('user_id', $user->id)->count();
 
 		$newId = null;
 		do {
 			$newId = $prefix . str_pad(++$count, 6, '0', STR_PAD_LEFT);
-		} while (static::where('user_id', $user->id)->where('estimate_id', $newId)->exists());
-		return $newId;
+		} while (static::where('user_id', $user->id)->where($modelName.'_id', $newId)->exists());
+		return trim($newId);
 	}
 
 	public function getTotalAmountAttribute()

@@ -5,15 +5,16 @@ namespace App\Http\Services;
 use XMLWriter;
 use App\Enums\Status;
 use App\Models\Invoice;
+use App\Traits\Paginatable;
+use App\Traits\UploadsFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use App\Enums\PaymentMethod;
 use App\Exports\InvoiceExport;
 use App\Models\InvoicePayment;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Traits\Paginatable;
-use App\Traits\UploadsFile;
-use Maatwebsite\Excel\Facades\Excel;
 
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\InvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PaymentResource;
@@ -99,6 +100,7 @@ class InvoiceService
     public function duplicate(Invoice $data)
     {
         $data = $data->toArray();
+        Arr::forget($data, ['code', 'status', 'invoice_id', 'tax_percentage']);
         $data += [
             'code'           => Invoice::getUniqueCode(),
             'status'         => Status::DRAFT,

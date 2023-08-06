@@ -4,10 +4,11 @@ namespace App\Http\Services;
 
 use App\Enums\Status;
 use App\Models\Estimate;
-use App\Exports\EstimateExport;
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\Paginatable;
 use App\Traits\UploadsFile;
+use Illuminate\Support\Arr;
+use App\Exports\EstimateExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\EstimateResource;
 use App\Http\Repositories\EstimateRepository;
@@ -78,6 +79,7 @@ class EstimateService
     public function duplicate(Estimate $data)
     {
         $data = $data->toArray();
+        Arr::forget($data, ['code', 'status', 'estimate_id', 'tax_percentage']);
         $data += [
             'code'           => Estimate::getUniqueCode(),
             'status'         => Status::DRAFT,

@@ -34,7 +34,8 @@ class Invoice extends FinancialDocument
         'more_discount',
         'signature',
         'signatory_name',
-        'status'
+        'status',
+        'tax_percentage',
     ];
 
     public function payments(): HasMany
@@ -79,8 +80,8 @@ class Invoice extends FinancialDocument
             ->orWhere('status', 'LIKE', '%' . $query . '%');
     }
 
-    public static function getPrefix()
+    public static function modelName(): string
     {
-        return request()->user()->setting->invoice_prefix;
+        return 'invoice';
     }
 }

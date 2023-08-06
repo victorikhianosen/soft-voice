@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Estimate extends Model
+class Estimate extends FinancialDocument
 {
     use HasFactory, HasUniqueCode;
 
@@ -28,7 +28,8 @@ class Estimate extends Model
         'description',
         'additional_charges',
         'more_discount',
-        'status'
+        'status',
+        'tax_percentage',
     ];
 
     public function items(): HasMany
@@ -45,8 +46,8 @@ class Estimate extends Model
             ->orWhere('status', 'LIKE', '%' . $query . '%');
     }
 
-    public static function getPrefix()
+    public static function modelName(): string
     {
-        return request()->user()->setting->estimate_prefix;
+        return 'estimate';
     }
 }
