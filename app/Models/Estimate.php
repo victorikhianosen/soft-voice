@@ -2,16 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use App\Traits\HasUniqueCode;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Estimate extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUniqueCode;
 
     protected $with = ['items', 'customer'];
 
@@ -33,118 +31,22 @@ class Estimate extends Model
         'status'
     ];
 
-    public function customer(): BelongsTo
-    {
-        return $this->belongsTo(Customer::class);
-    }
-
     public function items(): HasMany
     {
         return $this->hasMany(EstimateItem::class);
     }
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function setAdditionalChargesAttribute(array $data)
-    {
-        $this->attributes['additional_charges'] = $this->extractJSONField($data);
-    }
-
-    public function getAdditionalChargesAttribute(): array
-    {
-        return json_decode($this->attributes['additional_charges'], true) ?? [];
-    }
-
-    public function setMoreDiscountAttribute(array $data)
-    {
-        $this->attributes['more_discount'] = $this->extractJSONField($data);
-    }
-
-    public function getMoreDiscountAttribute(): array
-    {
-        if (!$this->attributes['more_discount']) {
-            return [];
-        }
-        return json_decode($this->attributes['more_discount'], true);
-    }
-
-    private function extractJSONField($data): string
-    {
-        return json_encode(Arr::map(
-            $data,
-            fn($item) => Arr::only($item, ['description', 'mode', 'value']))
-        );
-    }
-
-    public function getAmountAttribute(): float|int
-    {
-        return $this->items()->sum('amount');
-    }
-
-    public static function getNextEstimateId()
-    {
-        $user = request()->user();
-        $prefix = $user->setting->estimate_prefix;
-        $estimatesCount = $user->estimates()->count();
-
-        $newId = null;
-        do {
-            $newId = $prefix . str_pad(++$estimatesCount, 6, '0', STR_PAD_LEFT);
-        } while ($user->estimates()->where('estimate_id', $newId)->exists());
-        return $newId;
-    }
-
-    public static function getUniqueCode()
-    {
-        $code = null;
-        do {
-            $code = Str::random(10);
-        } while (Estimate::where('code', $code)->exists());
-        return $code;
-    }
-
     public function scopeSearch($q, $query)
     {
-        return $q->where('estimate_id', 'LIKE', '%'.$query.'%')
-            ->orWhereHas('customer', fn ($qr) => $qr->where('name', 'LIKE', '%'.$query.'%'))
-            ->orWhere('currency', 'LIKE', '%'.$query.'%')
-            ->orWhere('notes', 'LIKE', '%'.$query.'%')
-            ->orWhere('status', 'LIKE', '%'.$query.'%');
+        return $q->where('estimate_id', 'LIKE', '%' . $query . '%')
+            ->orWhereHas('customer', fn ($qr) => $qr->where('name', 'LIKE', '%' . $query . '%'))
+            ->orWhere('currency', 'LIKE', '%' . $query . '%')
+            ->orWhere('notes', 'LIKE', '%' . $query . '%')
+            ->orWhere('status', 'LIKE', '%' . $query . '%');
     }
 
-    public function getTotalAmountAttribute()
+    public static function getPrefix()
     {
-        $totalAmount = 0;
-
-        foreach ($this->items as $item) {
-            $totalAmount += $item->amount;
-        }
-
-        // Calculate additional charges
-        foreach ($this->additional_charges as $charge) {
-            if ($charge['mode'] === 'percent') { 
-                $totalAmount += ($charge['value'] / 100) * $totalAmount;
-            } elseif ($charge['mode'] === 'amount') {
-                $totalAmount += $charge['value'];
-            }
-        }
-
-        // Calculate more discounts
-        foreach ($this->more_discount as $discount) {
-            if ($discount['mode'] === 'amount') {
-                $totalAmount -= $discount['value'];
-            }
-        }
-
-        // Calculate tax if enabled
-        if ($this->tax_enabled) {
-            $taxPercentage = $this->user->setting->tax_percentage;
-            $totalAmount += ($taxPercentage / 100) * $totalAmount;
-        }
-
-        return $totalAmount;
+        return request()->user()->setting->estimate_prefix;
     }
 }

@@ -43,9 +43,12 @@ class EstimateService
 
     public function store(array $data): EstimateResource
     {
-        $data['user_id'] = request()->user()->id;
-        $data['code'] = Estimate::getUniqueCode();
-        $data['status'] = Status::DRAFT;
+        $data += [
+            'code'           => Estimate::getUniqueCode(),
+            'status'         => Status::DRAFT,
+            'user_id'        => request()->user()->id,
+            'tax_percentage' => request()->user()->setting->tax_percentage,
+        ];
         $estimate = $this->estimateRepository->create($data);
         foreach ($data['items'] as $item) {
             $estimate->items()->create($item);
@@ -75,9 +78,12 @@ class EstimateService
     public function duplicate(Estimate $data)
     {
         $data = $data->toArray();
-        $data['estimate_id'] = Estimate::getNextEstimateId();
-        $data['code'] = Estimate::getUniqueCode();
-        $data['status'] = Status::DRAFT;
+        $data += [
+            'code'           => Estimate::getUniqueCode(),
+            'status'         => Status::DRAFT,
+            'estimate_id'    => Estimate::nextId(),
+            'tax_percentage' => request()->user()->setting->tax_percentage,
+        ];
         $estimate = $this->estimateRepository->create($data);
         foreach ($data['items'] as $item) {
             $estimate->items()->create($item);

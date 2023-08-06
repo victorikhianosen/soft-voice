@@ -55,9 +55,12 @@ class InvoiceService
     {
         $file = $data->file('signature');
         $data = $data->all();
-        $data['user_id'] = request()->user()->id;
-        $data['code'] = Invoice::getUniqueCode();
-        $data['status'] = Status::DRAFT;
+        $data += [
+            'code'           => Invoice::getUniqueCode(),
+            'user_id'        => request()->user()->id,
+            'status'         => Status::DRAFT,
+            'tax_percentage' => request()->user()->setting->tax_percentage,
+        ];
         if ($file) {
             $data['signature'] = $this->saveFIle($file, 'signatures');
         }
@@ -96,9 +99,12 @@ class InvoiceService
     public function duplicate(Invoice $data)
     {
         $data = $data->toArray();
-        $data['invoice_id'] = Invoice::getNextInvoiceId();
-        $data['code'] = Invoice::getUniqueCode();
-        $data['status'] = Status::DRAFT;
+        $data += [
+            'code'           => Invoice::getUniqueCode(),
+            'status'         => Status::DRAFT,
+            'invoice_id'     => Invoice::nextId(),
+            'tax_percentage' => request()->user()->setting->tax_percentage,
+        ];
         $invoice = $this->invoiceRepository->create($data);
         foreach ($data['items'] as $item) {
             $invoice->items()->create($item);
