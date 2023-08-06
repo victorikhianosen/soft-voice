@@ -10,7 +10,7 @@ use App\Http\Requests\EstimateRequest;
 use App\Http\Services\EstimateService;
 use App\Http\Resources\EstimateResource;
 use App\Http\Requests\ListEstimateRequest;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Http\Requests\MarkEstimateAsRequest;
 use App\Http\Repositories\EstimateRepository;
 

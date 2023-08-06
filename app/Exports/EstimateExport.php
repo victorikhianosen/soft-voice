@@ -18,9 +18,9 @@ class EstimateExport implements FromArray, WithHeadings
     public function array(): array
     {
         return $this->estimates->map(fn($estimate) => [
-            'estimate_id'   => $estimate->estimate_id,
+            'estimate_id'  => $estimate->estimate_id,
             'customer'     => $estimate->customer->name,
-            'amount'       => $estimate->amount,
+            'total_amount' => $estimate->total_amount,
             'date_created' => $estimate->date,
             'due_date'     => $estimate->due_date,
             'status'       => $estimate->status,
@@ -32,7 +32,7 @@ class EstimateExport implements FromArray, WithHeadings
         return [
             'Estimate ID',
             'Customer',
-            'Amount',
+            'Total Amount',
             'Date Created',
             'Due Date',
             'Status',

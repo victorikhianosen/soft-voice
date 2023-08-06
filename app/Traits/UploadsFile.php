@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Traits;
+namespace App\Traits;
 
 use Illuminate\Http\UploadedFile;
 use XMLWriter;

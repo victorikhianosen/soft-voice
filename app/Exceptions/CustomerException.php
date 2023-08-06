@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Throwable;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 
 class CustomerException extends Exception
 {

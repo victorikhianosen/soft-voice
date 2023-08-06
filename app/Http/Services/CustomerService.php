@@ -5,8 +5,8 @@ namespace App\Http\Services;
 use App\Exports\CustomerExport;
 use App\Models\Customer;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Http\Traits\Paginatable;
-use App\Http\Traits\UploadsFile;
+use App\Traits\Paginatable;
+use App\Traits\UploadsFile;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\CustomerResource;
 use App\Http\Repositories\CustomerRepository;
@@ -58,11 +58,11 @@ class CustomerService
     {
         $data = $this->customerRepository->getHistoryById($id);
         $data['summary'] = [
-            'total' => $data->invoices->sum('amount'),
+            'total' => $data->invoices->sum('total_amount'),
             'amount_paid' => $data->invoices->whereNotIn('status', ['refunded', 'pending'])->sum('amount_paid'),
             'amount_due' => $data->invoices->whereNotIn('status', ['refunded', 'pending'])->sum('amount_due'),
-            'pending' => $data->invoices->where('status', 'pending')->sum('amount'),
-            'refunded' => $data->invoices->where('status', 'refunded')->sum('amount'),
+            'pending' => $data->invoices->where('status', 'pending')->sum('total_amount'),
+            'refunded' => $data->invoices->where('status', 'refunded')->sum('total_amount'),
         ];
         return $data;
     }

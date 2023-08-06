@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PaymentKeyRequest;
 use App\Http\Services\PaymentApiService;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 
 class PaymentKeyController extends Controller
 {

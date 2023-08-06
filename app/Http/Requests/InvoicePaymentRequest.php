@@ -15,8 +15,9 @@ class InvoicePaymentRequest extends FormRequest
      */
     public function rules()
     {
+        $rule = !!optional($this->payment)->id ? "nullable" : "required";
         return [
-            'invoice_id'    => ["required", "numeric", "exists:invoices,id"],
+            'invoice_id'    => [$rule, "numeric", "exists:invoices,id"],
             'date'          => ["required", "date", "date_format:Y-m-d"],
             'method'        => ["required", "string", Rule::in(PaymentMethod::types())],
             'amount'        => ["required", "numeric"],

@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ListMessageRequest;
 use App\Http\Requests\MessageRequest;
 use App\Http\Services\MessageService;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Models\Message;
 
 class MessageController extends Controller

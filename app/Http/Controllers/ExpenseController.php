@@ -13,7 +13,7 @@ use App\Http\Resources\ExpenseResource;
 use App\Http\Requests\ListExpenseRequest;
 use App\Http\Requests\MarkExpenseAsRequest;
 use App\Http\Repositories\ExpenseRepository;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 
 class ExpenseController extends Controller
 {

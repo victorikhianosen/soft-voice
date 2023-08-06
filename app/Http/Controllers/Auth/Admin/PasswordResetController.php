@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth\Admin;
 
 use App\Http\Services\AuthService;
 use App\Http\Controllers\Controller;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Http\Requests\PasswordResetLinkRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\WalletService;
 use App\Http\Requests\WithdrawalRequest;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Http\Repositories\WalletRepository;
 use App\Http\Requests\DepositRequest;
 

@@ -10,7 +10,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Services\AuthService;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller

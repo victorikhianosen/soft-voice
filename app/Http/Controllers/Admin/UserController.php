@@ -14,7 +14,7 @@ use App\Http\Resources\ListUserResource;
 use App\Http\Repositories\UserRepository;
 use App\Http\Services\TransactionService;
 use App\Http\Requests\ListCustomerRequest;
-use App\Http\Traits\RespondWithHttpStatus;
+use App\Traits\RespondWithHttpStatus;
 use App\Http\Resources\BankAccountResource;
 use App\Http\Repositories\SettingRepository;
 use App\Http\Resources\SubscriptionResource;
