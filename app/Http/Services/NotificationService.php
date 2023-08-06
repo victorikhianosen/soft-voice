@@ -4,28 +4,42 @@ namespace App\Http\Services;
 
 use Exception;
 use App\Models\Admin;
+use App\Models\Invoice;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use App\Notifications\CustomNotification;
-use App\Http\Services\NotificationConstructor\AdminNotificationConstructor;
-use App\Http\Services\NotificationConstructor\CustomerNotificationConstructor;
-use App\Http\Services\NotificationConstructor\UserNotificationConstructor;
+use App\Http\Services\NotificationBuilder\AdminNotificationBuilder;
+use App\Http\Services\NotificationBuilder\CustomerNotificationBuilder;
+use App\Http\Services\NotificationBuilder\UserNotificationBuilder;
+use App\Models\Estimate;
 
 class NotificationService
 {
     public function __construct(
-        protected UserNotificationConstructor $userNotificationConstructor,
-        protected AdminNotificationConstructor $adminNotificationConstructor,
-        protected CustomerNotificationConstructor $customerNotificationConstructor,
+        protected UserNotificationBuilder $userNotificationBuilder,
+        protected AdminNotificationBuilder $adminNotificationBuilder,
+        protected CustomerNotificationBuilder $customerNotificationBuilder,
     ) {
     }
 
     public function sendAdminWelcomeNotification(Admin $admin, string $password)
     {
-        $this->send(
-            $admin,
-            $this->adminNotificationConstructor->welcome($admin, $password)
-        );
+        $this->send($admin, $this->adminNotificationBuilder->welcome($admin, $password));
+    }
+
+    public function sendInvoiceReminderNotification(Invoice $invoice)
+    {
+        $this->send($invoice->customer, $this->customerNotificationBuilder->invoiceReminder($invoice));
+    }
+
+    public function sendInvoiceToCustomer(Invoice $invoice)
+    {
+        $this->send($invoice->customer, $this->customerNotificationBuilder->invoiceSent($invoice));
+    }
+
+    public function sendEstimateToCustomer(Estimate $estimate)
+    {
+        $this->send($estimate->customer, $this->customerNotificationBuilder->estimateSent($estimate));
     }
 
     private function send(Model $recipient, $data, $channel = ['mail', 'database'])
@@ -40,5 +54,9 @@ class NotificationService
                 Log::error($e->getMessage());
             }
         }
+
+        // TODO: Handle SMS
+
+        // TODO: Handle Whatsapp
     }
 }

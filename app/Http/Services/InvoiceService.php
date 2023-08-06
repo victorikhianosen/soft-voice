@@ -8,7 +8,6 @@ use App\Models\Invoice;
 use App\Traits\Paginatable;
 use App\Traits\UploadsFile;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use App\Enums\PaymentMethod;
 use App\Exports\InvoiceExport;
 use App\Models\InvoicePayment;
@@ -20,8 +19,6 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PaymentResource;
 use App\Http\Repositories\InvoiceRepository;
 use App\Http\Repositories\PaymentRepository;
-use App\Notifications\SendInvoiceNotification;
-use App\Notifications\InvoiceReminderNotification;
 
 class InvoiceService
 {
@@ -123,12 +120,12 @@ class InvoiceService
     public function send(Invoice $invoice)
     {
         $this->invoiceRepository->update($invoice, ['status' => 'sent']);
-        $this->notificationService->send(new SendInvoiceNotification($invoice), $invoice->customer);
+        $this->notificationService->sendInvoiceToCustomer($invoice);
     }
 
     public function sendReminder(Invoice $invoice)
     {
-        $this->notificationService->send(new InvoiceReminderNotification($invoice), $invoice->customer);
+        $this->notificationService->sendInvoiceReminderNotification($invoice);
     }
 
     public function recordPayment(array $data)

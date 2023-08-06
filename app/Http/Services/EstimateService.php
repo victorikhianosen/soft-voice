@@ -12,7 +12,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\EstimateResource;
 use App\Http\Repositories\EstimateRepository;
-use App\Notifications\SendEstimateNotification;
 
 class EstimateService
 {
@@ -102,7 +101,7 @@ class EstimateService
     public function send(Estimate $estimate)
     {
         $this->estimateRepository->update($estimate, ['status' => 'sent']);
-        $this->notificationService->send(new SendEstimateNotification($estimate), $estimate->customer);
+        $this->notificationService->sendEstimateToCustomer($estimate);
     }
 
     public function export(string $format): string
