@@ -134,8 +134,9 @@ class InvoiceService
     public function recordPayment(array $data)
     {
         $data['method'] = PaymentMethod::from($data['method']);
-        $invoice = $this->paymentRepository->create($data);
-        return new PaymentResource($invoice);
+        $payment = $this->paymentRepository->create($data);
+        $this->updateInvoiceStatusByPayments($data['invoice_id']);
+        return new PaymentResource($payment);
     }
 
     public function getPayments(array $data)
@@ -147,12 +148,14 @@ class InvoiceService
     public function updatePayment(InvoicePayment $payment, array $data)
     {
         $this->paymentRepository->update($payment, $data);
+        $this->updateInvoiceStatusByPayments($payment->invoice_id);
         return new PaymentResource($payment->refresh());
     }
 
     public function deletePayment(InvoicePayment $payment)
     {
         $this->paymentRepository->destroy($payment);
+        $this->updateInvoiceStatusByPayments($payment->invoice_id);
     }
 
     public function export(string $format): string
@@ -182,5 +185,12 @@ class InvoiceService
             $this->closeXML($xml);
         }
         return asset("/storage/{$userDirectory}/{$file}");
+    }
+
+    public function updateInvoiceStatusByPayments($invoiceId)
+    {
+        $invoice = Invoice::find($invoiceId);
+        $status = $invoice->amount_due > 0 ? Status::PARTIALLY_PAID : Status::PAID;
+        $this->invoiceRepository->update($invoice, ['status' => $status]);
     }
 }

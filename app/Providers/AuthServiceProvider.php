@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Admin;
+use App\Models\InvoicePayment;
 use App\Models\User;
+use App\Policies\InvoicePaymentPolicy;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Model;
@@ -29,10 +31,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::define('process', function (User $user, Model $model) {
-            return $user->id === $model->user_id
-                ? Response::allow()
-                : Response::deny('Action is unathorized.');
-        });
+        Gate::define('process', fn (User $user, Model $model) => $user->id === $model->user_id);
+        Gate::define('processPayment', fn (User $user, Model $model) => $user->id === $model->invoice->user_id);
     }
 }
