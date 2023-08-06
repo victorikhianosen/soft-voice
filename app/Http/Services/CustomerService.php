@@ -58,11 +58,11 @@ class CustomerService
     {
         $data = $this->customerRepository->getHistoryById($id);
         $data['summary'] = [
-            'total' => $data->invoices->sum('amount'),
+            'total' => $data->invoices->sum('total_amount'),
             'amount_paid' => $data->invoices->whereNotIn('status', ['refunded', 'pending'])->sum('amount_paid'),
             'amount_due' => $data->invoices->whereNotIn('status', ['refunded', 'pending'])->sum('amount_due'),
-            'pending' => $data->invoices->where('status', 'pending')->sum('amount'),
-            'refunded' => $data->invoices->where('status', 'refunded')->sum('amount'),
+            'pending' => $data->invoices->where('status', 'pending')->sum('total_amount'),
+            'refunded' => $data->invoices->where('status', 'refunded')->sum('total_amount'),
         ];
         return $data;
     }

@@ -65,7 +65,7 @@ class Invoice extends FinancialDocument
 
     public function getAmountDueAttribute(): float|int
     {
-        return max(0, $this->amount - $this->amount_paid);
+        return max(0, $this->total_amount - $this->amount_paid);
     }
 
 

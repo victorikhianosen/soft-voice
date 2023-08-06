@@ -21,7 +21,6 @@ class InvoiceResource extends JsonResource
             $data['user'] = new UserResource($this->user, $this->user->setting);
         }
         Arr::forget($data, ['customer_id']);
-        $data['amount'] = $this->amount;
         $data['signature'] = $this->signature ? asset($this->signature) : null;
         return $data;
     }

@@ -67,7 +67,7 @@ class AnalyticsService
         return [
             "data" => $invoiceData,
             "summary" => [
-                "total" => $invoices->sum('amount'),
+                "total" => $invoices->sum('total_amount'),
                 "due" => $invoices->sum('amount_due'),
                 "paid" => $totalPaid,
                 "expenses" => $totalExpenses,
@@ -101,7 +101,7 @@ class AnalyticsService
         return [
             "data" => $invoiceData,
             "summary" => [
-                "total" => $invoices->sum('amount'),
+                "total" => $invoices->sum('total_amount'),
                 "due" => $invoices->sum('amount_due'),
                 "paid" => $totalPaid,
                 "expenses" => $totalExpenses,
@@ -137,7 +137,7 @@ class AnalyticsService
         return [
             "data" => $invoiceData,
             "summary" => [
-                "total" => $invoices->sum('amount'),
+                "total" => $invoices->sum('total_amount'),
                 "due" => $invoices->sum('amount_due'),
                 "paid" => $totalPaid,
                 "expenses" => $totalExpenses,

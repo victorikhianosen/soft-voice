@@ -123,7 +123,7 @@ class EstimateService
                 $xml->startElement('Estimate');
                 $xml->writeElement('estimate_id', $estimate->estimate_id);
                 $xml->writeElement('customer', $estimate->customer->name);
-                $xml->writeElement('amount', $estimate->amount);
+                $xml->writeElement('total_amount', $estimate->total_amount);
                 $xml->writeElement('date_created', $estimate->date);
                 $xml->writeElement('due_date', $estimate->due_date);
                 $xml->writeElement('status', $estimate->status);

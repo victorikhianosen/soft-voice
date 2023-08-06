@@ -173,7 +173,7 @@ class InvoiceService
                 $xml->startElement('Invoice');
                 $xml->writeElement('invoice_id', $invoice->invoice_id);
                 $xml->writeElement('customer', $invoice->customer->name);
-                $xml->writeElement('amount', $invoice->amount);
+                $xml->writeElement('total_amount', $invoice->total_amount);
                 $xml->writeElement('date_created', $invoice->date);
                 $xml->writeElement('due_date', $invoice->due_date);
                 $xml->writeElement('status', $invoice->status);

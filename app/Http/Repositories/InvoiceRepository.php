@@ -23,10 +23,10 @@ class InvoiceRepository extends AbstractRepository
     {
         $invoices = request()->user()->invoices;
         return [
-            'all' => $invoices->sum('amount'),
-            'paid' => $invoices->where('status', Status::PAID)->sum('amount'),
-            'unpaid' => $invoices->where('status', Status::UNPAID)->sum('amount'),
-            'refunded' => $invoices->where('status', Status::REFUNDED)->sum('amount'),
+            'all' => $invoices->sum('total_amount'),
+            'paid' => $invoices->where('status', Status::PAID)->sum('total_amount'),
+            'unpaid' => $invoices->where('status', Status::UNPAID)->sum('total_amount'),
+            'refunded' => $invoices->where('status', Status::REFUNDED)->sum('total_amount'),
         ];
     }
 
