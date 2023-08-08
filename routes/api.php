@@ -21,6 +21,7 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\InAppNotificationController;
+use App\Http\Controllers\WebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -215,4 +216,8 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
         Route::get('/{id}/show', 'showNotification');
         Route::get('/mark-all-as-read', 'markAllNotificationsAsRead');
     });
+});
+
+Route::controller(WebhookController::class)->prefix('/webhook')->group(function () {
+    Route::post('/paystack', 'handlePaystackWebook');
 });

@@ -131,12 +131,19 @@ class User extends Authenticatable
 
     public function subscribed()
     {
-        return Carbon::parse($this->active_subscriptions->ends_at)->gte(now());
+        return $this->subscriptions()
+                    ->whereNot('plan_id', 1)
+                    ->whereNotNull('ends_at')
+                    ->where('ends_at', '>=', now())
+                    ->exists();
     }
 
     public function getActiveSubscriptionAttribute()
     {
-        return $this->subscriptions()->whereNotNull('ends_at')->latest()->first();
+        return $this->subscriptions()
+                    ->whereNotNull('ends_at')
+                    ->where('ends_at', '>=', now())
+                    ->latest()->first();
     }
 
     public function sendPasswordResetNotification($token)
