@@ -66,7 +66,7 @@ class InvoiceService
         foreach ($data['items'] as $item) {
             $invoice->items()->create($item);
         }
-        return new InvoiceResource($invoice);
+        return new InvoiceResource($invoice->refresh());
     }
 
     public function update(Invoice $invoice, InvoiceRequest $data)
