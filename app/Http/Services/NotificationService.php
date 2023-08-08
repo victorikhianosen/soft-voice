@@ -62,6 +62,16 @@ class NotificationService
         );
     }
 
+    public function sendUserInvoiceViewedNotification(
+        Invoice $invoice, $channel = ['mail', 'database']
+    ) {
+        $this->send(
+            $invoice->user,
+            $this->userNotificationBuilder->invoiceViewed($invoice),
+            $channel
+        );
+    }
+
     private function send(
         Model $recipient, $data, $channel = ['mail', 'database']
     ) {

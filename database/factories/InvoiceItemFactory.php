@@ -17,7 +17,7 @@ class InvoiceItemFactory extends Factory
     public function definition()
     {
         return [
-            'invoice_id' => fake()->numberBetween(1, 500),
+            'invoice_id' => fake()->numberBetween(1, 200),
             'name' => fake()->word(),
             'quantity' => fake()->randomNumber(),
             'price' => fake()->randomNumber(5),

@@ -17,7 +17,7 @@ class InvoicePaymentFactory extends Factory
     public function definition()
     {
         return [
-            'invoice_id' => fake()->numberBetween(1, 500),
+            'invoice_id' => fake()->numberBetween(1, 200),
             'date' => fake()->date(),
             'method' => fake()->randomElement(['transfer', 'cash']),
             'amount' => fake()->randomNumber(5),

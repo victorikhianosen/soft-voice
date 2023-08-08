@@ -22,7 +22,6 @@ class SettingResource extends JsonResource
         $data['payment_history_on_invoice_page'] = $data['payment_history_on_invoice_page'] === 1;
         $data['auto_enable_tax'] = $data['auto_enable_tax'] === 1;
         $data['auto_payment_reminder'] = $data['auto_payment_reminder'] === 1;
-        $data['signature'] = $data['signature'] ? asset($data['signature']) : "";
 
         return $data;
     }
