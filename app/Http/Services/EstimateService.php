@@ -53,7 +53,7 @@ class EstimateService
         foreach ($data['items'] as $item) {
             $estimate->items()->create($item);
         }
-        return new EstimateResource($estimate);
+        return new EstimateResource($estimate->refresh());
     }
 
     public function update(Estimate $estimate, array $data)
