@@ -38,7 +38,7 @@ class AuthService
             }
         }
         $url = config('env.spa_url').'/email/verify?email='.$user->email.'&token='.$data['otp'];
-        $this->notificationService->send(new EmailVerificationNotification($url), $user);
+        $user->notify(new EmailVerificationNotification($url));
         return $this->getToken($user);
     }
 
@@ -77,7 +77,7 @@ class AuthService
             'email_verification_token_expiry' => date('Y-m-d H:i:s', strtotime(now().' + 1 hour'))
         ]);
         $url = config('env.spa_url').'/email/verify?email='.$user->email.'&token='.$otp;
-        $this->notificationService->send(new EmailVerificationNotification($url), $user);
+        $user->notify(new EmailVerificationNotification($url));
     }
 
     public function verifyEmail(array $data)

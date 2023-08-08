@@ -18,12 +18,13 @@ class UserFactory
         $data['referral_code'] = $this->getUniqueReferralCode();
         $user = $this->userRepository->save($data);
 
-        $plan = Plan::where('slug', 'basic')->first();
+        $plan = Plan::where('slug', 'free')->first();
         $user->subscriptions()->create([
             'plan_id'   => $plan->id,
             'starts_at' => now(),
-            'amount'    => 0,
-            'active'    => true,
+            'ends_at'   => now()->addDecade(),
+            'status'    => 'active',
+            'gateway'   => 'paystack',
         ]);
 
         $user->wallet()->create();

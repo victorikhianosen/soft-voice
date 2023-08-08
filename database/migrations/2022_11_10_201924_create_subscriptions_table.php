@@ -19,8 +19,9 @@ return new class extends Migration
             $table->foreignId('plan_id')->constrained();
             $table->timestamp('starts_at');
             $table->timestamp('ends_at')->nullable();
-            $table->double('amount');
-            $table->boolean('active');
+            $table->string('status');
+            $table->string('gateway');
+            $table->text('meta')->nullable();
             $table->timestamps();
         });
     }

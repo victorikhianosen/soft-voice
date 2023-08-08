@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
-use App\Http\Resources\BankAccountResource;
 use App\Notifications\PasswordResetNotification;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -45,6 +44,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+    ];
+
+    protected $appends = [
+        'active_subscription'
     ];
 
     /**
@@ -126,9 +129,21 @@ class User extends Authenticatable
         return $this->hasMany(Referral::class, 'referrer_id');
     }
 
+    public function subscribed()
+    {
+        return $this->subscriptions()
+                    ->whereNot('plan_id', 1)
+                    ->whereNotNull('ends_at')
+                    ->where('ends_at', '>=', now())
+                    ->exists();
+    }
+
     public function getActiveSubscriptionAttribute()
     {
-        return $this->subscriptions->where('active', true)->first();
+        return $this->subscriptions()
+                    ->whereNotNull('ends_at')
+                    ->where('ends_at', '>=', now())
+                    ->latest()->first();
     }
 
     public function sendPasswordResetNotification($token)
