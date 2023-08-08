@@ -41,4 +41,14 @@ class Setting extends Model
     {
         return json_decode($this->attributes['notifications']);
     }
+
+    public function getSignatureAttribute()
+    {
+        return $this->attributes['signature'] ? asset($this->attributes['signature']) : null;
+    }
+
+    public function getBusinessLogoAttribute()
+    {
+        return $this->attributes['business_logo'] ? asset($this->attributes['business_logo']) : null;
+    }
 }
