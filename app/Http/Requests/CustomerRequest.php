@@ -27,15 +27,15 @@ class CustomerRequest extends FormRequest
     public function rules()
     {
         return [
-            "name"     => ["required", "string"],
-            "email"    => ["required", "string", Rule::unique('customers')->ignore(optional($this->customer)->id)],
-            "phone"    => ["required", "numeric"],
-            "whatsapp_number"    => ["numeric"],
-            "address"  => ["string"],
-            "category" => ["string"],
-            "website"  => ["string"],
-            "country"  => ["string"],
-            "state"    => ["string"],
+            "name"            => ["required", "string"],
+            "email"           => ["required", "string", Rule::unique('customers')->ignore(optional($this->customer)->id)],
+            "phone"           => ["nullable", "numeric"],
+            "whatsapp_number" => ["nullable", "numeric"],
+            "address"         => ["nullable", "string"],
+            "category"        => ["nullable", "string"],
+            "website"         => ["nullable", "string"],
+            "country"         => ["nullable", "string"],
+            "state"           => ["nullable", "string"],
         ];
     }
 }

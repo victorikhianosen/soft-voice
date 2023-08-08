@@ -17,6 +17,7 @@ return new class extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('paystack_id')->nullable();
             $table->string('slug');
             $table->integer('duration');
             $table->double('amount');
@@ -26,14 +27,22 @@ return new class extends Migration
 
         $plans = [
             [
-                'name'     => 'Basic',
-                'slug'     => 'basic',
+                'name'     => 'Free',
+                'slug'     => 'free',
                 'duration' => -1,
                 'amount'   => 0,
             ],
             [
+                'name'     => 'Basic',
+                'slug'     => 'basic',
+                'paystack_id' => 'PLN_4htnmxqlj0u0svk',
+                'duration' => 1,
+                'amount'   => 1000,
+            ],
+            [
                 'name'     => 'Premium',
                 'slug'     => 'premium',
+                'paystack_id' => 'PLN_6bzmno4rb15wzue',
                 'duration' => 1,
                 'amount'   => 5000,
             ]
