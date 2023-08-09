@@ -128,6 +128,16 @@ class InvoiceService
         $this->notificationService->sendInvoiceReminderNotification($invoice);
     }
 
+    public function sendSMSReminder(Invoice $invoice)
+    {
+        $this->notificationService->sendSMSInvoiceReminderNotification($invoice);
+    }
+
+    public function sendWhatsappReminder(Invoice $invoice)
+    {
+        $this->notificationService->sendWhatsappInvoiceReminderNotification($invoice);
+    }
+
     public function recordPayment(array $data)
     {
         $data['method'] = PaymentMethod::from($data['method']);

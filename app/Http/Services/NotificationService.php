@@ -5,13 +5,14 @@ namespace App\Http\Services;
 use Exception;
 use App\Models\Admin;
 use App\Models\Invoice;
+use Twilio\Rest\Client;
+use App\Models\Estimate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use App\Notifications\CustomNotification;
+use App\Http\Services\NotificationBuilder\UserNotificationBuilder;
 use App\Http\Services\NotificationBuilder\AdminNotificationBuilder;
 use App\Http\Services\NotificationBuilder\CustomerNotificationBuilder;
-use App\Http\Services\NotificationBuilder\UserNotificationBuilder;
-use App\Models\Estimate;
 
 class NotificationService
 {
@@ -38,6 +39,26 @@ class NotificationService
         $this->send(
             $invoice->customer,
             $this->customerNotificationBuilder->invoiceReminder($invoice),
+            $channel
+        );
+    }
+
+    public function sendSMSInvoiceReminderNotification(
+        Invoice $invoice, $channel = ['sms']
+    ) {
+        $this->send(
+            $invoice->customer,
+            $this->customerNotificationBuilder->invoiceSMSReminder($invoice),
+            $channel
+        );
+    }
+
+    public function sendWhatsappInvoiceReminderNotification(
+        Invoice $invoice, $channel = ['whatsapp']
+    ) {
+        $this->send(
+            $invoice->customer,
+            $this->customerNotificationBuilder->invoiceWhatsappReminder($invoice),
             $channel
         );
     }
@@ -77,8 +98,37 @@ class NotificationService
             }
         }
 
-        // TODO: Handle SMS
+        if (in_array('sms', $channel)) {
+            $smsRecipientNumber = $recipient->phone;
+    
+            if ($smsRecipientNumber) {
+                try {
+                    $twilio = new Client(config('env.twilio_sid'), config('env.twilio_token'));
+    
+                    $twilio->messages->create($smsRecipientNumber, [
+                        "from" => config('env.twilio_phone_number'),
+                        "body" => $body,
+                    ]);
+                } catch (Exception $e) {
+                    Log::error('Error sending SMS: ' . $e->getMessage());
+                }
+            }
+        }
 
-        // TODO: Handle Whatsapp
+        if (in_array('whatsapp', $channel)) {
+            $smsRecipientNumber = $recipient->phone;
+
+            if ($smsRecipientNumber) {
+                try {
+                    $twilio = new Client(config('env.twilio_sid'), config('env.twilio_token'));
+                    $twilio->messages->create("whatsapp:$smsRecipientNumber", [
+                        "from" => "whatsapp:" . config('env.twilio_phone_number'),
+                        "body" => $body
+                    ]);
+                } catch (Exception $e) {
+                    Log::error('Error sending SMS: ' . $e->getMessage());
+                }
+            }
+        }
     }
 }

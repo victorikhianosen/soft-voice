@@ -18,6 +18,19 @@ class CustomerNotificationBuilder
 		return compact('title', 'body', 'action');
 	}
 
+	public function invoiceSMSReminder(Invoice $invoice)
+	{
+		$body = 'Invoice reminder content goes here';
+		return compact('body');
+	}
+
+	public function invoiceWhatsappReminder(Invoice $invoice)
+	{
+		$code = "4367";
+		$body = "*$code* is your verification code. For your security, do not share this code.";
+		return compact('body');
+	}
+
 	public function invoiceSent(Invoice $invoice)
 	{
 		$title = "New Invoice";
