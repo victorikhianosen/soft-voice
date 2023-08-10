@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Enums\Notification;
 use XMLWriter;
 use App\Enums\Status;
 use App\Models\Invoice;
@@ -123,19 +124,9 @@ class InvoiceService
         $this->notificationService->sendInvoiceToCustomer($invoice);
     }
 
-    public function sendReminder(Invoice $invoice)
+    public function sendReminder(Invoice $invoice, $data)
     {
-        $this->notificationService->sendInvoiceReminderNotification($invoice);
-    }
-
-    public function sendSMSReminder(Invoice $invoice)
-    {
-        $this->notificationService->sendSMSInvoiceReminderNotification($invoice);
-    }
-
-    public function sendWhatsappReminder(Invoice $invoice)
-    {
-        $this->notificationService->sendWhatsappInvoiceReminderNotification($invoice);
+        $this->notificationService->sendInvoiceReminderNotification($invoice, ['channel' => $data->channel]);
     }
 
     public function recordPayment(array $data)

@@ -14,6 +14,10 @@ enum Notification: string
     case ESTIMATE_RECURRING = 'estimate-recurring';
     case ESTIMATE_EXPIRED = 'estimate-expired';
 
+    case MAIL = 'mail';
+    case SMS = 'sms';
+    case WHATSAPP = 'whatsapp';
+
 
     public static function notifications(): array
     {
@@ -40,6 +44,15 @@ enum Notification: string
             self::ESTIMATE_ACCEPTED_OR_DECLINED->value,
             self::ESTIMATE_RECURRING->value,
             self::ESTIMATE_EXPIRED->value,
+        ];
+    }
+
+    public static function reminderTypes(): array
+    {
+        return [
+            self::MAIL->value,
+            self::SMS->value,
+            self::WHATSAPP->value
         ];
     }
 }

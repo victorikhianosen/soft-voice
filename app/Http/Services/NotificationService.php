@@ -34,7 +34,7 @@ class NotificationService
     }
 
     public function sendInvoiceReminderNotification(
-        Invoice $invoice, $channel = ['mail']
+        Invoice $invoice, array $channel
     ) {
         $this->send(
             $invoice->customer,
@@ -42,27 +42,7 @@ class NotificationService
             $channel
         );
     }
-
-    public function sendSMSInvoiceReminderNotification(
-        Invoice $invoice, $channel = ['sms']
-    ) {
-        $this->send(
-            $invoice->customer,
-            $this->customerNotificationBuilder->invoiceSMSReminder($invoice),
-            $channel
-        );
-    }
-
-    public function sendWhatsappInvoiceReminderNotification(
-        Invoice $invoice, $channel = ['whatsapp']
-    ) {
-        $this->send(
-            $invoice->customer,
-            $this->customerNotificationBuilder->invoiceWhatsappReminder($invoice),
-            $channel
-        );
-    }
-
+    
     public function sendInvoiceToCustomer(
         Invoice $invoice, $channel = ['mail']
     ) {
@@ -126,8 +106,13 @@ class NotificationService
         }
 
         if (in_array('whatsapp', $channel)) {
-            $smsRecipientNumber = $recipient->phone;
 
+            if ($recipient->whatsapp_number) {
+                $smsRecipientNumber = $recipient->whatsapp_number;
+            } else {
+                $smsRecipientNumber = $recipient->phone;
+            }
+            
             if ($smsRecipientNumber) {
                 try {
                     $twilio = new Client(config('env.twilio_sid'), config('env.twilio_token'));
@@ -136,7 +121,7 @@ class NotificationService
                         "body" => $body
                     ]);
                 } catch (Exception $e) {
-                    Log::error('Error sending SMS: ' . $e->getMessage());
+                    Log::error('Error sending WhatsApp Message: ' . $e->getMessage());
                 }
             }
         }

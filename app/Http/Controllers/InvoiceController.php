@@ -6,6 +6,7 @@ use Exception;
 use App\Enums\Status;
 use App\Models\Invoice;
 use Twilio\Rest\Client;
+use App\Enums\Notification;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\ExportRequest;
 use App\Http\Requests\InvoiceRequest;
@@ -15,6 +16,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Requests\ListInvoiceRequest;
 use App\Http\Requests\MarkInvoiceAsRequest;
 use App\Http\Repositories\InvoiceRepository;
+use App\Http\Requests\ReminderNotificationRequest;
 
 class InvoiceController extends Controller
 {
@@ -85,25 +87,11 @@ class InvoiceController extends Controller
         return $this->success("Invoice sent");
     }
 
-    public function sendReminder(Invoice $invoice): JsonResponse
+    public function sendReminder(Invoice $invoice, ReminderNotificationRequest $request): JsonResponse
     {
         $this->authorize('process', $invoice);
-        $this->invoiceService->sendReminder($invoice);
+        $data = $this->invoiceService->sendReminder($invoice, $request);
         return $this->success("Invoice reminder sent");
-    }
-
-    public function sendSMSReminder(Invoice $invoice): JsonResponse
-    {
-        $this->authorize('process', $invoice);
-        $this->invoiceService->sendSMSReminder($invoice);
-        return $this->success("Invoice SMS reminder sent");
-    }
-
-    public function sendWhatsappReminder(Invoice $invoice): JsonResponse
-    {
-        $this->authorize('process', $invoice);
-        $this->invoiceService->sendWhatsappReminder($invoice);
-        return $this->success("Invoice WhatsApp reminder sent");
     }
     
     public function export(ExportRequest $request): JsonResponse
