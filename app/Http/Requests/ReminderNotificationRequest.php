@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\Notification;
 use Illuminate\Validation\Rule;
+use App\Enums\NotificationChannel;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ReminderNotificationRequest extends FormRequest
@@ -16,7 +16,7 @@ class ReminderNotificationRequest extends FormRequest
     public function rules()
     {
         return [
-            'channel' => ['required', Rule::in(Notification::reminderTypes())]
+            'channels' => ['required', 'array', Rule::in(NotificationChannel::channels())]
         ];
     }
 }

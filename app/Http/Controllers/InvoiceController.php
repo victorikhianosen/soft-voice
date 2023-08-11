@@ -90,7 +90,7 @@ class InvoiceController extends Controller
     public function sendReminder(Invoice $invoice, ReminderNotificationRequest $request): JsonResponse
     {
         $this->authorize('process', $invoice);
-        $data = $this->invoiceService->sendReminder($invoice, $request);
+        $this->invoiceService->sendReminder($invoice, $request->channels);
         return $this->success("Invoice reminder sent");
     }
     

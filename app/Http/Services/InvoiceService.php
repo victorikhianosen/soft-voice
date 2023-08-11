@@ -124,9 +124,9 @@ class InvoiceService
         $this->notificationService->sendInvoiceToCustomer($invoice);
     }
 
-    public function sendReminder(Invoice $invoice, $data)
+    public function sendReminder(Invoice $invoice, array $channel)
     {
-        $this->notificationService->sendInvoiceReminderNotification($invoice, ['channel' => $data->channel]);
+        $this->notificationService->sendInvoiceReminderNotification($invoice, $channel);
     }
 
     public function recordPayment(array $data)
