@@ -93,7 +93,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::put('/{invoice}/duplicate', 'duplicate');
             Route::put('/{invoice}/mark-as', 'markAs');
             Route::post('/{invoice}/send', 'send')->middleware('throttle:3,1');
-            Route::post('/{invoice}/send-reminder', 'sendReminder'); // ->middleware('throttle:3,1');
+            Route::post('/{invoice}/send-reminder', 'sendReminder')->middleware('throttle:3,1');
             Route::post('/export', 'export');
         });
     });
