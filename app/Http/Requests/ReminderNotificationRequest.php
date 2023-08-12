@@ -17,7 +17,7 @@ class ReminderNotificationRequest extends FormRequest
     {
         return [
             'channels' => ['required', 'array'],
-            'channels.*' => ['required', 'string', Rule::in(NotificationChannel::channels())]
+            'channels.*' => ['required', Rule::in(NotificationChannel::channels())]
         ];
     }
 }
