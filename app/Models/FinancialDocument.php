@@ -65,6 +65,9 @@ abstract class FinancialDocument extends Model
 
 		foreach ($this->items as $item) {
 			$itemsAmount += $item->amount;
+			if ($item->discount > 0) {
+				$itemsAmount -= ($item->discount / 100) * $item->amount;
+			}
 		}
 
 		$totalAmount = $itemsAmount;
