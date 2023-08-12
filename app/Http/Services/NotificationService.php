@@ -34,7 +34,7 @@ class NotificationService
     }
 
     public function sendInvoiceReminderNotification(
-        Invoice $invoice, array $channel
+        Invoice $invoice, $channel = ['mail']
     ) {
         $this->send(
             $invoice->customer,
