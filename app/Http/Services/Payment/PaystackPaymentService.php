@@ -11,20 +11,40 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Interfaces\PaymentGatewayInterface;
 use App\Http\Repositories\SubscriptionRepository;
 use App\Http\Repositories\OnlinePaymentRepository;
+use App\Http\Repositories\PaymentRepository;
+use App\Http\Services\InvoiceService;
+use App\Http\Services\WalletService;
+use App\Models\Invoice;
 use App\Models\Subscription;
 
 class PaystackPaymentService implements PaymentGatewayInterface
 {
+	const FIXED_FEE = 100;
+	const FEE_CAP = 2000;
+	const PERCENTAGE_FEE = 1.5 / 100;
+	const FEE_WAIVER_THRESHOLD = 2500;
+
 	public function __construct(
+		protected WalletService $walletService,
+		protected InvoiceService $invoiceService,
+		protected PaymentRepository $paymentRepository,
 		protected SubscriptionRepository $subscriptionRepository,
-		protected OnlinePaymentRepository $onlinePaymentRepository
+		protected OnlinePaymentRepository $onlinePaymentRepository,
 	) {
 	}
 
 	public function client(User|null $user = null)
 	{
+		if ($user) {
+			$secret = $user->payStackKey?->secret_key;
+			if (!$secret) {
+				abort(403, "Payment keys not set for this user");
+			}
+		} else {
+			$secret = config('payment.paystack.secret_key');
+		}
 		return Http::withHeaders([
-			'Authorization' => 'Bearer ' . config('payment.paystack.secret_key'),
+			'Authorization' => 'Bearer ' . $secret,
 			'Content-Type' => 'application/json',
 		])->baseUrl(config('payment.paystack.base_url'));
 	}
@@ -57,6 +77,38 @@ class PaystackPaymentService implements PaymentGatewayInterface
 			'metadata'   => [
 				'type'      => 'subscription',
 				'reference' => $payment->reference,
+				'auth_type' => 'self'
+			],
+		]);
+
+		if (!isset($res['data']['authorization_url'])) {
+			abort(400, "There was an error getting payment link");
+		}
+
+		return $res['data']['authorization_url'];
+	}
+
+	public function initializeInvoicePaymentAndGetPayLink(array $data): string
+	{
+		$invoice = Invoice::find($data['invoice_id']);
+
+		$payment = $this->onlinePaymentRepository->create([
+			'type'       => 'invoice_payment',
+			'reference'  => Str::uuid()->toString(),
+			'amount'     => $data['amount'],
+			'model_type' => Invoice::class,
+			'gateway'    => 'paystack',
+			'model_id'   => $invoice->id,
+		]);
+
+		$res = $this->client($data['wallet'] ? null : $invoice->user)->post('/transaction/initialize', [
+			'email'  => $invoice->customer->email,
+			'amount' => ($data['amount'] + $this->getPaystackCharge($data['amount'])) * 100,
+			'metadata'   => [
+				'type'      => 'invoice',
+				'invoice_id' => $invoice->id,
+				'reference' => $payment->reference,
+				'auth_type' => ($data['wallet'] ? 'self' : 'user'),
 			],
 		]);
 
@@ -69,6 +121,16 @@ class PaystackPaymentService implements PaymentGatewayInterface
 
 	public function processWebhook(array $payload)
 	{
+		$secret = config('payment.paystack.secret_key');
+
+		$type = $payload['data']['metadata']['type'] ?? null;
+		$authType = $payload['data']['metadata']['auth_type'] ?? null;
+
+		if ($type === 'invoice' && $authType === 'user') {
+			$invoice = Invoice::find($payload['data']['metadata']['invoice_id']);
+			$secret = $invoice->user->payStackKey->secret_key;
+		}
+
 		if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') || !array_key_exists('HTTP_X_PAYSTACK_SIGNATURE', $_SERVER)) {
 			http_response_code(401);
 			exit();
@@ -76,10 +138,12 @@ class PaystackPaymentService implements PaymentGatewayInterface
 
 		$input = @file_get_contents("php://input");
 
-		if ($_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac('sha512', $input, config('payment.paystack.secret_key'))) {
+		if ($_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac('sha512', $input, $secret)) {
 			http_response_code(401);
 			exit();
 		}
+
+		logger(json_encode($payload));
 
 		$data = $payload['data'];
 
@@ -91,17 +155,11 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				$this->processUpdateUserSubscription($data['customer'], $data['plan'], $data['paid']);
 				break;
 			case 'charge.success':
-				$payment = OnlinePayment::where('reference', $data['metadata']['reference'])->first();
-				if ($payment) {
-					$this->onlinePaymentRepository->update($payment, ['status' => PaymentStatus::SUCCESS]);
-				}
+				$this->processChargeSuccessful($data);
 				break;
 			case 'subscription.disable':
 				$subscription = Subscription::where('gateway_id', $data['subscription_code'])->first();
-				$this->subscriptionRepository->update($subscription, [
-					'status'  => 'completed',
-					'ends_at' => now()
-				]);
+				$this->subscriptionRepository->update($subscription, ['status'  => 'completed', 'ends_at' => now()]);
 				break;
 		}
 
@@ -144,5 +202,46 @@ class PaystackPaymentService implements PaymentGatewayInterface
 			$currentSubscription->ends_at = now()->addMonth();
 			$currentSubscription->save();
 		}
+	}
+
+	private function processChargeSuccessful(array $data)
+	{
+		$metadata = $data['metadata'];
+		$payment = OnlinePayment::where('reference', $metadata['reference'])->where('status', PaymentStatus::PENDING)->first();
+		if ($payment) {
+			$this->onlinePaymentRepository->update($payment, ['status' => PaymentStatus::SUCCESS]);
+
+			if ($metadata['type'] === 'invoice' && $payment->model_type === Invoice::class) {
+				$invoice = Invoice::find($payment->model_id);
+				$this->paymentRepository->create([
+					'invoice_id'    => $invoice->id,
+					'date'          => now()->format('Y-m-d'),
+					'method'        => 'card',
+					'amount'        => $payment->amount,
+					'notify_client' => true,
+				]);
+
+				$this->invoiceService->updateInvoiceStatusByPayments($invoice->id);
+
+				if ($metadata['auth_type'] === 'self') {
+					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount);
+				}
+			}
+		}
+	}
+
+	private function getPaystackCharge($amount)
+	{
+		$charge = ($amount * self::PERCENTAGE_FEE) + self::FIXED_FEE;
+
+		if ($amount < self::FEE_WAIVER_THRESHOLD) {
+			$charge -= self::FIXED_FEE;
+		}
+
+		if ($charge > self::FEE_CAP) {
+			$charge = self::FEE_CAP;
+		}
+
+		return $charge;
 	}
 }
