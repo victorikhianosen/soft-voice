@@ -13,7 +13,7 @@ class WalletService
         protected WalletRepository $walletRepository,
         protected TransactionService $transactionService,
         protected TransactionRepository $transactionRepository
-    ){
+    ) {
     }
 
     public function processWithdrawal(int $userId, float $amount)
@@ -45,5 +45,19 @@ class WalletService
             'method'   => 'deposit',
             'status'  => Status::PENDING->value,
         ]);
+    }
+
+    public function fundUserWallet(int $userId, float $amount)
+    {
+        $this->transactionRepository->create([
+            'user_id' => $userId,
+            'reference' => $this->transactionService->generateReference(),
+            'type'    => 'deposit',
+            'amount'  => $amount,
+            'description' => 'Invoice Payment Deposit',
+            'method'   => 'card',
+            'status'  => Status::APPROVED->value,
+        ]);
+        $this->walletRepository->creditUserWallet($userId, $amount);
     }
 }

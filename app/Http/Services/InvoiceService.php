@@ -145,6 +145,9 @@ class InvoiceService
 
     public function updatePayment(InvoicePayment $payment, array $data)
     {
+        if (!in_array($payment->method, PaymentMethod::types())) {
+            abort(403, "Can't update invoice payment with method {$payment->method}");
+        }
         $this->paymentRepository->update($payment, $data);
         $this->updateInvoiceStatusByPayments($payment->invoice_id);
         return new PaymentResource($payment->refresh());
@@ -152,6 +155,9 @@ class InvoiceService
 
     public function deletePayment(InvoicePayment $payment)
     {
+        if (!in_array($payment->method, PaymentMethod::types())) {
+            abort(403, "Can't delete invoice payment with method {$payment->method}");
+        }
         $this->paymentRepository->destroy($payment);
         $this->updateInvoiceStatusByPayments($payment->invoice_id);
     }
