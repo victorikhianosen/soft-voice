@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('starts_at');
             $table->timestamp('ends_at')->nullable();
             $table->string('status');
-            $table->string('gateway');
+            $table->string('gateway')->nullable();
             $table->text('meta')->nullable();
             $table->timestamps();
         });

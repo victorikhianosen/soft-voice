@@ -129,7 +129,7 @@ class User extends Authenticatable
         return $this->hasMany(Referral::class, 'referrer_id');
     }
 
-    public function subscribed()
+    public function subscribedToPaidPlan()
     {
         return $this->subscriptions()
                     ->whereNot('plan_id', 1)

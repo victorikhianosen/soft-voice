@@ -12,10 +12,11 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Repositories\WalletRepository;
 use App\Http\Resources\TransactionResource;
 use App\Http\Repositories\TransactionRepository;
+use App\Traits\HasRestrictions;
 
 class TransactionService
 {
-    use Paginatable, UploadsFile;
+    use Paginatable, UploadsFile, HasRestrictions;
 
     public function __construct(
         protected TransactionRepository $transactionRepository,
@@ -68,6 +69,10 @@ class TransactionService
 
     public function export(string $format): string
     {
+        if ($this->isRestricted('data-export')) {
+			abort(400, "You current plan doesn't support this feature");
+		}
+
         $directory = 'exports/admin';
         $dir = $this->getExportDirectory($directory);
         $transactions = $this->transactionRepository->getAll('*');

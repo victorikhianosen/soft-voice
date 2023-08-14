@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('restrictions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('unit', ['count']);
+            $table->enum('unit', ['count', 'boolean']);
             $table->timestamps();
         });
 
@@ -27,16 +27,56 @@ return new class extends Migration
                 'unit' => 'count',
             ],
             [
-                'name' => 'expenses',
+                'name' => 'estimates',
                 'unit' => 'count',
             ],
             [
-                'name' => 'estimates',
+                'name' => 'expenses',
                 'unit' => 'count',
             ],
             [
                 'name' => 'customers',
                 'unit' => 'count',
+            ],
+            [
+                'name' => 'wallet',
+                'unit' => 'boolean',
+            ],
+            [
+                'name' => 'transactions',
+                'unit' => 'count',
+            ],
+            [
+                'name' => 'in-app-payments',
+                'unit' => 'boolean',
+            ],
+            [
+                'name' => 'data-export',
+                'unit' => 'boolean',
+            ],
+            [
+                'name' => 'report',
+                'unit' => 'boolean',
+            ],
+            [
+                'name' => 'custom-payment',
+                'unit' => 'boolean',
+            ],
+            [
+                'name' => 'sms-messaging',
+                'unit' => 'boolean',
+            ],
+            [
+                'name' => 'whatsapp-messaging',
+                'unit' => 'boolean',
+            ],
+            [
+                'name' => 'custom-signature',
+                'unit' => 'boolean',
+            ],
+            [
+                'name' => 'api-integration',
+                'unit' => 'boolean',
             ],
         ];
 

@@ -5,9 +5,12 @@ namespace App\Http\Services;
 use App\Enums\Status;
 use App\Http\Repositories\ExpenseRepository;
 use App\Http\Repositories\InvoiceRepository;
+use App\Traits\HasRestrictions;
 
 class ReportService
 {
+    use HasRestrictions;
+
     public function __construct(
         protected InvoiceRepository $invoiceRepository,
         protected ExpenseRepository $expenseRepository,
@@ -18,6 +21,10 @@ class ReportService
 
     public function computeProfitAndLoss($filter): array
     {
+        if ($this->isRestricted('report')) {
+			abort(400, "You current plan doesn't support this feature");
+		}
+
         $payments = $this->invoiceRepository->getUserInvoicePayments($filter);
         $expenses = $this->expenseRepository->getUserExpenses($filter);
         $dates = array_unique(array_merge(array_keys($payments), array_keys($expenses)));
@@ -37,6 +44,10 @@ class ReportService
 
     public function computeSales($filter): array
     {
+        if ($this->isRestricted('report')) {
+			abort(400, "You current plan doesn't support this feature");
+		}
+
         $invoices = $this->invoiceRepository->getUserInvoices($filter);
         $dates = array_keys($invoices);
         $data = [];
@@ -59,6 +70,10 @@ class ReportService
 
     public function computeExpense($filter): array
     {
+        if ($this->isRestricted('report')) {
+			abort(400, "You current plan doesn't support this feature");
+		}
+        
         $expenses = $this->expenseRepository->getUserExpenses($filter);
         $dates = array_keys($expenses);
         $data = [];
