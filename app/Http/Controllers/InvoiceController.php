@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Enums\Status;
 use App\Models\Invoice;
-use Twilio\Rest\Client;
-use App\Enums\Notification;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\ExportRequest;
 use App\Http\Requests\InvoiceRequest;
@@ -93,7 +91,7 @@ class InvoiceController extends Controller
         $this->invoiceService->sendReminder($invoice, $request->channels);
         return $this->success("Invoice reminder sent");
     }
-    
+
     public function export(ExportRequest $request): JsonResponse
     {
         $url = $this->invoiceService->export($request['format']);

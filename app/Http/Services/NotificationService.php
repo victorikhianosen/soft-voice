@@ -7,6 +7,7 @@ use App\Models\Admin;
 use App\Models\Invoice;
 use Twilio\Rest\Client;
 use App\Models\Estimate;
+use App\Traits\HasRestrictions;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use App\Notifications\CustomNotification;
@@ -16,6 +17,8 @@ use App\Http\Services\NotificationBuilder\CustomerNotificationBuilder;
 
 class NotificationService
 {
+    use HasRestrictions;
+
     public function __construct(
         protected UserNotificationBuilder $userNotificationBuilder,
         protected AdminNotificationBuilder $adminNotificationBuilder,
@@ -42,7 +45,7 @@ class NotificationService
             $channel
         );
     }
-    
+
     public function sendInvoiceToCustomer(
         Invoice $invoice, $channel = ['mail']
     ) {
@@ -88,13 +91,14 @@ class NotificationService
             }
         }
 
-        if (in_array('sms', $channel)) {
+
+        if (in_array('sms', $channel) && !$this->isRestricted('sms-messaging')) {
             $smsRecipientNumber = $recipient->phone;
-    
+
             if ($smsRecipientNumber) {
                 try {
                     $twilio = new Client(config('env.twilio_sid'), config('env.twilio_token'));
-    
+
                     $twilio->messages->create($smsRecipientNumber, [
                         "from" => config('env.twilio_phone_number'),
                         "body" => $body,
@@ -105,14 +109,14 @@ class NotificationService
             }
         }
 
-        if (in_array('whatsapp', $channel)) {
+        if (in_array('whatsapp', $channel) && !$this->isRestricted('whatsapp-messaging')) {
 
             if ($recipient->whatsapp_number) {
                 $smsRecipientNumber = $recipient->whatsapp_number;
             } else {
                 $smsRecipientNumber = $recipient->phone;
             }
-            
+
             if ($smsRecipientNumber) {
                 try {
                     $twilio = new Client(config('env.twilio_sid'), config('env.twilio_token'));
