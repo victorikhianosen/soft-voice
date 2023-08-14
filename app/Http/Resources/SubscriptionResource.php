@@ -17,7 +17,6 @@ class SubscriptionResource extends JsonResource
     {
         $data = parent::toArray($request);
         Arr::forget($data, ['user_id', 'plan_id', 'created_at', 'updated_at']);
-        Arr::set($data, 'active', $data['active'] === 1);
         Arr::set($data, 'plan', new PlanResource($this->plan));
         return $data;
     }
