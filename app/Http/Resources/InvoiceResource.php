@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\BankAccount;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +19,10 @@ class InvoiceResource extends JsonResource
         $data = parent::toArray($request);
         $data['customer'] = new CustomerResource($this->customer);
         if (!request()->user()) {
-            $data['user'] = new UserResource($this->user, $this->user->setting, $this->user->bank_accounts);
+            $data['user'] = new UserResource($this->user, $this->user->setting);
+            if ($this->user->setting['preferred_bank_id']) {
+                $data['preferred_bank'] = BankAccount::find($this->user->setting['preferred_bank_id']);
+            }
         }
         Arr::forget($data, ['customer_id']);
         $data['signature'] = $this->signature ? asset($this->signature) : null;
