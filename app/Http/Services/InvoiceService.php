@@ -20,10 +20,11 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PaymentResource;
 use App\Http\Repositories\InvoiceRepository;
 use App\Http\Repositories\PaymentRepository;
+use App\Traits\HasRestrictions;
 
 class InvoiceService
 {
-    use Paginatable, UploadsFile;
+    use Paginatable, UploadsFile, HasRestrictions;
 
     public function __construct(
         protected InvoiceRepository $invoiceRepository,
@@ -52,6 +53,10 @@ class InvoiceService
 
     public function store(InvoiceRequest $data): InvoiceResource
     {
+        if ($this->hasExhaustedCount('invoices')) {
+            abort(400, "You have exceeded you monthly invoice limit for your plan");
+        }
+
         $file = $data->file('signature');
         $data = $data->all();
         $data += [
@@ -164,6 +169,10 @@ class InvoiceService
 
     public function export(string $format): string
     {
+        if ($this->isRestricted('data-export')) {
+			abort(400, "You current plan doesn't support this feature");
+		}
+
         $userDirectory = 'exports/'.request()->user()->id;
         $dir = $this->getExportDirectory($userDirectory);
         $invoices = request()->user()->invoices;

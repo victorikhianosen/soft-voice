@@ -10,10 +10,11 @@ use App\Traits\UploadsFile;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\CustomerResource;
 use App\Http\Repositories\CustomerRepository;
+use App\Traits\HasRestrictions;
 
 class CustomerService
 {
-    use Paginatable, UploadsFile;
+    use Paginatable, UploadsFile, HasRestrictions;
 
     public function __construct(protected CustomerRepository $customerRepository)
     {
@@ -38,6 +39,10 @@ class CustomerService
 
     public function store(array $data): CustomerResource
     {
+        if ($this->hasExhaustedCount('customers')) {
+            abort(400, "You have exceeded you monthly expense limit for your plan");
+        }
+
         $data['user_id'] = request()->user()->id;
         $customer = $this->customerRepository->create($data);
         return new CustomerResource($customer);
@@ -69,6 +74,10 @@ class CustomerService
 
     public function export(string $format, int $userId, string|int $dirName): string
     {
+        if ($this->isRestricted('data-export')) {
+			abort(400, "You current plan doesn't support this feature");
+		}
+
         $directory = 'exports/'.$dirName;
         $dir = $this->getExportDirectory($directory);
         $customers = $this->customerRepository->getAll('*', conditions: ['user_id' => $userId]);

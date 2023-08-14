@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('subscriptions', function (Blueprint $table) {
-            $table->string('gateway_id')->after('gateway');
+            $table->string('gateway_id')->nullable()->after('gateway');
         });
     }
 

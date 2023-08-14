@@ -16,9 +16,12 @@ use App\Http\Services\InvoiceService;
 use App\Http\Services\WalletService;
 use App\Models\Invoice;
 use App\Models\Subscription;
+use App\Traits\HasRestrictions;
 
 class PaystackPaymentService implements PaymentGatewayInterface
 {
+	use HasRestrictions;
+
 	const FIXED_FEE = 100;
 	const FEE_CAP = 2000;
 	const PERCENTAGE_FEE = 1.5 / 100;
@@ -57,7 +60,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 	 */
 	public function initializeSubscriptionAndGetPayLink(Plan $plan): string
 	{
-		if (request()->user()->subscribed()) {
+		if (request()->user()->subscribedToPaidPlan()) {
 			abort(400, "User already has an active subscription");
 		}
 
@@ -91,6 +94,14 @@ class PaystackPaymentService implements PaymentGatewayInterface
 	public function initializeInvoicePaymentAndGetPayLink(array $data): string
 	{
 		$invoice = Invoice::find($data['invoice_id']);
+
+		if ($this->isRestricted('in-app-payments', $invoice->user)) {
+			abort(400, "You current plan doesn't support this feature");
+		}
+
+		if (!$data['wallet'] && $this->isRestricted('custom-payment', $invoice->user)) {
+			abort(400, "You current plan doesn't support this feature");
+		}
 
 		$payment = $this->onlinePaymentRepository->create([
 			'type'       => 'invoice_payment',
@@ -158,8 +169,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				$this->processChargeSuccessful($data);
 				break;
 			case 'subscription.disable':
-				$subscription = Subscription::where('gateway_id', $data['subscription_code'])->first();
-				$this->subscriptionRepository->update($subscription, ['status'  => 'completed', 'ends_at' => now()]);
+				$this->processDisableSubscription($data);
 				break;
 		}
 
@@ -176,7 +186,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				'user_id'    => $user->id,
 				'plan_id'    => $plan->id,
 				'starts_at'  => now(),
-				'ends_at'    => now()->addMonth(),
+				'ends_at'    => now()->addMonths($plan->duration),
 				'status'     => 'active',
 				'gateway'    => 'paystack',
 				'gateway_id' => $code,
@@ -199,7 +209,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				'status'     => ($paid ? PaymentStatus::SUCCESS : PaymentStatus::FAILED)
 			]);
 			$currentSubscription = $this->subscriptionRepository->getActive($user->id);
-			$currentSubscription->ends_at = now()->addMonth();
+			$currentSubscription->ends_at = now()->addMonths($plan->duration);
 			$currentSubscription->save();
 		}
 	}
@@ -230,7 +240,22 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		}
 	}
 
-	private function getPaystackCharge($amount)
+	private function processDisableSubscription(array $data): void
+	{
+		$subscription = Subscription::where('gateway_id', $data['subscription_code'])->first();
+		$this->subscriptionRepository->update($subscription, ['status'  => 'completed', 'ends_at' => now()]);
+
+		$plan = Plan::where('slug', 'basic')->first();
+		$this->subscriptionRepository->create([
+			'user_id'    => $subscription->user->id,
+			'plan_id'    => $plan->id,
+			'starts_at'  => now(),
+			'ends_at'    => now()->addDecade(),
+			'status'     => 'active',
+		]);
+	}
+
+	private function getPaystackCharge(float $amount)
 	{
 		$charge = ($amount * self::PERCENTAGE_FEE) + self::FIXED_FEE;
 
