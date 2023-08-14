@@ -29,7 +29,7 @@ class CustomerRequest extends FormRequest
         return [
             "name"            => ["required", "string"],
             "email"           => ["required", "string", Rule::unique('customers')->ignore(optional($this->customer)->id)],
-            "phone"           => ["nullable", "numeric"],
+            "phone"           => ["required", "numeric"],
             "whatsapp_number" => ["nullable", "numeric"],
             "address"         => ["nullable", "string"],
             "category"        => ["nullable", "string"],

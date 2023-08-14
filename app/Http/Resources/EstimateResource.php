@@ -18,7 +18,7 @@ class EstimateResource extends JsonResource
         $data = parent::toArray($request);
         $data['customer'] = new CustomerResource($this->customer);
         if (!request()->user()) {
-            $data['user'] = new UserResource($this->user, $this->user->setting);
+            $data['user'] = new UserResource($this->user, $this->user->setting, $this->user->bank_accounts);
         }
         Arr::forget($data, ['customer_id']);
         return $data;
