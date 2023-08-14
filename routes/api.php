@@ -66,6 +66,10 @@ Route::prefix('/view')->group(function () {
     });
 });
 
+Route::controller(PaymentController::class)->group(function () {
+    Route::post('/payments/get-payment-link', 'getPaymentLink');
+});
+
 Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
     Route::controller(AnalyticsController::class)->prefix('/analytics')->group(function () {
         Route::get('/', 'getAllAnalytics');

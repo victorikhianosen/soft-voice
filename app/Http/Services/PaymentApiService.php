@@ -20,7 +20,11 @@ class PaymentApiService
     public function updateKeys(array $data)
     {
         $property = $data['type'] . "Key";
-        request()->user()->{$property}->update($data);
+        if (request()->user()->{$property}) {
+            request()->user()->{$property}->update($data);
+        } else {
+            request()->user()->{$property}()->create($data);
+        }
         return $this->getKeys();
     }
 }

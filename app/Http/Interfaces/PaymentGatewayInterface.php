@@ -7,4 +7,6 @@ use App\Models\Plan;
 interface PaymentGatewayInterface
 {
   public function initializeSubscriptionAndGetPayLink(Plan $plan): string;
+
+  public function initializeInvoicePaymentAndGetPayLink(array $data): string;
 }

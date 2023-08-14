@@ -12,8 +12,8 @@ class WebhookController extends Controller
     ) {
     }
 
-    public function handlePaystackWebook()
+    public function handlePaystackWebook(Request $request)
     {
-        $this->paystackPaymentService->processWebhook();
+        $this->paystackPaymentService->processWebhook($request->all());
     }
 }

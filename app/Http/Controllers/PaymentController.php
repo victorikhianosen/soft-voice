@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Interfaces\PaymentGatewayInterface;
+use App\Http\Requests\InvoicePaymentLinkRequest;
 use App\Models\Invoice;
 use App\Models\InvoicePayment;
 use App\Http\Requests\InvoicePaymentRequest;
@@ -14,8 +16,10 @@ class PaymentController extends Controller
 {
     use RespondWithHttpStatus;
 
-    public function __construct(protected InvoiceService $invoiceService)
-    {
+    public function __construct(
+        protected InvoiceService $invoiceService,
+        protected PaymentGatewayInterface $paymentGatewayInterface,
+    ) {
     }
 
     public function index(ListInvoicePaymentRequest $request)
@@ -50,5 +54,11 @@ class PaymentController extends Controller
         $this->authorize('processPayment', $payment);
         $this->invoiceService->deletePayment($payment);
         return $this->success("Invoice payment deleted");
+    }
+
+    public function getPaymentLink(InvoicePaymentLinkRequest $request)
+    {
+        $link = $this->paymentGatewayInterface->initializeInvoicePaymentAndGetPayLink($request->all());
+        return $this->success(data: compact('link'));
     }
 }

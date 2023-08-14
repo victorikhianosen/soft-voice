@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(PaymentGatewayInterface::class, fn () => new PaystackPaymentService);
+        $this->app->bind(PaymentGatewayInterface::class, fn () => app(PaystackPaymentService::class));
     }
 
     /**
