@@ -20,6 +20,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\PaymentResource;
 use App\Http\Repositories\InvoiceRepository;
 use App\Http\Repositories\PaymentRepository;
+use App\Http\Services\NotificationService\CustomerNotificationService;
 use App\Traits\HasRestrictions;
 
 class InvoiceService
@@ -29,7 +30,7 @@ class InvoiceService
     public function __construct(
         protected InvoiceRepository $invoiceRepository,
         protected PaymentRepository $paymentRepository,
-        protected NotificationService $notificationService
+        protected CustomerNotificationService $customerNotificationService
     )
     {
     }
@@ -126,12 +127,12 @@ class InvoiceService
     public function send(Invoice $invoice)
     {
         $this->invoiceRepository->update($invoice, ['status' => 'sent']);
-        $this->notificationService->sendInvoiceToCustomer($invoice);
+        $this->customerNotificationService->sendInvoiceToCustomer($invoice);
     }
 
     public function sendReminder(Invoice $invoice, array $channel)
     {
-        $this->notificationService->sendInvoiceReminderNotification($invoice, $channel);
+        $this->customerNotificationService->sendInvoiceReminderNotification($invoice, $channel);
     }
 
     public function recordPayment(array $data)

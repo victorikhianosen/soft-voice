@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\AdminResource;
 use Illuminate\Support\Facades\Password;
-use App\Http\Services\NotificationService;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Traits\UploadsFile;
 use App\Notifications\EmailVerificationNotification;
@@ -23,7 +22,7 @@ class AuthService
 {
     use UploadsFile;
 
-    public function __construct(protected NotificationService $notificationService)
+    public function __construct()
     {
     }
 

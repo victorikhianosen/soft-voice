@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Http\Services\NotificationService;
+use App\Http\Services\NotificationService\UserNotificationService;
 use App\Models\User;
 use App\Models\Coupon;
 use App\Models\Wallet;
@@ -24,7 +25,7 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     public function __construct(
-        protected NotificationService $notificationService
+        protected UserNotificationService $userNotificationService
     )
     {
     }
@@ -48,7 +49,7 @@ class DatabaseSeeder extends Seeder
         EstimateItem::factory(1000)->create();
         Expense::factory(500)->create();
         Invoice::factory(200)->create()->each(function ($invoice) {
-            $this->notificationService->sendUserInvoiceViewedNotification($invoice, ['database']);
+            $this->userNotificationService->sendInvoiceViewedNotification($invoice, ['database']);
         });
         InvoiceItem::factory(1000)->create();
         InvoicePayment::factory(1000)->create();
