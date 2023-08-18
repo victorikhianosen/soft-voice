@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Traits\Paginatable;
 use App\Http\Resources\AdminResource;
 use App\Http\Repositories\AdminRepository;
+use App\Http\Services\NotificationService\AdminNotificationService;
 
 class AdminService
 {
@@ -15,7 +16,7 @@ class AdminService
 
     public function __construct(
         protected AdminRepository $adminRepository,
-        protected NotificationService $notificationService,
+        protected AdminNotificationService $adminNotificationService,
     ) {
     }
 
@@ -41,7 +42,7 @@ class AdminService
         $data['password'] = bcrypt($password);
         $admin = $this->adminRepository->create($data);
         $admin->assignRole($data['role_id']);
-        $this->notificationService->sendAdminWelcomeNotification($admin, $password);
+        $this->adminNotificationService->sendWelcomeNotification($admin, $password);
         return new AdminResource($admin->fresh());
     }
 
