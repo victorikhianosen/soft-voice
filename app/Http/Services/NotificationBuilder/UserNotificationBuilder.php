@@ -16,4 +16,12 @@ class UserNotificationBuilder
 		];
 		return compact('title', 'body', 'action');
 	}
+
+	public function walletCredited(float $amount)
+	{
+		$title = "Wallet Credited";
+		$body = 'Wallet credited content goes here';
+		$action = [];
+		return compact('title', 'body', 'action');
+	}
 }

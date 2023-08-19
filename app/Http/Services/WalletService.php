@@ -6,13 +6,15 @@ use App\Enums\Status;
 use App\Exceptions\CustomerException;
 use App\Http\Repositories\TransactionRepository;
 use App\Http\Repositories\WalletRepository;
+use App\Http\Services\NotificationService\UserNotificationService;
 
 class WalletService
 {
     public function __construct(
         protected WalletRepository $walletRepository,
         protected TransactionService $transactionService,
-        protected TransactionRepository $transactionRepository
+        protected TransactionRepository $transactionRepository,
+        protected UserNotificationService $userNotificationService
     ) {
     }
 
@@ -59,5 +61,6 @@ class WalletService
             'status'  => Status::APPROVED->value,
         ]);
         $this->walletRepository->creditUserWallet($userId, $amount);
+        $this->userNotificationService->sendWalletCreditNotification($userId, $amount);
     }
 }
