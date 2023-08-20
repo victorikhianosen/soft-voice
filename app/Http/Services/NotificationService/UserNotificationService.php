@@ -38,4 +38,49 @@ class UserNotificationService extends BaseNotificationService
 			$channel
 		);
 	}
+
+	public function sendWalletDebitNotification(
+		User|int $user,
+		float $amount,
+		array $channel = ['mail', 'database']
+	) {
+		if (is_integer($user)) {
+			$user = User::find($user);
+		}
+		$this->send(
+			$user,
+			$this->userNotificationBuilder->walletDebited($amount),
+			$channel
+		);
+	}
+
+	public function sendDepositQueuedNotification(
+		User|int $user,
+		float $amount,
+		array $channel = ['mail', 'database']
+	) {
+		if (is_integer($user)) {
+			$user = User::find($user);
+		}
+		$this->send(
+			$user,
+			$this->userNotificationBuilder->depositQueued($amount),
+			$channel
+		);
+	}
+
+	public function sendWithdrawalQueuedNotification(
+		User|int $user,
+		float $amount,
+		array $channel = ['mail', 'database']
+	) {
+		if (is_integer($user)) {
+			$user = User::find($user);
+		}
+		$this->send(
+			$user,
+			$this->userNotificationBuilder->withdrawalQueued($amount),
+			$channel
+		);
+	}
 }

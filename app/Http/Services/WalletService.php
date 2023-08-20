@@ -34,6 +34,8 @@ class WalletService
             'method'   => 'wallet',
             'status'  => Status::PENDING->value,
         ]);
+        $this->userNotificationService->sendWithdrawalQueuedNotification($userId, $amount);
+        $this->userNotificationService->sendWalletDebitNotification($userId, $amount);
     }
 
     public function processDeposit(int $userId, float $amount)
@@ -47,6 +49,7 @@ class WalletService
             'method'   => 'deposit',
             'status'  => Status::PENDING->value,
         ]);
+        $this->userNotificationService->sendDepositQueuedNotification($userId, $amount);
     }
 
     public function fundUserWallet(int $userId, float $amount)
