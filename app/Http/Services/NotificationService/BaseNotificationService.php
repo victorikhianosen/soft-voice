@@ -27,7 +27,7 @@ abstract class BaseNotificationService
     }
 
     protected function send(
-        Model $recipient, $data, $channel = ['mail', 'database']
+        Model $recipient, array $data, array $channel = ['mail', 'database']
     ) {
         $title = $data['title'] ?? null;
         $body = $data['body'] ?? null;

@@ -6,13 +6,15 @@ use App\Enums\Status;
 use App\Exceptions\CustomerException;
 use App\Http\Repositories\TransactionRepository;
 use App\Http\Repositories\WalletRepository;
+use App\Http\Services\NotificationService\UserNotificationService;
 
 class WalletService
 {
     public function __construct(
         protected WalletRepository $walletRepository,
         protected TransactionService $transactionService,
-        protected TransactionRepository $transactionRepository
+        protected TransactionRepository $transactionRepository,
+        protected UserNotificationService $userNotificationService
     ) {
     }
 
@@ -32,6 +34,8 @@ class WalletService
             'method'   => 'wallet',
             'status'  => Status::PENDING->value,
         ]);
+        $this->userNotificationService->sendWithdrawalQueuedNotification($userId, $amount);
+        $this->userNotificationService->sendWalletDebitNotification($userId, $amount);
     }
 
     public function processDeposit(int $userId, float $amount)
@@ -45,6 +49,7 @@ class WalletService
             'method'   => 'deposit',
             'status'  => Status::PENDING->value,
         ]);
+        $this->userNotificationService->sendDepositQueuedNotification($userId, $amount);
     }
 
     public function fundUserWallet(int $userId, float $amount)
@@ -59,5 +64,6 @@ class WalletService
             'status'  => Status::APPROVED->value,
         ]);
         $this->walletRepository->creditUserWallet($userId, $amount);
+        $this->userNotificationService->sendWalletCreditNotification($userId, $amount);
     }
 }

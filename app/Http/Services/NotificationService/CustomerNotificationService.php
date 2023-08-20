@@ -15,7 +15,7 @@ class CustomerNotificationService extends BaseNotificationService
 
 	public function sendInvoiceReminderNotification(
 		Invoice $invoice,
-		$channel = ['mail']
+		array $channel = ['mail']
 	) {
 		$this->send(
 			$invoice->customer,
@@ -25,7 +25,8 @@ class CustomerNotificationService extends BaseNotificationService
 	}
 
 	public function sendInvoiceToCustomer(
-        Invoice $invoice, $channel = ['mail']
+        Invoice $invoice,
+        array $channel = ['mail']
     ) {
         $this->send(
             $invoice->customer,
@@ -35,7 +36,8 @@ class CustomerNotificationService extends BaseNotificationService
     }
 
 	public function sendEstimateToCustomer(
-        Estimate $estimate, $channel = ['mail']
+        Estimate $estimate,
+        array $channel = ['mail']
     ) {
         $this->send(
             $estimate->customer,

@@ -13,7 +13,7 @@ class AdminNotificationService extends BaseNotificationService
 	}
 
 	public function sendWelcomeNotification(
-        Admin $admin, string $password, $channel = ['mail', 'database']
+        Admin $admin, string $password, array $channel = ['mail', 'database']
     ) {
         $this->send(
             $admin,
