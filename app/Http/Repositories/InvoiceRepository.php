@@ -21,12 +21,11 @@ class InvoiceRepository extends AbstractRepository
 
     public function getSummary()
     {
-        $invoices = request()->user()->invoices;
         return [
-            'all' => $invoices->sum('total_amount'),
-            'paid' => $invoices->where('status', Status::PAID)->sum('total_amount'),
-            'unpaid' => $invoices->where('status', Status::UNPAID)->sum('total_amount'),
-            'refunded' => $invoices->where('status', Status::REFUNDED)->sum('total_amount'),
+            'all'      => $this->getSummaryByStatus(),
+            'paid'     => $this->getSummaryByStatus([Status::PAID]),
+            'pending'  => $this->getSummaryByStatus([Status::SENT, Status::VIEWED]),
+            'refunded' => $this->getSummaryByStatus([Status::REFUNDED]),
         ];
     }
 
@@ -66,5 +65,26 @@ class InvoiceRepository extends AbstractRepository
             ->invoices()
             ->get()
             ->sum('amount_due');
+    }
+
+    private function getSummaryByStatus(array $statuses = [])
+    {
+        $query = request()->user()->invoices();
+
+        if ($statuses) {
+            $query->where(function($q) use ($statuses) {
+                foreach ($statuses as $key => $status) {
+                    if ($key === 0) $q->where('status', $status);
+                    else $q->orWhere('status', $status);
+                }
+            });
+        }
+
+        $collection = $query->get();
+
+        return [
+            'amount' => round($collection->sum('total_amount'), 2),
+            'count'  => $collection->count()
+        ];
     }
 }
