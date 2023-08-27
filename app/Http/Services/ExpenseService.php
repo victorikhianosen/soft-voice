@@ -20,7 +20,6 @@ class ExpenseService
 
     public function __construct(
         protected ExpenseRepository $expenseRepository,
-        protected NotificationService $notificationService
     )
     {
     }
