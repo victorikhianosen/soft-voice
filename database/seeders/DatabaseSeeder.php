@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Http\Services\NotificationService;
 use App\Http\Services\NotificationService\UserNotificationService;
 use App\Models\User;
 use App\Models\Coupon;
