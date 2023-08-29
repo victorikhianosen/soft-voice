@@ -12,14 +12,16 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\EstimateResource;
 use App\Http\Repositories\EstimateRepository;
+use App\Http\Services\NotificationService\CustomerNotificationService;
+use App\Traits\HasRestrictions;
 
 class EstimateService
 {
-    use Paginatable, UploadsFile;
+    use Paginatable, UploadsFile, HasRestrictions;
 
     public function __construct(
         protected EstimateRepository $estimateRepository,
-        protected NotificationService $notificationService
+        protected CustomerNotificationService $customerNotificationService
     )
     {
     }
@@ -43,6 +45,10 @@ class EstimateService
 
     public function store(array $data): EstimateResource
     {
+        if ($this->hasExhaustedCount('estimates')) {
+            abort(400, "You have exceeded you monthly estimate limit for your plan");
+        }
+
         $data += [
             'code'           => Estimate::getUniqueCode(),
             'status'         => Status::DRAFT,
@@ -101,11 +107,15 @@ class EstimateService
     public function send(Estimate $estimate)
     {
         $this->estimateRepository->update($estimate, ['status' => 'sent']);
-        $this->notificationService->sendEstimateToCustomer($estimate);
+        $this->customerNotificationService->sendEstimateToCustomer($estimate);
     }
 
     public function export(string $format): string
     {
+        if ($this->isRestricted('data-export')) {
+			abort(400, "You current plan doesn't support this feature");
+		}
+
         $userDirectory = 'exports/'.request()->user()->id;
         $dir = $this->getExportDirectory($userDirectory);
         $estimates = request()->user()->estimates;

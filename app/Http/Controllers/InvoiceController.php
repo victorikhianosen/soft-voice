@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Enums\Status;
 use App\Models\Invoice;
-use Twilio\Rest\Client;
-use App\Enums\Notification;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\ExportRequest;
 use App\Http\Requests\InvoiceRequest;
@@ -17,6 +15,7 @@ use App\Http\Requests\ListInvoiceRequest;
 use App\Http\Requests\MarkInvoiceAsRequest;
 use App\Http\Repositories\InvoiceRepository;
 use App\Http\Requests\ReminderNotificationRequest;
+use App\Http\Services\NotificationService\UserNotificationService;
 
 class InvoiceController extends Controller
 {
@@ -24,7 +23,8 @@ class InvoiceController extends Controller
 
     public function __construct(
         protected InvoiceService $invoiceService,
-        protected InvoiceRepository $invoiceRepository
+        protected InvoiceRepository $invoiceRepository,
+        protected UserNotificationService $userNotificationService,
     )
     {
     }
@@ -43,6 +43,7 @@ class InvoiceController extends Controller
 
     public function showPublic(Invoice $invoice): JsonResponse
     {
+        $this->userNotificationService->sendInvoiceViewedNotification($invoice);
         return $this->success(data: new InvoiceResource($invoice));
     }
 
@@ -93,7 +94,7 @@ class InvoiceController extends Controller
         $this->invoiceService->sendReminder($invoice, $request->channels);
         return $this->success("Invoice reminder sent");
     }
-    
+
     public function export(ExportRequest $request): JsonResponse
     {
         $url = $this->invoiceService->export($request['format']);

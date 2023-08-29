@@ -27,24 +27,38 @@ return new class extends Migration
 
         $plans = [
             [
-                'name'     => 'Free',
-                'slug'     => 'free',
+                'name'     => 'Basic',
+                'slug'     => 'basic',
                 'duration' => -1,
                 'amount'   => 0,
             ],
             [
-                'name'     => 'Basic',
-                'slug'     => 'basic',
+                'name'     => 'Professional Monthly',
+                'slug'     => 'professional-monthly',
                 'paystack_id' => 'PLN_4htnmxqlj0u0svk',
                 'duration' => 1,
                 'amount'   => 1000,
             ],
             [
-                'name'     => 'Premium',
-                'slug'     => 'premium',
+                'name'     => 'Professional Annual',
+                'slug'     => 'professional-annual',
+                'paystack_id' => 'PLN_4htnmxqlj0u0svk',
+                'duration' => 12,
+                'amount'   => 10000,
+            ],
+            [
+                'name'     => 'Premium Monthly',
+                'slug'     => 'premium-monthly',
                 'paystack_id' => 'PLN_6bzmno4rb15wzue',
                 'duration' => 1,
-                'amount'   => 5000,
+                'amount'   => 2000,
+            ],
+            [
+                'name'     => 'Premium Annual',
+                'slug'     => 'premium-annual',
+                'paystack_id' => 'PLN_6bzmno4rb15wzue',
+                'duration' => 12,
+                'amount'   => 20000,
             ]
         ];
 

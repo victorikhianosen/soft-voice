@@ -12,14 +12,17 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Repositories\WalletRepository;
 use App\Http\Resources\TransactionResource;
 use App\Http\Repositories\TransactionRepository;
+use App\Http\Services\NotificationService\UserNotificationService;
+use App\Traits\HasRestrictions;
 
 class TransactionService
 {
-    use Paginatable, UploadsFile;
+    use Paginatable, UploadsFile, HasRestrictions;
 
     public function __construct(
+        protected WalletRepository $walletRepository,
         protected TransactionRepository $transactionRepository,
-        protected WalletRepository $walletRepository
+        protected UserNotificationService $userNotificationService
     )
     {
 
@@ -49,9 +52,12 @@ class TransactionService
         if (Status::tryFrom($transaction->status) !== Status::PENDING) {
             abort(404, "Transaction already processed");
         }
+
         if ($transaction->type === 'deposit') {
             $this->walletRepository->creditUserWallet($transaction->user->id, $transaction->amount);
+            $this->userNotificationService->sendWalletCreditNotification($transaction->user, $transaction->amount);
         }
+
         $this->transactionRepository->update($transaction, ['status' => Status::APPROVED]);
     }
 
@@ -68,6 +74,10 @@ class TransactionService
 
     public function export(string $format): string
     {
+        if ($this->isRestricted('data-export')) {
+			abort(400, "You current plan doesn't support this feature");
+		}
+
         $directory = 'exports/admin';
         $dir = $this->getExportDirectory($directory);
         $transactions = $this->transactionRepository->getAll('*');

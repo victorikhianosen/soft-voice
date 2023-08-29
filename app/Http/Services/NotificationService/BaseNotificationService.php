@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Http\Services\NotificationService;
 
 use Exception;
 use App\Models\Admin;
 use App\Models\Invoice;
 use Twilio\Rest\Client;
 use App\Models\Estimate;
+use App\Traits\HasRestrictions;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use App\Notifications\CustomNotification;
@@ -14,8 +15,10 @@ use App\Http\Services\NotificationBuilder\UserNotificationBuilder;
 use App\Http\Services\NotificationBuilder\AdminNotificationBuilder;
 use App\Http\Services\NotificationBuilder\CustomerNotificationBuilder;
 
-class NotificationService
+abstract class BaseNotificationService
 {
+    use HasRestrictions;
+
     public function __construct(
         protected UserNotificationBuilder $userNotificationBuilder,
         protected AdminNotificationBuilder $adminNotificationBuilder,
@@ -23,58 +26,8 @@ class NotificationService
     ) {
     }
 
-    public function sendAdminWelcomeNotification(
-        Admin $admin, string $password, $channel = ['mail', 'database']
-    ) {
-        $this->send(
-            $admin,
-            $this->adminNotificationBuilder->welcome($admin, $password),
-            $channel
-        );
-    }
-
-    public function sendInvoiceReminderNotification(
-        Invoice $invoice, $channel = ['mail']
-    ) {
-        $this->send(
-            $invoice->customer,
-            $this->customerNotificationBuilder->invoiceReminder($invoice),
-            $channel
-        );
-    }
-    
-    public function sendInvoiceToCustomer(
-        Invoice $invoice, $channel = ['mail']
-    ) {
-        $this->send(
-            $invoice->customer,
-            $this->customerNotificationBuilder->invoiceSent($invoice),
-            $channel
-        );
-    }
-
-    public function sendEstimateToCustomer(
-        Estimate $estimate, $channel = ['mail']
-    ) {
-        $this->send(
-            $estimate->customer,
-            $this->customerNotificationBuilder->estimateSent($estimate),
-            $channel
-        );
-    }
-
-    public function sendUserInvoiceViewedNotification(
-        Invoice $invoice, $channel = ['mail', 'database']
-    ) {
-        $this->send(
-            $invoice->user,
-            $this->userNotificationBuilder->invoiceViewed($invoice),
-            $channel
-        );
-    }
-
-    private function send(
-        Model $recipient, $data, $channel = ['mail', 'database']
+    protected function send(
+        Model $recipient, array $data, array $channel = ['mail', 'database']
     ) {
         $title = $data['title'] ?? null;
         $body = $data['body'] ?? null;
@@ -88,13 +41,13 @@ class NotificationService
             }
         }
 
-        if (in_array('sms', $channel)) {
+        if (in_array('sms', $channel) && !$this->isRestricted('sms-messaging')) {
             $smsRecipientNumber = $recipient->phone;
-    
+
             if ($smsRecipientNumber) {
                 try {
                     $twilio = new Client(config('env.twilio_sid'), config('env.twilio_token'));
-    
+
                     $twilio->messages->create($smsRecipientNumber, [
                         "from" => config('env.twilio_phone_number'),
                         "body" => $body,
@@ -105,14 +58,14 @@ class NotificationService
             }
         }
 
-        if (in_array('whatsapp', $channel)) {
+        if (in_array('whatsapp', $channel) && !$this->isRestricted('whatsapp-messaging')) {
 
             if ($recipient->whatsapp_number) {
                 $smsRecipientNumber = $recipient->whatsapp_number;
             } else {
                 $smsRecipientNumber = $recipient->phone;
             }
-            
+
             if ($smsRecipientNumber) {
                 try {
                     $twilio = new Client(config('env.twilio_sid'), config('env.twilio_token'));

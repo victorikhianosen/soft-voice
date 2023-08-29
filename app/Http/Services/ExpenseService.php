@@ -12,14 +12,14 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Resources\ExpenseResource;
 use App\Http\Repositories\ExpenseRepository;
 use App\Http\Requests\ExpenseRequest;
+use App\Traits\HasRestrictions;
 
 class ExpenseService
 {
-    use Paginatable, UploadsFile;
+    use Paginatable, UploadsFile, HasRestrictions;
 
     public function __construct(
         protected ExpenseRepository $expenseRepository,
-        protected NotificationService $notificationService
     )
     {
     }
@@ -43,6 +43,10 @@ class ExpenseService
 
     public function store(ExpenseRequest $data): ExpenseResource
     {
+        if ($this->hasExhaustedCount('expenses')) {
+            abort(400, "You have exceeded you monthly expense limit for your plan");
+        }
+
         $file = $data->file('attachment');
         $data = $data->all();
         $data['user_id'] = request()->user()->id;
@@ -84,6 +88,10 @@ class ExpenseService
 
     public function export(string $format): string
     {
+        if ($this->isRestricted('data-export')) {
+			abort(400, "You current plan doesn't support this feature");
+		}
+
         $userDirectory = 'exports/'.request()->user()->id;
         $dir = $this->getExportDirectory($userDirectory);
         $expenses = request()->user()->expenses;
