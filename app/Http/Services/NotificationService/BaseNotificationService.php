@@ -31,11 +31,11 @@ abstract class BaseNotificationService
     ) {
         $title = $data['title'] ?? null;
         $body = $data['body'] ?? null;
-        $action = $data['action'] ?? null;
+        $actions = $data['actions'] ?? [];
         if (in_array('mail', $channel) || in_array('database', $channel)) {
             $channel = array_filter($channel, fn ($c) => in_array($c, $channel));
             try {
-                $recipient->notify(new CustomNotification($title, $body, $action, $channel));
+                $recipient->notify(new CustomNotification($title, $body, $actions, $channel));
             } catch (Exception $e) {
                 Log::error($e->getMessage());
             }

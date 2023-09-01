@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -15,18 +17,18 @@ class CustomNotification extends Notification implements ShouldQueue
     public $title;
     public $body;
     public $modes;
-    public $action;
+    public $actions;
 
     public function __construct(
         string $title,
         string $body,
-        ?array $action = null,
+        array $actions = [],
         array $modes = ['mail', 'database']
     ) {
         $this->title = $title;
         $this->body = $body;
         $this->modes = $modes;
-        $this->action = $action;
+        $this->actions = $actions;
     }
 
     public function via($notifiable): array
@@ -44,16 +46,20 @@ class CustomNotification extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        $mail = (new MailMessage)
-            ->greeting('skip')
+        return (new MailMessage)
             ->subject($this->title)
-            // ->line('Hello '.$notifiable->name.',')
-            ->line(new HtmlString($this->body));
+            ->view('mails.default', [
+                'body' => $this->body,
+                'actions' => $this->actions,
+                'user' => $this->notifyingUser($notifiable)
+            ]);
+    }
 
-        if ($this->action) {
-            $mail->action($this->action['text'], $this->action['url']);
+    private function notifyingUser($notifiable) {
+        if ($notifiable instanceof User || $notifiable instanceof Customer) {
+            return $notifiable instanceof User ? $notifiable : $notifiable->user;
         }
 
-        return $mail;
+        return null;
     }
 }

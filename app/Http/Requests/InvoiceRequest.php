@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 
 class InvoiceRequest extends FormRequest
@@ -32,7 +33,11 @@ class InvoiceRequest extends FormRequest
                 'string',
                 Rule::unique('invoices')->where('user_id', $this->user()->id)->ignore(optional($this->invoice)->id, 'id'),
             ],
-            "customer_id"    => ["required", "numeric", "exists:customers,id"],
+            "customer_id" => [
+                "required", 
+                "numeric", 
+                Rule::exists('customers', 'id')->where(fn (Builder $query) => $query->where('user_id', $this->user()->id))
+            ],
             "date"           => ["required", "date", "date_format:Y-m-d"],
             "due_date"       => ["required", "date", "date_format:Y-m-d"],
             "tax_enabled"    => ["required", "boolean"],

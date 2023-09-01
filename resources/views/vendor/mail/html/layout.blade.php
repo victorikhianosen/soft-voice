@@ -23,8 +23,12 @@ width: 100% !important;
 }
 
 @media only screen and (min-width: 600px) {
-    .logo {
+    .logo-link img{
         margin-right: 365px;
+    }
+
+    .logo-link span{
+        margin-right: 418px;
     }
 }
 </style>

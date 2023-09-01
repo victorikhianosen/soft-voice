@@ -11,11 +11,11 @@ class CustomerNotificationBuilder
 	{
 		$title = "Invoice Reminder";
 		$body = 'This is an Invoice reminder message';
-		$action = [
+		$actions = [
 			'text' => 'View Invoice',
 			'url'  => config('env.spa_url') . '/' . $invoice->code
 		];
-		return compact('title', 'body', 'action');
+		return compact('title', 'body', 'actions');
 	}
 
 	public function invoiceSent(Invoice $invoice)
@@ -29,11 +29,11 @@ class CustomerNotificationBuilder
 				 ."<br>"
 				 . "Your invoice will be due for payment in <b>" . $dueDate->diffInDays(now()) . " Days\n</b>"
 				 . "Which is by ". $dueDate->format('jS \of F, Y');
-		$action = [
+		$actions = [
 			'text' => 'View Invoice Now',
 			'url'  => config('env.spa_url') . '/' . $invoice->code
 		];
-		return compact('title', 'body', 'action');
+		return compact('title', 'body', 'actions');
 	}
 
 	public function estimateSent(Estimate $estimate)
@@ -47,11 +47,19 @@ class CustomerNotificationBuilder
 				 ."<br>"
 				 . "Your estimate will be due for payment in <b>" . $dueDate->diffInDays(now()) . " Days\n</b>"
 				 . "Which is by ". $dueDate->format('jS \of F, Y');
-		$action = [
-			'text' => 'View Estimate',
-			'url'  => config('env.spa_url') . '/' . $estimate->code
+		$actions = [
+			[
+				'text' => 'View Estimate',
+				'url'  => config('env.spa_url') . '/' . $estimate->code,
+				'outlined' => false
+			],
+			[
+				'text' => 'Make Payment',
+				'url'  => config('env.spa_url') . '/' . $estimate->code,
+				'outlined' => true
+			]
 		];
-		return compact('title', 'body', 'action', 'logo');
+		return compact('title', 'body', 'actions', 'logo');
 	}
 
 }
