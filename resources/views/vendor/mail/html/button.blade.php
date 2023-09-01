@@ -1,9 +1,9 @@
-<table class="action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+<table class="action" align="left" width="100%" cellpadding="0" cellspacing="0" role="presentation">
 <tr>
-<td align="center">
+<td align="left">
 <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
 <tr>
-<td align="center">
+<td align="left">
 <table border="0" cellpadding="0" cellspacing="0" role="presentation">
 <tr>
 <td>

@@ -21,6 +21,12 @@ width: 100% !important;
 width: 100% !important;
 }
 }
+
+@media only screen and (min-width: 600px) {
+    .logo {
+        margin-right: 365px;
+    }
+}
 </style>
 </head>
 <body>

@@ -20,10 +20,17 @@ class CustomerNotificationBuilder
 
 	public function invoiceSent(Invoice $invoice)
 	{
+		$dueDate = \Carbon\Carbon::parse($invoice->due_date);
+		$logo = $invoice->user->setting['business_logo'];
 		$title = "New Invoice";
-		$body = 'Invoice created content goes here';
+		$body = "Dear " . $invoice->customer->name . ", you just received an\n"
+				 . "invoice of <b> NGN" . number_format($invoice->amount, 2) . "</b> from <b>" . $invoice->user->name ."</b>.\n"
+				 ."<br>"
+				 ."<br>"
+				 . "Your invoice will be due for payment in <b>" . $dueDate->diffInDays(now()) . " Days\n</b>"
+				 . "Which is by ". $dueDate->format('jS \of F, Y');
 		$action = [
-			'text' => 'View Invoice',
+			'text' => 'View Invoice Now',
 			'url'  => config('env.spa_url') . '/' . $invoice->code
 		];
 		return compact('title', 'body', 'action');
@@ -31,13 +38,20 @@ class CustomerNotificationBuilder
 
 	public function estimateSent(Estimate $estimate)
 	{
+		$dueDate = \Carbon\Carbon::parse($estimate->due_date);
+		$logo = $estimate->user->setting['business_logo'];
 		$title = "New Estimate";
-		$body = 'Estimate created content goes here';
+		$body = "Dear " . $estimate->customer->name . ", you just received an\n"
+				 . "estimate of <b> NGN" . number_format($estimate->amount, 2) . "</b> from <b>" . $estimate->user->name ."</b>.\n"
+				 ."<br>"
+				 ."<br>"
+				 . "Your estimate will be due for payment in <b>" . $dueDate->diffInDays(now()) . " Days\n</b>"
+				 . "Which is by ". $dueDate->format('jS \of F, Y');
 		$action = [
 			'text' => 'View Estimate',
 			'url'  => config('env.spa_url') . '/' . $estimate->code
 		];
-		return compact('title', 'body', 'action');
+		return compact('title', 'body', 'action', 'logo');
 	}
 
 }

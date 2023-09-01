@@ -47,7 +47,7 @@ class CustomNotification extends Notification implements ShouldQueue
         $mail = (new MailMessage)
             ->greeting('skip')
             ->subject($this->title)
-            ->line('Hello '.$notifiable->name.',')
+            // ->line('Hello '.$notifiable->name.',')
             ->line(new HtmlString($this->body));
 
         if ($this->action) {
