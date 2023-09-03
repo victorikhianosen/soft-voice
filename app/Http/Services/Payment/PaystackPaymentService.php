@@ -183,7 +183,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		$plan = Plan::where('paystack_id', $plan['plan_code'])->first();
 		if ($user && $plan) {
 			if ($user->active_subscription) {
-				$user->active_subscription()->update([
+				$user->active_subscription->update([
 					'ends_at' => now(),
 					'status'  => 'cancelled',
 				]);
