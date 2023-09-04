@@ -65,7 +65,7 @@ class CustomerNotificationBuilder
 				'outlined' => true
 			]
 		];
-		return compact('title', 'body', 'actions', 'logo');
+		return compact('title', 'body', 'actions');
 	}
 
 }
