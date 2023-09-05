@@ -14,10 +14,12 @@ class AdminNotificationBuilder
 				has been created for you, find your login credentials below.<br><br>
                 Email: <b>' . $admin['email'] . '</b><br>
                 Password: <b>' . $password . '</b><br>';
-        $action = [
-            'text' => 'Login to Dashboard',
-            'url'  => (config('env.spa_url') . 'admin/login')
+        $actions = [
+            [
+                'text' => 'Login to Dashboard',
+                'url'  => (config('env.spa_url') . 'admin/login')
+            ]
         ];
-        return compact('title', 'body', 'action');
+        return compact('title', 'body', 'actions');
     }
 }

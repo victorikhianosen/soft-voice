@@ -38,15 +38,15 @@
 @endforeach
 
 {{-- Salutation --}}
-@if (! empty($salutation))
+{{-- @if (! empty($salutation))
 {{ $salutation }}
 @else
 @lang('Regards'),<br>
 {{ config('app.name') }}
-@endif
+@endif --}}
 
 {{-- Subcopy --}}
-@isset($actionText)
+{{-- @isset($actionText)
 <x-slot:subcopy>
 @lang(
     "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\n".
@@ -56,5 +56,5 @@
     ]
 ) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
 </x-slot:subcopy>
-@endisset
+@endisset --}}
 </x-mail::message>

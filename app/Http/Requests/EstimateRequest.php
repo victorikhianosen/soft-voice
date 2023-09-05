@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EstimateRequest extends FormRequest
@@ -20,7 +21,11 @@ class EstimateRequest extends FormRequest
                 'string',
                 Rule::unique('estimates')->where('user_id', $this->user()->id)->ignore(optional($this->estimate)->id, 'id'),
             ],
-            "customer_id" => ["required", "numeric", "exists:customers,id"],
+            "customer_id" => [
+                "required", 
+                "numeric", 
+                Rule::exists('customers', 'id')->where(fn (Builder $query) => $query->where('user_id', $this->user()->id))
+            ],
             "date"        => ["required", "date", "date_format:Y-m-d"],
             "due_date"    => ["required", "date", "date_format:Y-m-d"],
             "tax_enabled" => ["required", "boolean"],
