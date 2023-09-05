@@ -15,8 +15,10 @@ class AdminNotificationBuilder
                 Email: <b>' . $admin['email'] . '</b><br>
                 Password: <b>' . $password . '</b><br>';
         $actions = [
-            'text' => 'Login to Dashboard',
-            'url'  => (config('env.spa_url') . 'admin/login')
+            [
+                'text' => 'Login to Dashboard',
+                'url'  => (config('env.spa_url') . 'admin/login')
+            ]
         ];
         return compact('title', 'body', 'actions');
     }

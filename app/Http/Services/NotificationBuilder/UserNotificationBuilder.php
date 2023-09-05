@@ -11,8 +11,10 @@ class UserNotificationBuilder
 		$title = "Invoice Viewed";
 		$body = 'Invoice viewed content goes here';
 		$actions = [
-			'text' => 'View Invoice',
-			'url'  => config('env.spa_url') . 'customer-invoice/' . $invoice->id
+			[
+				'text' => 'View Invoice',
+				'url'  => config('env.spa_url') . 'customer-invoice/' . $invoice->id
+			]
 		];
 		return compact('title', 'body', 'actions');
 	}

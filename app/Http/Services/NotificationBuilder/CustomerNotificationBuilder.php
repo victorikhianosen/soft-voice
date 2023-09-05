@@ -12,8 +12,10 @@ class CustomerNotificationBuilder
 		$title = "Invoice Reminder";
 		$body = 'This is an Invoice reminder message';
 		$actions = [
-			'text' => 'View Invoice',
-			'url'  => config('env.spa_url') . '/' . $invoice->code
+			[
+				'text' => 'View Invoice',
+				'url'  => config('env.spa_url') . '/' . $invoice->code
+			]
 		];
 		return compact('title', 'body', 'actions');
 	}
