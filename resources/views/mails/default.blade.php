@@ -47,6 +47,7 @@
                                 <a target="_blank" rel="noopener noreferrer" href="http://localhost" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; color: #3d4852; font-size: 19px; font-weight: bold; text-decoration: none; display: inline-block;" class="logo-link">
                                     @if($user)
                                         @if($user->setting['business_logo'])
+                                            {{ $user->setting['business_logo'] }}
                                             <img src="{{ $user->setting['business_logo'] }}" class="logo" alt="">
                                         @else
                                             <span class="logo" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; width: 200px; height: auto; color: #0000006b; font-size: 24px;">
