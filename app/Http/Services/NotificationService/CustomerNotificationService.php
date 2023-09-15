@@ -35,6 +35,28 @@ class CustomerNotificationService extends BaseNotificationService
         );
     }
 
+    public function sendInvoiceOverdueToCustomer(
+        Invoice $invoice,
+        array $channel = ['mail']
+    ) {
+        $this->send(
+            $invoice->customer,
+            $this->customerNotificationBuilder->invoiceOverdue($invoice),
+            $channel
+        );
+    }
+
+    public function sendPaymentToCustomer(
+        Invoice $invoice,
+        array $channel = ['mail']
+    ) {
+        $this->send(
+            $invoice->customer,
+            $this->customerNotificationBuilder->invoicePayment($invoice),
+            $channel
+        );
+    }
+
 	public function sendEstimateToCustomer(
         Estimate $estimate,
         array $channel = ['mail']

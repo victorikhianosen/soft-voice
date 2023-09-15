@@ -135,6 +135,16 @@ class InvoiceService
         $this->customerNotificationService->sendInvoiceReminderNotification($invoice, $channel);
     }
 
+    public function sendOverdue(Invoice $invoice, array $channel)
+    {
+        $this->customerNotificationService->sendInvoiceOverdueToCustomer($invoice, $channel);
+    }
+
+    public function sendPayment(Invoice $invoice, array $channel)
+    {
+        $this->customerNotificationService->sendPaymentToCustomer($invoice, $channel);
+    }
+
     public function recordPayment(array $data)
     {
         $data['method'] = PaymentMethod::from($data['method']);
