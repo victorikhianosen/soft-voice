@@ -46,13 +46,15 @@ class CustomNotification extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage)
+        $user = $this->notifyingUser($notifiable);
+        $mailMessage = (new MailMessage)
             ->subject($this->title)
             ->view('mails.default', [
                 'body' => $this->body,
                 'actions' => $this->actions,
-                'user' => $this->notifyingUser($notifiable)
+                'user' => $user
             ]);
+        return $user ? $mailMessage->from($user->email, $user->name) : $mailMessage;
     }
 
     private function notifyingUser($notifiable) {

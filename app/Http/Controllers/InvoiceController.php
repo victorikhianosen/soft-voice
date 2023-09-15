@@ -95,6 +95,20 @@ class InvoiceController extends Controller
         return $this->success("Invoice reminder sent");
     }
 
+    public function sendOverdue(Invoice $invoice, ReminderNotificationRequest $request): JsonResponse
+    {
+        $this->authorize('process', $invoice);
+        $this->invoiceService->sendOverdue($invoice, $request->channels);
+        return $this->success("Invoice overdue sent");
+    }
+
+    public function sendPayment(Invoice $invoice, ReminderNotificationRequest $request): JsonResponse
+    {
+        $this->authorize('process', $invoice);
+        $this->invoiceService->sendPayment($invoice, $request->channels);
+        return $this->success("Invoice payment sent");
+    }
+
     public function export(ExportRequest $request): JsonResponse
     {
         $url = $this->invoiceService->export($request['format']);
