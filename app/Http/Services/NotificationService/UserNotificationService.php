@@ -5,6 +5,7 @@ namespace App\Http\Services\NotificationService;
 use App\Models\User;
 use App\Models\Invoice;
 use App\Http\Services\NotificationBuilder\UserNotificationBuilder;
+use App\Models\InvoicePayment;
 
 class UserNotificationService extends BaseNotificationService
 {
@@ -25,48 +26,48 @@ class UserNotificationService extends BaseNotificationService
 	}
 
 	public function sendInvoiceOverdueNotification(
-        Invoice $invoice,
-        array $channel = ['mail']
-    ) {
-        $this->send(
-            $invoice->user,
-            $this->userNotificationBuilder->invoiceOverdue($invoice),
-            $channel
-        );
-    }
+		Invoice $invoice,
+		array $channel = ['mail']
+	) {
+		$this->send(
+			$invoice->user,
+			$this->userNotificationBuilder->invoiceOverdue($invoice),
+			$channel
+		);
+	}
 
-	public function sendInvoicePayementRecordedNotification(
-        Invoice $invoice,
-        array $channel = ['mail']
-    ) {
-        $this->send(
-            $invoice->user,
-            $this->userNotificationBuilder->invoicePayementRecorded($invoice),
-            $channel
-        );
-    }
+	public function sendInvoicePaymentRecordedNotification(
+		InvoicePayment $payment,
+		array $channel = ['mail']
+	) {
+		$this->send(
+			$payment->invoice->user,
+			$this->userNotificationBuilder->invoicePaymentRecorded($payment),
+			$channel
+		);
+	}
 
-	public function sendInvoicePayementReceivedNotification(
-        Invoice $invoice,
-        array $channel = ['mail']
-    ) {
-        $this->send(
-            $invoice->user,
-            $this->userNotificationBuilder->invoicePayementReceived($invoice),
-            $channel
-        );
-    }
+	public function sendInvoicePaymentReceivedNotification(
+		InvoicePayment $payment,
+		array $channel = ['mail']
+	) {
+		$this->send(
+			$payment->invoice->user,
+			$this->userNotificationBuilder->invoicePaymentReceived($payment),
+			$channel
+		);
+	}
 
-	public function sendInvoicePayementCompletedNotification(
-        Invoice $invoice,
-        array $channel = ['mail']
-    ) {
-        $this->send(
-            $invoice->user,
-            $this->userNotificationBuilder->invoicePayementCompleted($invoice),
-            $channel
-        );
-    }
+	public function sendInvoicePaymentCompletedNotification(
+		Invoice $invoice,
+		array $channel = ['mail']
+	) {
+		$this->send(
+			$invoice->user,
+			$this->userNotificationBuilder->invoicePaymentCompleted($invoice),
+			$channel
+		);
+	}
 
 	public function sendWalletCreditNotification(
 		User|int $user,

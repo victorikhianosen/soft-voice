@@ -21,6 +21,7 @@ use App\Http\Resources\PaymentResource;
 use App\Http\Repositories\InvoiceRepository;
 use App\Http\Repositories\PaymentRepository;
 use App\Http\Services\NotificationService\CustomerNotificationService;
+use App\Http\Services\NotificationService\UserNotificationService;
 use App\Traits\HasRestrictions;
 
 class InvoiceService
@@ -30,7 +31,8 @@ class InvoiceService
     public function __construct(
         protected InvoiceRepository $invoiceRepository,
         protected PaymentRepository $paymentRepository,
-        protected CustomerNotificationService $customerNotificationService
+        protected UserNotificationService $userNotificationService,
+        protected CustomerNotificationService $customerNotificationService,
     )
     {
     }
@@ -150,6 +152,11 @@ class InvoiceService
         $data['method'] = PaymentMethod::from($data['method']);
         $payment = $this->paymentRepository->create($data);
         $this->updateInvoiceStatusByPayments($data['invoice_id']);
+        if ($payment->invoice->amount_due > 0) {
+            $this->userNotificationService->sendInvoicePaymentRecordedNotification($payment);
+        } else {
+            $this->userNotificationService->sendInvoicePaymentCompletedNotification($payment->invoice);
+        }
         return new PaymentResource($payment);
     }
 

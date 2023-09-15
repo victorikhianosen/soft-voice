@@ -2,20 +2,22 @@
 
 namespace App\Http\Services\NotificationBuilder;
 
+use App\Enums\PaymentMethod;
 use App\Models\Invoice;
+use App\Models\InvoicePayment;
 
 class UserNotificationBuilder
 {
 	public function invoiceViewed(Invoice $invoice)
 	{
-		$title = $invoice->customer->name ." has viewd your invoice ". "- ". $invoice->invoice_id ;
+		$title = $invoice->customer->name . " has viewd your invoice " . "- " . $invoice->invoice_id;
 		$body = "Dear " . $invoice->user->name . ","
-				."<br>"
-				."<br>"
-				."Congratulations!"
-				."<br>"
-				."<br>"
-				. "Your invoice, invoice <b>" .$invoice->code.  "</b> has been received and viewed by ". $invoice->customer->name;
+			. "<br>"
+			. "<br>"
+			. "Congratulations!"
+			. "<br>"
+			. "<br>"
+			. "Your invoice, invoice <b>" . $invoice->code .  "</b> has been received and viewed by " . $invoice->customer->name;
 		$actions = [
 			[
 				'text' => 'Go to dashboard',
@@ -33,14 +35,14 @@ class UserNotificationBuilder
 
 	public function invoiceOverdue(Invoice $invoice)
 	{
-		$title = "Overdue Invoice - ". $invoice->invoice_id;
+		$title = "Overdue Invoice - " . $invoice->invoice_id;
 		$body = "Dear " . $invoice->user->name . "!"
-				 ."<br>"
-				 ."<br>"
-				 ."Your invoice to ". $invoice->customer->name .", ". $invoice->invoice_id ." is now overdue."
-				 ."<br>"
-				 ."<br>"
-				 . "Ensure your invoice is up to date by recording the payment or mark the invoice as paid if you have received payment from your customer.";
+			. "<br>"
+			. "<br>"
+			. "Your invoice to " . $invoice->customer->name . ", " . $invoice->invoice_id . " is now overdue."
+			. "<br>"
+			. "<br>"
+			. "Ensure your invoice is up to date by recording the payment or mark the invoice as paid if you have received payment from your customer.";
 		$actions = [
 			[
 				'text' => 'Go to Invoice',
@@ -51,23 +53,17 @@ class UserNotificationBuilder
 		return compact('title', 'body', 'actions');
 	}
 
-	public function invoicePayementRecorded(Invoice $invoice)
+	public function invoicePaymentRecorded(InvoicePayment $payment)
 	{
-		$title = "Invoice payment recorded - ". $invoice->invoice_id;
-		$body = "Dear " . $invoice->user->name . ","
-				 ."<br>"
-				 ."<br>"
-				 .$invoice->customer->name. " just made a payment of <b>NGN". number_format($invoice->amount, 2) ."</b> for invoice ". $invoice->invoice_id ." via (payment gateway)"//. $invoice->payment_gateway
-				 ."<br>"
-				 ."<br>"
-				 . "Your invoice still has a remaining balance of ". number_format($invoice->amount, 2)
-				 ."<br>"
-				 ."<br>"
-				 ."Total Amount: ". number_format($invoice->amount, 2)
-				 ."<br>"
-				 ."Amount Paid: ". number_format($invoice->amount, 2)
-				 ."<br>"
-				 ."Balance: ". number_format($invoice->amount, 2);
+		$method = str_replace('_', ' ', $payment->method->value);
+		$title = "Invoice payment recorded - " . $payment->invoice->invoice_id;
+		$body = "Dear {$payment->invoice->user->name},<br><br> {$payment->invoice->customer->name} just made a payment of <b>
+						NGN" . number_format($payment->amount, 2) . "</b> for invoice {$payment->invoice->invoice_id} via ({$method}) <br><br>
+						Your invoice still has a remaining balance of " . number_format($payment->invoice->amount_due, 2) . "<br><br>
+						Total Amount: " . number_format($payment->invoice->amount, 2) ."<br>
+						Amount Paid: " . number_format($payment->invoice->amount_paid, 2) . "<br>
+						Balance: " . number_format($payment->invoice->amount_due, 2);
+
 		$actions = [
 			[
 				'text' => 'Go to dashboard',
@@ -76,30 +72,30 @@ class UserNotificationBuilder
 			],
 			[
 				'text' => 'View as customer',
-				'url'  => config('env.spa_url') . '/' . $invoice->code,
+				'url'  => config('env.spa_url') . '/' . $payment->invoice->code,
 				'outlined' => true
 			],
 		];
 		return compact('title', 'body', 'actions');
 	}
 
-	public function invoicePayementReceived(Invoice $invoice)
+	public function invoicePaymentReceived(InvoicePayment $payment)
 	{
-		$title = "Payment received from ". $invoice->customer->name ." - ". $invoice->invoice_id;
-		$body = "Dear " . $invoice->user->name . ","
-				 ."<br>"
-				 ."<br>"
-				 ."Your payment of <b> NGN". number_format($invoice->amount, 2) ."</b> for invoice ". $invoice->invoice_id ." has been acknowledged and recorded."
-				 ."<br>"
-				 ."<br>"
-				 . "Your invoice still has a remaining balance of ". number_format($invoice->amount, 2)
-				 ."<br>"
-				 ."<br>"
-				 ."Total Amount: ". number_format($invoice->amount, 2)
-				 ."<br>"
-				 ."Amount Paid: ". number_format($invoice->amount, 2)
-				 ."<br>"
-				 ."Balance: ". number_format($invoice->amount, 2);
+		$title = "Payment received from " . $payment->invoice->customer->name . " - " . $payment->invoice->invoice_id;
+		$body = "Dear " . $payment->invoice->user->name . ","
+			. "<br>"
+			. "<br>"
+			. "Your payment of <b> NGN" . number_format($payment->amount, 2) . "</b> for invoice " . $payment->invoice->invoice_id . " has been acknowledged and recorded."
+			. "<br>"
+			. "<br>"
+			. "Your invoice still has a remaining balance of " . number_format($payment->invoice->amount_due, 2)
+			. "<br>"
+			. "<br>"
+			. "Total Amount: " . number_format($payment->invoice->amount, 2)
+			. "<br>"
+			. "Amount Paid: " . number_format($payment->invoice->amount_paid, 2)
+			. "<br>"
+			. "Balance: " . number_format($payment->invoice->amount_due, 2);
 		$actions = [
 			[
 				'text' => 'Go to wallet',
@@ -110,17 +106,16 @@ class UserNotificationBuilder
 		return compact('title', 'body', 'actions');
 	}
 
-	public function invoicePayementCompleted(Invoice $invoice)
+	public function invoicePaymentCompleted(Invoice $invoice)
 	{
-		$dueDate = \Carbon\Carbon::parse($invoice->due_date);
-		$title = "Payment Completed - ". $invoice->invoice_id;
+		$title = "Payment Completed - " . $invoice->invoice_id;
 		$body = "Congratulations " . $invoice->user->name . "!"
-				 ."<br>"
-				 ."<br>"
-				 ."You have successfully received full payment for invoice ". $invoice->invoice_id ."."
-				 ."<br>"
-				 ."<br>"
-				 ."Create more invoices to receive more payment. ";
+			. "<br>"
+			. "<br>"
+			. "You have successfully received full payment for invoice " . $invoice->invoice_id . "."
+			. "<br>"
+			. "<br>"
+			. "Create more invoices to receive more payment. ";
 		$actions = [
 			[
 				'text' => 'Go to Dashboard',
@@ -143,7 +138,7 @@ class UserNotificationBuilder
 	{
 		$title = "Wallet Debited";
 		$body = 'Wallet debited content goes here';
-		$actions= [];
+		$actions = [];
 		return compact('title', 'body', 'actions');
 	}
 
@@ -151,7 +146,7 @@ class UserNotificationBuilder
 	{
 		$title = "Deposit Queued";
 		$body = 'Deposit queued content goes here';
-		$actions= [];
+		$actions = [];
 		return compact('title', 'body', 'actions');
 	}
 

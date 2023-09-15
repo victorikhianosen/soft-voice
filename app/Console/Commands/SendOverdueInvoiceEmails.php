@@ -17,8 +17,10 @@ class SendOverdueInvoiceEmails extends Command
         parent::__construct();
     }
 
-    public function handle(CustomerNotificationService $customerNotificationService, UserNotificationService $userNotificationService)
-    {
+    public function handle(
+        UserNotificationService $userNotificationService,
+        CustomerNotificationService $customerNotificationService,
+    ) {
         $overdueInvoices = Invoice::where('due_date', '<', now())
             ->whereNull('overdue_email_sent')
             ->get();

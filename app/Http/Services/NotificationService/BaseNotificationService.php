@@ -34,8 +34,10 @@ abstract class BaseNotificationService
         $actions = $data['actions'] ?? [];
         if (in_array('mail', $channel) || in_array('database', $channel)) {
             $channel = array_filter($channel, fn ($c) => in_array($c, $channel));
+            logger(get_class($this));
             try {
-                $recipient->notify(new CustomNotification($title, $body, $actions, $channel));
+                $hasCustomSender = get_class($this) === CustomerNotificationService::class;
+                $recipient->notify(new CustomNotification($title, $body, $actions, $channel, $hasCustomSender));
             } catch (Exception $e) {
                 Log::error($e->getMessage());
             }
