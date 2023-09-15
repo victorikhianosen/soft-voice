@@ -35,35 +35,35 @@ class UserNotificationService extends BaseNotificationService
         );
     }
 
-	public function sendInvoicePayementRecordedNotification(
+	public function sendInvoicepaymentRecordedNotification(
         Invoice $invoice,
         array $channel = ['mail']
     ) {
         $this->send(
             $invoice->user,
-            $this->userNotificationBuilder->invoicePayementRecorded($invoice),
+            $this->userNotificationBuilder->invoicepaymentRecorded($invoice),
             $channel
         );
     }
 
-	public function sendInvoicePayementReceivedNotification(
+	public function sendInvoicepaymentReceivedNotification(
         Invoice $invoice,
         array $channel = ['mail']
     ) {
         $this->send(
             $invoice->user,
-            $this->userNotificationBuilder->invoicePayementReceived($invoice),
+            $this->userNotificationBuilder->invoicepaymentReceived($invoice),
             $channel
         );
     }
 
-	public function sendInvoicePayementCompletedNotification(
+	public function sendInvoicepaymentCompletedNotification(
         Invoice $invoice,
         array $channel = ['mail']
     ) {
         $this->send(
             $invoice->user,
-            $this->userNotificationBuilder->invoicePayementCompleted($invoice),
+            $this->userNotificationBuilder->invoicepaymentCompleted($invoice),
             $channel
         );
     }

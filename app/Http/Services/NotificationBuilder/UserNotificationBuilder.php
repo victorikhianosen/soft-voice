@@ -51,7 +51,7 @@ class UserNotificationBuilder
 		return compact('title', 'body', 'actions');
 	}
 
-	public function invoicePayementRecorded(Invoice $invoice)
+	public function invoicepaymentRecorded(Invoice $invoice)
 	{
 		$title = "Invoice payment recorded - ". $invoice->invoice_id;
 		$body = "Dear " . $invoice->user->name . ","
@@ -83,7 +83,7 @@ class UserNotificationBuilder
 		return compact('title', 'body', 'actions');
 	}
 
-	public function invoicePayementReceived(Invoice $invoice)
+	public function invoicepaymentReceived(Invoice $invoice)
 	{
 		$title = "Payment received from ". $invoice->customer->name ." - ". $invoice->invoice_id;
 		$body = "Dear " . $invoice->user->name . ","
@@ -110,7 +110,7 @@ class UserNotificationBuilder
 		return compact('title', 'body', 'actions');
 	}
 
-	public function invoicePayementCompleted(Invoice $invoice)
+	public function invoicepaymentCompleted(Invoice $invoice)
 	{
 		$dueDate = \Carbon\Carbon::parse($invoice->due_date);
 		$title = "Payment Completed - ". $invoice->invoice_id;
