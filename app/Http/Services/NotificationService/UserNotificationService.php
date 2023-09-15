@@ -24,6 +24,50 @@ class UserNotificationService extends BaseNotificationService
 		);
 	}
 
+	public function sendInvoiceOverdueNotification(
+        Invoice $invoice,
+        array $channel = ['mail']
+    ) {
+        $this->send(
+            $invoice->user,
+            $this->userNotificationBuilder->invoiceOverdue($invoice),
+            $channel
+        );
+    }
+
+	public function sendInvoicePayementRecordedNotification(
+        Invoice $invoice,
+        array $channel = ['mail']
+    ) {
+        $this->send(
+            $invoice->user,
+            $this->userNotificationBuilder->invoicePayementRecorded($invoice),
+            $channel
+        );
+    }
+
+	public function sendInvoicePayementReceivedNotification(
+        Invoice $invoice,
+        array $channel = ['mail']
+    ) {
+        $this->send(
+            $invoice->user,
+            $this->userNotificationBuilder->invoicePayementReceived($invoice),
+            $channel
+        );
+    }
+
+	public function sendInvoicePayementCompletedNotification(
+        Invoice $invoice,
+        array $channel = ['mail']
+    ) {
+        $this->send(
+            $invoice->user,
+            $this->userNotificationBuilder->invoicePayementCompleted($invoice),
+            $channel
+        );
+    }
+
 	public function sendWalletCreditNotification(
 		User|int $user,
 		float $amount,
