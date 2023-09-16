@@ -72,7 +72,7 @@ class UserNotificationBuilder
 			],
 			[
 				'text' => 'View as customer',
-				'url'  => config('env.spa_url') . '/' . $invoice->code . '?action=view',
+				'url'  => config('env.spa_url') . '/' . $payment->invoice->code . '?action=view',
 				'outlined' => true
 			],
 		];
