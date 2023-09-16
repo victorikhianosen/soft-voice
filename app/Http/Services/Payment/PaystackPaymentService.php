@@ -13,6 +13,7 @@ use App\Http\Repositories\SubscriptionRepository;
 use App\Http\Repositories\OnlinePaymentRepository;
 use App\Http\Repositories\PaymentRepository;
 use App\Http\Services\InvoiceService;
+use App\Http\Services\NotificationService\UserNotificationService;
 use App\Http\Services\WalletService;
 use App\Models\Invoice;
 use App\Models\Subscription;
@@ -33,6 +34,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		protected PaymentRepository $paymentRepository,
 		protected SubscriptionRepository $subscriptionRepository,
 		protected OnlinePaymentRepository $onlinePaymentRepository,
+		protected UserNotificationService $userNotificationService,
 	) {
 	}
 
@@ -182,6 +184,12 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		$user = User::where('email', $customer['email'])->first();
 		$plan = Plan::where('paystack_id', $plan['plan_code'])->first();
 		if ($user && $plan) {
+			if ($user->active_subscription) {
+				$user->active_subscription->update([
+					'ends_at' => now(),
+					'status'  => 'cancelled',
+				]);
+			}
 			$this->subscriptionRepository->create([
 				'user_id'    => $user->id,
 				'plan_id'    => $plan->id,
@@ -223,7 +231,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 
 			if ($metadata['type'] === 'invoice' && $payment->model_type === Invoice::class) {
 				$invoice = Invoice::find($payment->model_id);
-				$this->paymentRepository->create([
+				$invoicePayment = $this->paymentRepository->create([
 					'invoice_id'    => $invoice->id,
 					'date'          => now()->format('Y-m-d'),
 					'method'        => 'card',
@@ -232,6 +240,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				]);
 
 				$this->invoiceService->updateInvoiceStatusByPayments($invoice->id);
+				$this->userNotificationService->sendInvoicePaymentReceivedNotification($invoicePayment);
 
 				if ($metadata['auth_type'] === 'self') {
 					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount);

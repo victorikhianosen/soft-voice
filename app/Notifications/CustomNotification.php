@@ -8,22 +8,17 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\HtmlString;
 
 class CustomNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $title;
-    public $body;
-    public $modes;
-    public $actions;
-
     public function __construct(
-        string $title,
-        string $body,
-        array $actions = [],
-        array $modes = ['mail', 'database']
+        public string $title,
+        public string $body,
+        public array $actions = [],
+        public array $modes = ['mail', 'database'],
+        public bool $hasCustomSender = false
     ) {
         $this->title = $title;
         $this->body = $body;
@@ -50,11 +45,14 @@ class CustomNotification extends Notification implements ShouldQueue
         $mailMessage = (new MailMessage)
             ->subject($this->title)
             ->view('mails.default', [
-                'body' => $this->body,
-                'actions' => $this->actions,
-                'user' => $user
+                'body'            => $this->body,
+                'actions'         => $this->actions,
+                'user'            => $user,
+                'hasCustomSender' => $this->hasCustomSender,
             ]);
-        return $user ? $mailMessage->from($user->email, $user->name) : $mailMessage;
+        return ($user && $this->hasCustomSender)
+            ? $mailMessage->from($user->email, $user->name)
+            : $mailMessage;
     }
 
     private function notifyingUser($notifiable) {

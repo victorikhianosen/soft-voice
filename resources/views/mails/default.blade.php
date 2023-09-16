@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.cdnfonts.com/css/product-sans?styles=15767" rel="stylesheet">
-                
+
     <style>
         @media only screen and (max-width: 600px) {
         .inner-body {
@@ -58,22 +58,19 @@
                 <td align="center" style="box-sizing: border-box; position: relative;">
                 <table class="content" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing: border-box; position: relative; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%; margin: 0; padding: 0; width: 100%;">
                     <tbody>
-                        <tr>
+                        <tr style="text-align: center">
                             <td class="header" style="box-sizing: border-box; position: relative; padding: 25px 0; text-align: center;">
                                 <a target="_blank" rel="noopener noreferrer" href="{{ config('env.spa_url') }}" style="box-sizing: border-box; position: relative; color: #3d4852; font-size: 19px; font-weight: bold; text-decoration: none; display: inline-block;" class="logo-link">
-                                    
-                                    @php
-                                        logger($user->setting['business_logo']);
-                                    @endphp
-
-                                    @if($user)
+                                    @if($user && $hasCustomSender)
                                         @if($user->setting['business_logo'])
-                                            <img src="{{ $user->setting['business_logo'] }}" class="logo" alt="..." style="width: 120px;">
+                                            <img src="{{ $user->setting['business_logo'] }}" class="logo" alt="..." style="width: 120px; margin: auto">
                                         @else
-                                            <span class="logo" style="box-sizing: border-box; position: relative; width: 200px; height: auto; color: #0000006b; font-size: 24px;">
+                                            <span class="logo" style="box-sizing: border-box; position: relative; width: 200px; height: auto; color: #0000006b; font-size: 24px; text-align: center">
                                                 {{ $user->name }}
                                             </span>
                                         @endif
+                                    @else
+                                        <img src="{{ asset('assets/images/logo.png') }}" class="logo" alt="..." style="width: 120px; margin: auto">
                                     @endif
                                 </a>
                             </td>
