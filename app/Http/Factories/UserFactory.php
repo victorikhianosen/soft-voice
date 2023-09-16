@@ -22,7 +22,7 @@ class UserFactory
         $user->subscriptions()->create([
             'plan_id'   => $plan->id,
             'starts_at' => now(),
-            'ends_at'   => now()->addDecade(),
+            'ends_at'   => now()->addMonth(),
             'status'    => 'active',
         ]);
 
