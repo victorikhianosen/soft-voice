@@ -24,7 +24,7 @@ class UserNotificationBuilder
 			],
 			[
 				'text' => 'View as customer',
-				'url'  => config('env.spa_url'),
+				'url'  => config('env.spa_url') . '?action=view',
 				'outlined' => true
 			],
 		];
@@ -44,7 +44,7 @@ class UserNotificationBuilder
 		$actions = [
 			[
 				'text' => 'Go to Invoice',
-				'url'  => config('env.spa_url') . '/' . $invoice->code,
+				'url'  => config('env.spa_url') . '/' . $invoice->code . '?action=view',
 				'outlined' => false
 			]
 		];
@@ -76,7 +76,7 @@ class UserNotificationBuilder
 			],
 			[
 				'text' => 'View as customer',
-				'url'  => config('env.spa_url') . '/' . $invoice->code,
+				'url'  => config('env.spa_url') . '/' . $invoice->code . '?action=view',
 				'outlined' => true
 			],
 		];

@@ -20,12 +20,12 @@ class CustomerNotificationBuilder
 		$actions = [
 			[
 				'text' => 'View Invoice',
-				'url'  => config('env.spa_url') . '/' . $invoice->code,
+				'url'  => config('env.spa_url') . '/' . $invoice->code . '?action=view',
 				'outlined' => false
 			],
 			[
 				'text' => 'Make Secure Payment',
-				'url'  => config('env.spa_url') . '/' . $invoice->code,
+				'url'  => config('env.spa_url') . '/' . $invoice->code . '?action=payment',
 				'outlined' => true
 			]
 		];
@@ -45,7 +45,7 @@ class CustomerNotificationBuilder
 		$actions = [
 			[
 				'text' => 'View Invoice Now',
-				'url'  => config('env.spa_url') . '/' . $invoice->code,
+				'url'  => config('env.spa_url') . '/' . $invoice->code . '?action=view',
 				'outlined' => false
 			]
 		];
@@ -64,12 +64,12 @@ class CustomerNotificationBuilder
 		$actions = [
 			[
 				'text' => 'View Invoice Now',
-				'url'  => config('env.spa_url') . '/' . $invoice->code,
+				'url'  => config('env.spa_url') . '/' . $invoice->code . '?action=view',
 				'outlined' => false
 			],
 			[
 				'text' => 'Make Secure Payment',
-				'url'  => config('env.spa_url') . '/' . $invoice->code,
+				'url'  => config('env.spa_url') . '/' . $invoice->code . '?action=payment',
 				'outlined' => true
 			]
 		];
@@ -86,7 +86,7 @@ class CustomerNotificationBuilder
 		$actions = [
 			[
 				'text' => 'View Receipt now',
-				'url'  => config('env.spa_url') . '/' . $invoice->code,
+				'url'  => config('env.spa_url') . '/' . $invoice->code . '?action=view',
 				'outlined' => false
 			]
 		];
@@ -106,7 +106,7 @@ class CustomerNotificationBuilder
 		$actions = [
 			[
 				'text' => 'View Estimate',
-				'url'  => config('env.spa_url') . '/' . $estimate->code,
+				'url'  => config('env.spa_url') . '/' . $estimate->code . '?action=view',
 				'outlined' => false
 			]
 		];
