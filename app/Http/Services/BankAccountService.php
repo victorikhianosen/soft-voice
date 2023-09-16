@@ -20,12 +20,18 @@ class BankAccountService
     {
         $data['user_id'] = request()->user()->id;
         $bankAccount = $this->bankAccountRepository->create($data);
+        if (isset($data['preferred']) && $data['preferred']) {
+            $this->setAsPreferred($bankAccount->id);
+        }
         return new BankAccountResource($bankAccount);
     }
 
     public function update(BankAccount $bankAccount, array $data): BankAccountResource
     {
         $this->bankAccountRepository->update($bankAccount->id, $data);
+        if (isset($data['preferred']) && $data['preferred']) {
+            $this->setAsPreferred($bankAccount->id);
+        }
         return new BankAccountResource($bankAccount->refresh());
     }
 

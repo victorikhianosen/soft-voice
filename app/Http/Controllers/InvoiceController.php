@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Enums\Status;
 use App\Models\Invoice;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\ExportRequest;
 use App\Http\Requests\InvoiceRequest;
@@ -41,9 +42,11 @@ class InvoiceController extends Controller
         return $this->success(data: new InvoiceResource($invoice));
     }
 
-    public function showPublic(Invoice $invoice): JsonResponse
+    public function showPublic(Request $request, Invoice $invoice): JsonResponse
     {
-        $this->userNotificationService->sendInvoiceViewedNotification($invoice);
+        if (!($request['notify'] === 'false')) {
+            $this->userNotificationService->sendInvoiceViewedNotification($invoice);
+        }
         return $this->success(data: new InvoiceResource($invoice));
     }
 

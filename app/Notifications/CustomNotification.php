@@ -14,16 +14,12 @@ class CustomNotification extends Notification implements ShouldQueue
     use Queueable;
 
     public function __construct(
-        public string $title,
+        public string|array $title,
         public string $body,
         public array $actions = [],
         public array $modes = ['mail', 'database'],
         public bool $hasCustomSender = false
     ) {
-        $this->title = $title;
-        $this->body = $body;
-        $this->modes = $modes;
-        $this->actions = $actions;
     }
 
     public function via($notifiable): array
@@ -34,7 +30,7 @@ class CustomNotification extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
-            'title' => $this->title,
+            'title' => $this->getTitle('database'),
             'body' => $this->body
         ];
     }
@@ -43,7 +39,7 @@ class CustomNotification extends Notification implements ShouldQueue
     {
         $user = $this->notifyingUser($notifiable);
         $mailMessage = (new MailMessage)
-            ->subject($this->title)
+            ->subject($this->getTitle('mail'))
             ->view('mails.default', [
                 'body'            => $this->body,
                 'actions'         => $this->actions,
@@ -61,5 +57,12 @@ class CustomNotification extends Notification implements ShouldQueue
         }
 
         return null;
+    }
+
+    private function getTitle(string $channel)
+    {
+        return is_string($this->title)
+            ? $this->title
+            : ($this->title[$channel] ?? null);
     }
 }

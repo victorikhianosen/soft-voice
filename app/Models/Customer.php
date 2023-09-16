@@ -22,7 +22,8 @@ class Customer extends Model
         'website',
         'country',
         'state',
-        'whatsapp_number'
+        'whatsapp_number',
+        'country_code'
     ];
 
     public function scopeSearch($q, $query)

@@ -128,7 +128,9 @@ class InvoiceService
 
     public function send(Invoice $invoice)
     {
-        $this->invoiceRepository->update($invoice, ['status' => 'sent']);
+        if ($invoice->status === 'draft') {
+            $this->invoiceRepository->update($invoice, ['status' => 'sent']);
+        }
         $this->customerNotificationService->sendInvoiceToCustomer($invoice);
     }
 

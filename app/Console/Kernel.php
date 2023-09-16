@@ -18,6 +18,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('export:remove')->everyMinute();
 
         $schedule->command('invoices:send-overdue-emails')->daily();
+
+        $schedule->command('free-subscription:create')->dailyAt('01:00');
     }
 
     /**

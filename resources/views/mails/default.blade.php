@@ -60,12 +60,12 @@
                     <tbody>
                         <tr style="text-align: center">
                             <td class="header" style="box-sizing: border-box; position: relative; padding: 25px 0; text-align: center;">
-                                <a target="_blank" rel="noopener noreferrer" href="{{ config('env.spa_url') }}" style="box-sizing: border-box; position: relative; color: #3d4852; font-size: 19px; font-weight: bold; text-decoration: none; display: inline-block;" class="logo-link">
+                                <a target="_blank" rel="noopener noreferrer" href="{{ config('env.spa_url') }}" style="box-sizing: border-box; position: relative; color: #3d4852; font-size: 19px; font-weight: bold; text-decoration: none; display: inline-block; text-align: center;" class="logo-link">
                                     @if($user && $hasCustomSender)
                                         @if($user->setting['business_logo'])
                                             <img src="{{ $user->setting['business_logo'] }}" class="logo" alt="..." style="width: 120px; margin: auto">
                                         @else
-                                            <span class="logo" style="box-sizing: border-box; position: relative; width: 200px; height: auto; color: #0000006b; font-size: 24px; text-align: center">
+                                            <span class="logo" style="box-sizing: border-box; position: relative; width: 200px; height: auto; color: #0000006b; font-size: 24px; text-align: center; margin: auto;">
                                                 {{ $user->name }}
                                             </span>
                                         @endif

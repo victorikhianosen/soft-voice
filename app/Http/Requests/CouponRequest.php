@@ -15,7 +15,11 @@ class CouponRequest extends FormRequest
     public function rules()
     {
         return [
-            "code" => ["required", "string", Rule::unique('coupons')->ignore(optional($this->coupon)->id)],
+            "code" => [
+                "required",
+                "string",
+                Rule::unique('coupons')->where('user_id', $this->user()->id)->ignore(optional($this->coupon)->id, 'id')
+            ],
             "discount" => ["required", "numeric", "gt:0"],
             "total" => ["required", "numeric", "gt:0"],
             "expiry_date" => ["required", "date"],

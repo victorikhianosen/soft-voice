@@ -216,9 +216,23 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				'model_id'   => $user->id,
 				'status'     => ($paid ? PaymentStatus::SUCCESS : PaymentStatus::FAILED)
 			]);
+
 			$currentSubscription = $this->subscriptionRepository->getActive($user->id);
-			$currentSubscription->ends_at = now()->addMonths($plan->duration);
-			$currentSubscription->save();
+
+			$currentSubscription->update([
+				'status'  => 'expired',
+				'ends_at' => now(),
+			]);
+
+			$this->subscriptionRepository->create([
+				'user_id'    => $user->id,
+				'plan_id'    => $plan->id,
+				'starts_at'  => now(),
+				'ends_at'    => now()->addMonths($plan->duration),
+				'status'     => 'active',
+				'gateway'    => 'paystack',
+				'gateway_id' => $currentSubscription->gateway_id,
+			]);
 		}
 	}
 
@@ -252,7 +266,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 	private function processDisableSubscription(array $data): void
 	{
 		$subscription = Subscription::where('gateway_id', $data['subscription_code'])->first();
-		$this->subscriptionRepository->update($subscription, ['status'  => 'completed', 'ends_at' => now()]);
+		$this->subscriptionRepository->update($subscription, ['status'  => 'expired', 'ends_at' => now()]);
 
 		$plan = Plan::where('slug', 'basic')->first();
 		$this->subscriptionRepository->create([

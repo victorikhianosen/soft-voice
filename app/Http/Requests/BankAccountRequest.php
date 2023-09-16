@@ -17,9 +17,14 @@ class BankAccountRequest extends FormRequest
         return [
             'bank_name' => ['required', 'string'],
             'account_name' => ['required', 'string'],
-            'account_number' => ['required', 'string', Rule::unique('bank_accounts')->ignore(optional($this->bank_account)->id)],
+            'account_number' => [
+                'required',
+                'string',
+                Rule::unique('bank_accounts')->where('user_id', $this->user()->id)->ignore(optional($this->bank_account)->id, 'id'),
+            ],
             'ifsc_code' => ['nullable', 'string'],
             'other_info' => ['nullable'],
+            'preferred'  => ['nullable', 'boolean'],
         ];
     }
 }
