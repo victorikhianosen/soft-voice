@@ -27,7 +27,7 @@ class UserNotificationService extends BaseNotificationService
 
 	public function sendInvoiceOverdueNotification(
 		Invoice $invoice,
-		array $channel = ['mail']
+		array $channel = ['mail', 'database']
 	) {
 		$this->send(
 			$invoice->user,
@@ -38,7 +38,7 @@ class UserNotificationService extends BaseNotificationService
 
 	public function sendInvoicePaymentRecordedNotification(
 		InvoicePayment $payment,
-		array $channel = ['mail']
+		array $channel = ['mail', 'database']
 	) {
 		$this->send(
 			$payment->invoice->user,
@@ -49,7 +49,7 @@ class UserNotificationService extends BaseNotificationService
 
 	public function sendInvoicePaymentReceivedNotification(
 		InvoicePayment $payment,
-		array $channel = ['mail']
+		array $channel = ['mail', 'database']
 	) {
 		$this->send(
 			$payment->invoice->user,
@@ -60,7 +60,7 @@ class UserNotificationService extends BaseNotificationService
 
 	public function sendInvoicePaymentCompletedNotification(
 		Invoice $invoice,
-		array $channel = ['mail']
+		array $channel = ['mail', 'database']
 	) {
 		$this->send(
 			$invoice->user,
