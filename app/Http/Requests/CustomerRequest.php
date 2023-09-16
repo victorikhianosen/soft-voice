@@ -28,7 +28,12 @@ class CustomerRequest extends FormRequest
     {
         return [
             "name"            => ["required", "string"],
-            "email"           => ["required", "string", Rule::unique('customers')->ignore(optional($this->customer)->id)],
+            "email"           => [
+                "required",
+                "string",
+                Rule::unique('customers')->where('user_id', $this->user()->id)->ignore(optional($this->customer)->id, 'id'),
+            ],
+            "country_code"    => ["required", "numeric"],
             "phone"           => ["required", "numeric"],
             "whatsapp_number" => ["nullable", "numeric"],
             "address"         => ["nullable", "string"],
