@@ -15,6 +15,7 @@ class StripeKey extends Model
         'user_id',
         'public_key',
         'secret_key',
+        'webhook_id',
     ];
 
     public function setPublicKeyAttribute(?string $value)

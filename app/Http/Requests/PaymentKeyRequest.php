@@ -18,6 +18,7 @@ class PaymentKeyRequest extends FormRequest
             'public_key' => ['required_unless:type,paypal'],
             'secret_key' => ['required_unless:type,paypal'],
             'encryption_key' => ['required_if:type,flutterwave'],
+            'webhook_id' => ['required_if:type,stripe'],
             'username' => ['required_if:type,paypal'],
             'password' => ['required_if:type,paypal'],
             'signature' => ['required_if:type,paypal'],
