@@ -26,6 +26,8 @@ class FlutterwavePaymentService implements PaymentGatewayInterface
 
 	const PERCENTAGE_FEE = 1.4 / 100;
 
+	const CURRENCY = "NGN";
+
 	public function __construct(
 		protected WalletService $walletService,
 		protected InvoiceService $invoiceService,
@@ -281,7 +283,7 @@ class FlutterwavePaymentService implements PaymentGatewayInterface
 				$this->userNotificationService->sendInvoicePaymentReceivedNotification($invoicePayment);
 
 				if ($metadata['auth_type'] === 'self') {
-					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount);
+					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount, self::CURRENCY);
 				}
 			}
 		}

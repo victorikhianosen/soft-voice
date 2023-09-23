@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Currency;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class WithdrawalRequest extends FormRequest
@@ -14,7 +16,8 @@ class WithdrawalRequest extends FormRequest
     public function rules()
     {
         return [
-            'amount' => ['required', 'numeric', 'gt:0']
+            'amount' => ['required', 'numeric', 'gt:0'],
+            'currency' => ['required', 'in:'. implode(',', Currency::currencies())]
         ];
     }
 }

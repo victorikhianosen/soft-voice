@@ -2,10 +2,10 @@
 
 namespace App\Http\Services\NotificationService;
 
-use App\Models\User;
 use App\Models\Invoice;
 use App\Http\Services\NotificationBuilder\UserNotificationBuilder;
 use App\Models\InvoicePayment;
+use App\Models\Transaction;
 
 class UserNotificationService extends BaseNotificationService
 {
@@ -70,61 +70,45 @@ class UserNotificationService extends BaseNotificationService
 	}
 
 	public function sendWalletCreditNotification(
-		User|int $user,
-		float $amount,
+		Transaction $transaction,
 		array $channel = ['mail', 'database']
 	) {
-		if (is_integer($user)) {
-			$user = User::find($user);
-		}
 		$this->send(
-			$user,
-			$this->userNotificationBuilder->walletCredited($amount),
+			$transaction->user,
+			$this->userNotificationBuilder->walletCredited($transaction),
 			$channel
 		);
 	}
 
 	public function sendWalletDebitNotification(
-		User|int $user,
-		float $amount,
+		Transaction $transaction,
 		array $channel = ['mail', 'database']
 	) {
-		if (is_integer($user)) {
-			$user = User::find($user);
-		}
 		$this->send(
-			$user,
-			$this->userNotificationBuilder->walletDebited($amount),
+			$transaction->user,
+			$this->userNotificationBuilder->walletDebited($transaction),
 			$channel
 		);
 	}
 
 	public function sendDepositQueuedNotification(
-		User|int $user,
-		float $amount,
+		Transaction $transaction,
 		array $channel = ['mail', 'database']
 	) {
-		if (is_integer($user)) {
-			$user = User::find($user);
-		}
 		$this->send(
-			$user,
-			$this->userNotificationBuilder->depositQueued($amount),
+			$transaction->user,
+			$this->userNotificationBuilder->depositQueued($transaction),
 			$channel
 		);
 	}
 
 	public function sendWithdrawalQueuedNotification(
-		User|int $user,
-		float $amount,
+		Transaction $transaction,
 		array $channel = ['mail', 'database']
 	) {
-		if (is_integer($user)) {
-			$user = User::find($user);
-		}
 		$this->send(
-			$user,
-			$this->userNotificationBuilder->withdrawalQueued($amount),
+			$transaction->user,
+			$this->userNotificationBuilder->withdrawalQueued($transaction),
 			$channel
 		);
 	}

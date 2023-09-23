@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Enums\Currency;
 use App\Enums\Status;
 use App\Exceptions\CustomerException;
 use App\Http\Repositories\TransactionRepository;
@@ -18,14 +19,14 @@ class WalletService
     ) {
     }
 
-    public function processWithdrawal(int $userId, float $amount)
+    public function processWithdrawal(int $userId, float $amount, string $currency)
     {
-        $balance = $this->walletRepository->getUserBalance($userId);
+        $balance = $this->walletRepository->getUserBalance($userId)[$currency];
         if ($amount > $balance) {
             abort(400, "Insufficient wallet balance");
         }
-        $this->walletRepository->debitUserWallet($userId, $amount);
-        $this->transactionRepository->create([
+        $this->walletRepository->debitUserWallet($userId, $amount, $currency);
+        $transaction = $this->transactionRepository->create([
             'user_id' => $userId,
             'reference' => $this->transactionService->generateReference(),
             'type'    => 'withdrawal',
@@ -33,14 +34,15 @@ class WalletService
             'description' => 'Withdrawal Request',
             'method'   => 'wallet',
             'status'  => Status::PENDING->value,
+            'currency' => $currency,
         ]);
-        $this->userNotificationService->sendWithdrawalQueuedNotification($userId, $amount);
-        $this->userNotificationService->sendWalletDebitNotification($userId, $amount);
+        $this->userNotificationService->sendWithdrawalQueuedNotification($transaction);
+        $this->userNotificationService->sendWalletDebitNotification($transaction);
     }
 
-    public function processDeposit(int $userId, float $amount)
+    public function processDeposit(int $userId, float $amount, string $currency)
     {
-        $this->transactionRepository->create([
+        $transaction = $this->transactionRepository->create([
             'user_id' => $userId,
             'reference' => $this->transactionService->generateReference(),
             'type'    => 'deposit',
@@ -48,13 +50,14 @@ class WalletService
             'description' => 'Deposit Request',
             'method'   => 'deposit',
             'status'  => Status::PENDING->value,
+            'currency' => $currency,
         ]);
-        $this->userNotificationService->sendDepositQueuedNotification($userId, $amount);
+        $this->userNotificationService->sendDepositQueuedNotification($transaction);
     }
 
-    public function fundUserWallet(int $userId, float $amount)
+    public function fundUserWallet(int $userId, float $amount, string $currency)
     {
-        $this->transactionRepository->create([
+        $transaction = $this->transactionRepository->create([
             'user_id' => $userId,
             'reference' => $this->transactionService->generateReference(),
             'type'    => 'deposit',
@@ -62,8 +65,9 @@ class WalletService
             'description' => 'Invoice Payment Deposit',
             'method'   => 'card',
             'status'  => Status::APPROVED->value,
+            'currency' => $currency,
         ]);
-        $this->walletRepository->creditUserWallet($userId, $amount);
-        $this->userNotificationService->sendWalletCreditNotification($userId, $amount);
+        $this->walletRepository->creditUserWallet($userId, $amount, $currency);
+        $this->userNotificationService->sendWalletCreditNotification($transaction);
     }
 }

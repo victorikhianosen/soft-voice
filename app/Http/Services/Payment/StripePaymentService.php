@@ -13,7 +13,6 @@ use App\Models\Subscription;
 use App\Models\OnlinePayment;
 use App\Traits\HasRestrictions;
 use App\Http\Services\WalletService;
-use Illuminate\Support\Facades\Http;
 use App\Http\Services\InvoiceService;
 use App\Http\Repositories\PaymentRepository;
 use App\Http\Interfaces\PaymentGatewayInterface;
@@ -28,6 +27,8 @@ class StripePaymentService implements PaymentGatewayInterface
 
 	const FIXED_FEE = 0.30;
 	const PERCENTAGE_FEE = 2.9 / 100;
+
+	const CURRENCY = "USD";
 
 	public function __construct(
 		protected WalletService $walletService,
@@ -156,7 +157,7 @@ class StripePaymentService implements PaymentGatewayInterface
 		$sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
 		$event = [];
 
-		$webhookId = config('payment.paystack.webhook_id');
+		$webhookId = config('payment.stripe.webhook_id');
 
 		$metadata = $payload['data']['object']['metadata'];
 		$type = $metadata['type'] ?? null;
@@ -289,7 +290,7 @@ class StripePaymentService implements PaymentGatewayInterface
 				$this->userNotificationService->sendInvoicePaymentReceivedNotification($invoicePayment);
 
 				if ($metadata['auth_type'] === 'self') {
-					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount);
+					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount, self::CURRENCY);
 				}
 			}
 		}

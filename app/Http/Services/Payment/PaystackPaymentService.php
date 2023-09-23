@@ -28,6 +28,8 @@ class PaystackPaymentService implements PaymentGatewayInterface
 	const PERCENTAGE_FEE = 1.5 / 100;
 	const FEE_WAIVER_THRESHOLD = 2500;
 
+	const CURRENCY = "NGN";
+
 	public function __construct(
 		protected WalletService $walletService,
 		protected InvoiceService $invoiceService,
@@ -257,7 +259,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				$this->userNotificationService->sendInvoicePaymentReceivedNotification($invoicePayment);
 
 				if ($metadata['auth_type'] === 'self') {
-					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount);
+					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount, self::CURRENCY);
 				}
 			}
 		}
