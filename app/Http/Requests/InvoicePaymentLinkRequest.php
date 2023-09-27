@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PaymentGateway;
 use Illuminate\Foundation\Http\FormRequest;
 
 class InvoicePaymentLinkRequest extends FormRequest
@@ -17,6 +18,7 @@ class InvoicePaymentLinkRequest extends FormRequest
             'invoice_id' => ['required', "numeric", "exists:invoices,id"],
             'amount'     => ['required', 'gt:0'],
             'wallet'     => ['required', 'boolean'],
+            'gateway'    => ['required', 'in:' . implode(',', PaymentGateway::values())],
         ];
     }
 }

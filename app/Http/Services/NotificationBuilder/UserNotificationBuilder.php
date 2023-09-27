@@ -2,9 +2,9 @@
 
 namespace App\Http\Services\NotificationBuilder;
 
-use App\Enums\PaymentMethod;
 use App\Models\Invoice;
 use App\Models\InvoicePayment;
+use App\Models\Transaction;
 
 class UserNotificationBuilder
 {
@@ -60,7 +60,7 @@ class UserNotificationBuilder
 			"database" => "<b>{$payment->invoice->customer->name}</b> invoice payment has been recorded <b>#{$payment->invoice->invoice_id}</b>",
 		];
 		$body = "Dear {$payment->invoice->user->name},<br><br> {$payment->invoice->customer->name} just made a payment of <b>" .
-						"NGN" . number_format($payment->amount, 2) . "</b> for invoice {$payment->invoice->invoice_id} via {$method} <br><br>" .
+						"{$payment->invoice->currency}" . number_format($payment->amount, 2) . "</b> for invoice {$payment->invoice->invoice_id} via {$method} <br><br>" .
 						"Your invoice still has a remaining balance of " . number_format($payment->invoice->amount_due, 2) . "<br><br>" .
 						"Total Amount: " . number_format($payment->invoice->amount, 2) ."<br>" .
 						"Amount Paid: " . number_format($payment->invoice->amount_paid, 2) . "<br>" .
@@ -87,7 +87,7 @@ class UserNotificationBuilder
 			"mail"     => "Payment received from {$payment->invoice->customer->name} - {$payment->invoice->invoice_id}",
 			"database" => "<b>{$payment->invoice->customer->name}</b> invoice payment has been received <b>#{$payment->invoice->invoice_id}</b>",
 		];
-		$body = "Dear {$payment->invoice->user->name}, <br><br> Your payment of <b> NGN" . number_format($payment->amount, 2) . "</b> for invoice" .
+		$body = "Dear {$payment->invoice->user->name}, <br><br> Your payment of <b> {$payment->invoice->currency}" . number_format($payment->amount, 2) . "</b> for invoice" .
 						"{$payment->invoice->invoice_id} has been acknowledged and recorded. <br><br> Your invoice still has a remaining balance of" .
 						number_format($payment->invoice->amount_due, 2) . "<br><br>" .
 						"Total Amount: " . number_format($payment->invoice->amount, 2) . "<br>" .
@@ -121,34 +121,40 @@ class UserNotificationBuilder
 		return compact('title', 'body', 'actions');
 	}
 
-	public function walletCredited(float $amount)
+	public function walletCredited(Transaction $transaction)
 	{
 		$title = "Wallet Credited";
-		$body = 'Wallet credited content goes here';
+		$body = "Dear {$transaction->user->name},<br><br>" .
+			    "Your wallet has been credited with {$transaction->currency} " . number_format($transaction->amount, 2) . ".<br>";
 		$actions = [];
 		return compact('title', 'body', 'actions');
 	}
 
-	public function walletDebited(float $amount)
+	public function walletDebited(Transaction $transaction)
 	{
 		$title = "Wallet Debited";
-		$body = 'Wallet debited content goes here';
+		$body = "Dear {$transaction->user->name},<br><br>" .
+			    "Your wallet has been debited with {$transaction->currency} " . number_format($transaction->amount, 2) . ".<br>";
 		$actions = [];
 		return compact('title', 'body', 'actions');
 	}
 
-	public function depositQueued(float $amount)
+	public function depositQueued(Transaction $transaction)
 	{
 		$title = "Deposit Queued";
-		$body = 'Deposit queued content goes here';
+		$body = "Dear {$transaction->user->name},<br><br>" .
+			    "Your deposit of {$transaction->currency} " . number_format($transaction->amount, 2) .
+					" has been queued and will be processed shortly";
 		$actions = [];
 		return compact('title', 'body', 'actions');
 	}
 
-	public function withdrawalQueued(float $amount)
+	public function withdrawalQueued(Transaction $transaction)
 	{
 		$title = "Withdrawal Queued";
-		$body = 'Withdrawal queued content goes here';
+		$body = "Dear {$transaction->user->name},<br><br>" .
+			    "Your withdrawal of {$transaction->currency} " . number_format($transaction->amount, 2) .
+					" has been queued and will be processed shortly";
 		$actions = [];
 		return compact('title', 'body', 'actions');
 	}

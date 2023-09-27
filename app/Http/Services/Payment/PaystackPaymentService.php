@@ -28,6 +28,8 @@ class PaystackPaymentService implements PaymentGatewayInterface
 	const PERCENTAGE_FEE = 1.5 / 100;
 	const FEE_WAIVER_THRESHOLD = 2500;
 
+	const CURRENCY = "NGN";
+
 	public function __construct(
 		protected WalletService $walletService,
 		protected InvoiceService $invoiceService,
@@ -69,7 +71,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		$payment = $this->onlinePaymentRepository->create([
 			'type'       => 'subscription',
 			'reference'  => Str::uuid()->toString(),
-			'amount'     => $plan->amount,
+			'amount'     => $plan->amount_ngn,
 			'model_type' => User::class,
 			'gateway'    => 'paystack',
 			'model_id'   => request()->user()->id,
@@ -77,7 +79,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 
 		$res = $this->client()->post('/transaction/initialize', [
 			'email'  => request()->user()->email,
-			'amount' => $plan->amount * 100,
+			'amount' => $plan->amount_ngn * 100,
 			'plan'   => $plan->paystack_id,
 			'metadata'   => [
 				'type'      => 'subscription',
@@ -116,7 +118,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 
 		$res = $this->client($data['wallet'] ? null : $invoice->user)->post('/transaction/initialize', [
 			'email'  => $invoice->customer->email,
-			'amount' => ($data['amount'] + $this->getPaystackCharge($data['amount'])) * 100,
+			'amount' => intval(($data['amount'] + $this->getCharge($data['amount'])) * 100),
 			'metadata'   => [
 				'type'      => 'invoice',
 				'invoice_id' => $invoice->id,
@@ -210,7 +212,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 			$this->onlinePaymentRepository->create([
 				'type'       => 'subscription_renewal',
 				'reference'  => Str::uuid()->toString(),
-				'amount'     => $plan->amount,
+				'amount'     => $plan->amount_ngn,
 				'model_type' => User::class,
 				'gateway'    => 'paystack',
 				'model_id'   => $user->id,
@@ -257,7 +259,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				$this->userNotificationService->sendInvoicePaymentReceivedNotification($invoicePayment);
 
 				if ($metadata['auth_type'] === 'self') {
-					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount);
+					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount, self::CURRENCY);
 				}
 			}
 		}
@@ -278,7 +280,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		]);
 	}
 
-	private function getPaystackCharge(float $amount)
+	private function getCharge(float $amount)
 	{
 		$charge = ($amount * self::PERCENTAGE_FEE) + self::FIXED_FEE;
 

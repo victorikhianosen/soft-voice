@@ -16,7 +16,7 @@ class WalletController extends Controller
     public function __construct(
         protected WalletRepository $walletRepository,
         protected WalletService $walletService,
-    ){
+    ) {
     }
 
     public function getBalance(): JsonResponse
@@ -27,13 +27,13 @@ class WalletController extends Controller
 
     public function withdraw(WithdrawalRequest $request): JsonResponse
     {
-        $this->walletService->processWithdrawal(request()->user()->id, $request->amount);
+        $this->walletService->processWithdrawal(request()->user()->id, $request->amount, $request->currency);
         return $this->success("Withdrawal Queued Successfully");
     }
 
     public function deposit(DepositRequest $request): JsonResponse
     {
-        $this->walletService->processDeposit(request()->user()->id, $request->amount);
+        $this->walletService->processDeposit(request()->user()->id, $request->amount, $request->currency);
         return $this->success("Deposit Queued Successfully");
     }
 }

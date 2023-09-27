@@ -153,7 +153,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
         Route::controller(SubscriptionController::class)->group(function () {
             Route::get('', 'index');
             Route::get('/active', 'getActive');
-            Route::post('/plan/{plan}/get-link', 'getPaymentLink');
+            Route::post('/get-link', 'getPaymentLink');
         });
     });
 
@@ -225,5 +225,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
 });
 
 Route::controller(WebhookController::class)->prefix('/webhook')->group(function () {
-    Route::post('/paystack', 'handlePaystackWebook');
+    Route::post('/paystack', 'handlePaystackWebhook');
+    Route::post('/flutterwave', 'handleFlutterwaveWebhook');
+    Route::post('/stripe', 'handleStripeWebhook');
 });
