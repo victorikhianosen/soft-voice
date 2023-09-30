@@ -2,6 +2,7 @@
 
 namespace App\Http\Services\Payment;
 
+use App\Enums\PaymentGateway;
 use Stripe\Webhook;
 use App\Models\Plan;
 use App\Models\User;
@@ -126,7 +127,7 @@ class StripePaymentService implements PaymentGatewayInterface
 				[
 					'price_data' => [
 						'currency' => 'USD',
-						'unit_amount_decimal' => ($data['amount'] + $this->getCharge($data['amount'])) * 100,
+						'unit_amount_decimal' => intval(($data['amount'] + $this->getCharge($data['amount'])) * 100),
 						'product_data' => [
 							'name' => "Payment for invoice {$invoice->invoice_id}",
 						],
@@ -182,29 +183,20 @@ class StripePaymentService implements PaymentGatewayInterface
 			exit();
 		}
 
-		logger($event);
+		logger(json_encode($payload));
 
-		return http_response_code(200);
+		$data = $event['data']['object'];
 
-		if ((strtoupper($_SERVER['REQUEST_METHOD']) != 'POST') || !array_key_exists('HTTP_X_PAYSTACK_SIGNATURE', $_SERVER)) {
-			http_response_code(401);
-			exit();
-		}
-
-		$data = $payload['data']['object'];
-
-		switch ($payload['event']) {
-			case 'subscription.create':
-				$this->processCreateUserSubscription($data['subscription_code'], $data['customer'], $data['plan']);
+		switch ($payload['type']) {
+			case 'invoice.updated':
+				$email = $data['customer_email'];
+				$plan = $data['lines']['data'][0]['plan']['id'];
+				$subscriptionId = $data['lines']['data'][0]['subscription'];
+				$paid = $data['paid'];
+				$this->processUpdateUserSubscription($email, $plan, $subscriptionId, $paid);
 				break;
-			case 'invoice.update':
-				$this->processUpdateUserSubscription($data['customer'], $data['plan'], $data['paid']);
-				break;
-			case 'charge.success':
+			case 'checkout.session.completed':
 				$this->processChargeSuccessful($data);
-				break;
-			case 'subscription.disable':
-				$this->processDisableSubscription($data);
 				break;
 		}
 
@@ -212,64 +204,49 @@ class StripePaymentService implements PaymentGatewayInterface
 		exit();
 	}
 
-	private function processCreateUserSubscription(string $code, array $customer, array $plan)
-	{
-		$user = User::where('email', $customer['email'])->first();
-		$plan = Plan::where('paystack_id', $plan['plan_code'])->first();
-		if ($user && $plan) {
-			if ($user->active_subscription) {
-				$user->active_subscription->update([
-					'ends_at' => now(),
-					'status'  => 'cancelled',
-				]);
-			}
-			$this->subscriptionRepository->create([
-				'user_id'    => $user->id,
-				'plan_id'    => $plan->id,
-				'starts_at'  => now(),
-				'ends_at'    => now()->addMonths($plan->duration),
-				'status'     => 'active',
-				'gateway'    => 'paystack',
-				'gateway_id' => $code,
-			]);
-		}
-	}
-
-	private function processUpdateUserSubscription(array $customer, array $plan, bool $paid)
-	{
-		$user = User::where('email', $customer['email'])->first();
-		$plan = Plan::where('paystack_id', $plan['plan_code'])->first();
+	private function processUpdateUserSubscription(
+		string $email,
+		string $planId,
+		string $subscriptionId,
+		bool $paid
+	) {
+		$user = User::where('email', $email)->first();
+		$plan = Plan::where('stripe_id', $planId)->first();
 		if ($user && $plan) {
 			$this->onlinePaymentRepository->create([
-				'type'       => 'subscription_renewal',
+				'type'       => 'subscription',
 				'reference'  => Str::uuid()->toString(),
 				'amount'     => $plan->amount_ngn,
 				'model_type' => User::class,
-				'gateway'    => 'paystack',
+				'gateway'    => 'stripe',
 				'model_id'   => $user->id,
 				'status'     => ($paid ? PaymentStatus::SUCCESS : PaymentStatus::FAILED)
 			]);
 
-			$currentSubscription = $this->subscriptionRepository->getActive($user->id);
+			if ($paid) {
+				$currentSubscription = $this->subscriptionRepository->getActive($user->id);
 
-			$currentSubscription->update([
-				'status'  => 'expired',
-				'ends_at' => now(),
-			]);
+				$currentSubscription->update([
+					'status'  => 'expired',
+					'ends_at' => now(),
+				]);
 
-			$this->subscriptionRepository->create([
-				'user_id'    => $user->id,
-				'plan_id'    => $plan->id,
-				'starts_at'  => now(),
-				'ends_at'    => now()->addMonths($plan->duration),
-				'status'     => 'active',
-				'gateway'    => 'paystack',
-				'gateway_id' => $currentSubscription->gateway_id,
-			]);
+				$this->subscriptionRepository->create([
+					'user_id'    => $user->id,
+					'plan_id'    => $plan->id,
+					'starts_at'  => now(),
+					'ends_at'    => now()->addMonths($plan->duration),
+					'status'     => 'active',
+					'gateway'    => 'stripe',
+					'gateway_id' => $subscriptionId,
+				]);
+			}
+		} else {
+			logger("User or plan not found");
 		}
 	}
 
-	private function processChargeSuccessful(array $data)
+	private function processChargeSuccessful($data)
 	{
 		$metadata = $data['metadata'];
 		$payment = OnlinePayment::where('reference', $metadata['reference'])->where('status', PaymentStatus::PENDING)->first();
@@ -296,21 +273,6 @@ class StripePaymentService implements PaymentGatewayInterface
 		}
 	}
 
-	private function processDisableSubscription(array $data): void
-	{
-		$subscription = Subscription::where('gateway_id', $data['subscription_code'])->first();
-		$this->subscriptionRepository->update($subscription, ['status'  => 'expired', 'ends_at' => now()]);
-
-		$plan = Plan::where('slug', 'basic')->first();
-		$this->subscriptionRepository->create([
-			'user_id'    => $subscription->user->id,
-			'plan_id'    => $plan->id,
-			'starts_at'  => now(),
-			'ends_at'    => now()->addDecade(),
-			'status'     => 'active',
-		]);
-	}
-
 	private function getCharge(float $amount)
 	{
 		return ($amount * self::PERCENTAGE_FEE) + self::FIXED_FEE;
@@ -320,7 +282,7 @@ class StripePaymentService implements PaymentGatewayInterface
 	{
 		$user = request()->user();
 
-		if ($user->stripe_id) {
+		if ($user->stripe_customer_id) {
 			return $user->stripe_customer_id;
 		} else {
 			$id = $this->client()->customers->create([

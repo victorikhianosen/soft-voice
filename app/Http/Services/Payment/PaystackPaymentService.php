@@ -172,9 +172,9 @@ class PaystackPaymentService implements PaymentGatewayInterface
 			case 'charge.success':
 				$this->processChargeSuccessful($data);
 				break;
-			case 'subscription.disable':
-				$this->processDisableSubscription($data);
-				break;
+			// case 'subscription.disable':
+			// 	$this->processDisableSubscription($data);
+			// 	break;
 		}
 
 		http_response_code(200);
@@ -219,22 +219,27 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				'status'     => ($paid ? PaymentStatus::SUCCESS : PaymentStatus::FAILED)
 			]);
 
-			$currentSubscription = $this->subscriptionRepository->getActive($user->id);
 
-			$currentSubscription->update([
-				'status'  => 'expired',
-				'ends_at' => now(),
-			]);
+			if ($paid) {
+				$currentSubscription = $this->subscriptionRepository->getActive($user->id);
 
-			$this->subscriptionRepository->create([
-				'user_id'    => $user->id,
-				'plan_id'    => $plan->id,
-				'starts_at'  => now(),
-				'ends_at'    => now()->addMonths($plan->duration),
-				'status'     => 'active',
-				'gateway'    => 'paystack',
-				'gateway_id' => $currentSubscription->gateway_id,
-			]);
+				$currentSubscription->update([
+					'status'  => 'expired',
+					'ends_at' => now(),
+				]);
+
+				$this->subscriptionRepository->create([
+					'user_id'    => $user->id,
+					'plan_id'    => $plan->id,
+					'starts_at'  => now(),
+					'ends_at'    => now()->addMonths($plan->duration),
+					'status'     => 'active',
+					'gateway'    => 'paystack',
+					'gateway_id' => $currentSubscription->gateway_id,
+				]);
+			}
+		} else {
+			logger("User or plan not found");
 		}
 	}
 
