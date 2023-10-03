@@ -15,6 +15,7 @@ class PaystackKey extends Model
         'user_id',
         'public_key',
         'secret_key',
+        'active',
     ];
 
     public function setPublicKeyAttribute(?string $value)

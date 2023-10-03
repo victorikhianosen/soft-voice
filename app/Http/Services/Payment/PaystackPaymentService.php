@@ -221,12 +221,20 @@ class PaystackPaymentService implements PaymentGatewayInterface
 
 
 			if ($paid) {
-				$currentSubscription = $this->subscriptionRepository->getActive($user->id);
+				$lastSubscription = $this->subscriptionRepository->getActive($user->id);
 
-				$currentSubscription->update([
-					'status'  => 'expired',
-					'ends_at' => now(),
-				]);
+				if ($lastSubscription) {
+					$lastSubscription->update([
+						'status'  => 'expired',
+						'ends_at' => now(),
+					]);
+				} else {
+					$lastSubscription = $this->subscriptionRepository->getLatest([
+						'user_id' => $user->id,
+						'plan_id' => $plan->id,
+						'gateway' => 'paystack',
+					]);
+				}
 
 				$this->subscriptionRepository->create([
 					'user_id'    => $user->id,
@@ -235,7 +243,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 					'ends_at'    => now()->addMonths($plan->duration),
 					'status'     => 'active',
 					'gateway'    => 'paystack',
-					'gateway_id' => $currentSubscription->gateway_id,
+					'gateway_id' => $lastSubscription->gateway_id,
 				]);
 			}
 		} else {

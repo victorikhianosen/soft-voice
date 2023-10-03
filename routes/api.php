@@ -226,6 +226,6 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
 
 Route::controller(WebhookController::class)->prefix('/webhook')->group(function () {
     Route::post('/paystack', 'handlePaystackWebhook');
-    Route::post('/flutterwave', 'handleFlutterwaveWebhook');
     Route::post('/stripe', 'handleStripeWebhook');
+    Route::post('/paypal', 'handlePaypalWebhook');
 });

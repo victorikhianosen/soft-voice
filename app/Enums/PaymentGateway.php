@@ -5,7 +5,6 @@ namespace App\Enums;
 enum PaymentGateway: string
 {
 	case PAYSTACK = 'paystack';
-	case FLUTTERWAVE = 'flutterwave';
 	case STRIPE = 'stripe';
 	case PAYPAL = 'paypal';
 
@@ -13,7 +12,6 @@ enum PaymentGateway: string
 	{
 		return [
 			self::PAYSTACK->value,
-			self::FLUTTERWAVE->value,
 			self::STRIPE->value,
 			self::PAYPAL->value,
 		];
@@ -32,7 +30,6 @@ enum PaymentGateway: string
 	{
 		return [
 			self::PAYSTACK->value,
-			self::FLUTTERWAVE->value,
 		];
 	}
 }

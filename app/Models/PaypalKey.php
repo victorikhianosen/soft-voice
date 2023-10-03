@@ -13,56 +13,57 @@ class PaypalKey extends Model
 
     protected $fillable = [
         'user_id',
-        'username',
-        'password',
-        'signature',
+        'client_id',
+        'client_secret',
+        'webhook_id',
+        'active',
     ];
 
-    public function setUsernameAttribute(?string $value)
+    public function setClientIdAttribute(?string $value)
     {
         if ($value) {
-            $this->attributes['username'] = Crypt::encryptString($value);
+            $this->attributes['client_id'] = Crypt::encryptString($value);
         }
     }
 
-    public function getUsernameAttribute()
+    public function getClientIdAttribute()
     {
         try {
-            $decrypted = Crypt::decryptString($this->attributes['username']);
+            $decrypted = Crypt::decryptString($this->attributes['client_id']);
         } catch (Throwable $e) {
             $decrypted = "";
         }
         return $decrypted;
     }
 
-    public function setPasswordAttribute(?string $value)
+    public function setClientSecretAttribute(?string $value)
     {
         if ($value) {
-            $this->attributes['password'] = Crypt::encryptString($value);
+            $this->attributes['client_secret'] = Crypt::encryptString($value);
         }
     }
 
-    public function getPasswordAttribute()
+    public function getClientSecretAttribute()
     {
         try {
-            $decrypted = Crypt::decryptString($this->attributes['password']);
+            $decrypted = Crypt::decryptString($this->attributes['client_secret']);
         } catch (Throwable $e) {
             $decrypted = "";
         }
         return $decrypted;
     }
 
-    public function setSignatureAttribute(?string $value)
+    public function setWebhookIdAttribute(?string $value)
     {
         if ($value) {
-            $this->attributes['signature'] = Crypt::encryptString($value);
+            $this->attributes['webhook_id'] = Crypt::encryptString($value);
         }
     }
 
-    public function getSignatureAttribute()
+    public function getWebhookIdAttribute()
     {
         try {
-            $decrypted = Crypt::decryptString($this->attributes['signature']);
+            $decrypted = Crypt::decryptString($this->attributes['webhook_id']);
         } catch (Throwable $e) {
             $decrypted = "";
         }

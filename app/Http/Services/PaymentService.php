@@ -7,7 +7,7 @@ use App\Enums\PaymentGateway;
 use App\Http\Interfaces\PaymentGatewayInterface;
 use App\Http\Repositories\InvoiceRepository;
 use App\Http\Repositories\PlanRepository;
-use App\Http\Services\Payment\FlutterwavePaymentService;
+use App\Http\Services\Payment\PaypalPaymentService;
 use App\Http\Services\Payment\PaystackPaymentService;
 use App\Http\Services\Payment\StripePaymentService;
 use App\Models\Invoice;
@@ -18,8 +18,8 @@ class PaymentService
 		protected PlanRepository $planRepository,
 		protected InvoiceRepository $invoiceRepository,
 		protected StripePaymentService $stripePaymentService,
+		protected PaypalPaymentService $paypalPaymentService,
 		protected PaystackPaymentService $paystackPaymentService,
-		protected FlutterwavePaymentService $flutterwavePaymentService,
 	) {
 	}
 
@@ -27,8 +27,8 @@ class PaymentService
 	{
 		return match ($gateway) {
 			'paystack' => $this->paystackPaymentService,
-			'flutterwave' => $this->flutterwavePaymentService,
 			'stripe' => $this->stripePaymentService,
+			'paypal' => $this->paypalPaymentService,
 		};
 	}
 

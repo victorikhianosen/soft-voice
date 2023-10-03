@@ -27,7 +27,7 @@ class UserFactory
         ]);
 
         $user->wallet()->create();
-        $user->setting()->create();
+        $user->setting()->create(['currency' => $data['currency']]);
 
         $user->payStackKey()->create();
         $user->stripeKey()->create();

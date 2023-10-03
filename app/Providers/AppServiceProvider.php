@@ -3,10 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Http\Interfaces\PaymentGatewayInterface;
-use App\Http\Services\Payment\StripePaymentService;
-use App\Http\Services\Payment\PaystackPaymentService;
-use App\Http\Services\Payment\FlutterwavePaymentService;
 
 class AppServiceProvider extends ServiceProvider
 {
