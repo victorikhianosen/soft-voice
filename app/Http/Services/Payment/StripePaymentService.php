@@ -156,7 +156,6 @@ class StripePaymentService implements PaymentGatewayInterface
 	public function processWebhook(array $payload)
 	{
 		$sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
-		$event = [];
 
 		$webhookId = config('payment.stripe.webhook_id');
 
@@ -226,10 +225,12 @@ class StripePaymentService implements PaymentGatewayInterface
 			if ($paid) {
 				$currentSubscription = $this->subscriptionRepository->getActive($user->id);
 
-				$currentSubscription->update([
-					'status'  => 'expired',
-					'ends_at' => now(),
-				]);
+				if ($currentSubscription) {
+					$currentSubscription->update([
+						'status'  => 'expired',
+						'ends_at' => now(),
+					]);
+				}
 
 				$this->subscriptionRepository->create([
 					'user_id'    => $user->id,

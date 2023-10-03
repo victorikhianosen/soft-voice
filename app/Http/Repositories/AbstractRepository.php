@@ -48,9 +48,10 @@ abstract class AbstractRepository
      * @param array $columns
      * @return Model
      */
-    public function getLatest(array $columns = ['*']): Model
+    public function getLatest(array $conditions, array $columns = ['*']): Model
     {
         return $this->model
+            ->where($conditions)
             ->latest()
             ->first($columns);
     }
