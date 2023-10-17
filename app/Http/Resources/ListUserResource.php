@@ -16,12 +16,14 @@ class ListUserResource extends JsonResource
     public function toArray($request)
     {
         $data = parent::toArray($request);
+        $data['email_verified'] = !!$data['email_verified_at'];
         Arr::forget($data, [
             'email_verified_at', 'email_verification_token',
             'email_verification_token_expiry', 'updated_at'
         ]);
         $data['active'] = $data['active'] === 1;
         $data['wallet_balance'] = $this->wallet->balance;
+        $data['settings'] = new SettingResource($this->setting);
         return $data;
     }
 }
