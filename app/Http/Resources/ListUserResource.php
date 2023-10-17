@@ -24,6 +24,7 @@ class ListUserResource extends JsonResource
         $data['active'] = $data['active'] === 1;
         $data['wallet_balance'] = $this->wallet->balance;
         $data['settings'] = new SettingResource($this->setting);
+        $data['image'] = $data['image'] ? asset($data['image']) : null;
         return $data;
     }
 }
