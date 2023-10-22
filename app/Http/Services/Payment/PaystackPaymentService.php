@@ -81,6 +81,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 			'email'  => request()->user()->email,
 			'amount' => $plan->amount_ngn * 100,
 			'plan'   => $plan->paystack_id,
+			'callback_url' => config('env.spa_url') . "/membership-plans",
 			'metadata'   => [
 				'type'      => 'subscription',
 				'reference' => $payment->reference,
@@ -119,6 +120,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		$res = $this->client($data['wallet'] ? null : $invoice->user)->post('/transaction/initialize', [
 			'email'  => $invoice->customer->email,
 			'amount' => intval(($data['amount'] + $this->getCharge($data['amount'])) * 100),
+			'callback_url' => config('env.spa_url') . "/$invoice->code",
 			'metadata'   => [
 				'type'      => 'invoice',
 				'invoice_id' => $invoice->id,

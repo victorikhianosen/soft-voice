@@ -76,7 +76,8 @@ class StripePaymentService implements PaymentGatewayInterface
 		]);
 
 		$res = $this->client()->checkout->sessions->create([
-			'success_url' => config('env.spa_url') . "/index",
+			'success_url' => config('env.spa_url') . "/membership-plans",
+			'cancel_url' => config('env.spa_url') . "/membership-plans",
 			'line_items' => [
 				[
 					'price' => $plan->stripe_id,
@@ -122,7 +123,8 @@ class StripePaymentService implements PaymentGatewayInterface
 		]);
 
 		$res = $this->client()->checkout->sessions->create([
-			'success_url' => config('env.spa_url') . "/index",
+			'success_url' => config('env.spa_url') . "/$invoice->code",
+			'cancel_url' => config('env.spa_url') . "/$invoice->code",
 			'line_items' => [
 				[
 					'price_data' => [
