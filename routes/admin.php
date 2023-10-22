@@ -59,8 +59,11 @@ Route::middleware(['auth:sanctum', 'ability:admin'])->group(function () {
             Route::get('/{user}/bank-accounts', 'bankAccounts');
             Route::get('/{user}/customers', 'customers');
             Route::get('/{user}/invoices', 'invoices');
+            Route::get('/{user}/invoices/{invoice}', 'getInvoiceById');
             Route::get('/{user}/estimates', 'estimates');
+            Route::get('/{user}/estimates/{estimate}', 'getEstimateById');
             Route::get('/{user}/expenses', 'expenses');
+            Route::get('/{user}/expenses/{expense}', 'getExpenseById');
             Route::post('/{user}/customers/export', 'exportCustomers');
             Route::get('/{user}/settings', 'settings');
         });
