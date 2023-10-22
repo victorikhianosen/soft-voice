@@ -98,6 +98,7 @@ class PaypalPaymentService implements PaymentGatewayInterface
 					'payee_preferred' => 'IMMEDIATE_PAYMENT_REQUIRED',
 				],
 				'return_url' => config('env.spa_url') . "/membership-plans",
+				'cancel_url' => config('env.spa_url') . "/membership-plans",
 			],
 		];
 
@@ -148,7 +149,8 @@ class PaypalPaymentService implements PaymentGatewayInterface
 				],
 			],
 			'application_context' => [
-				'return_url' => config('env.spa_url') . "/index",
+				'cancel_url' => config('env.spa_url') . "/$invoice->code",
+				'return_url' => config('env.spa_url') . "/$invoice->code",
 			],
 		];
 

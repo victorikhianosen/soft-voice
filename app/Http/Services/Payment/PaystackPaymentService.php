@@ -120,6 +120,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		$res = $this->client($data['wallet'] ? null : $invoice->user)->post('/transaction/initialize', [
 			'email'  => $invoice->customer->email,
 			'amount' => intval(($data['amount'] + $this->getCharge($data['amount'])) * 100),
+			'callback_url' => config('env.spa_url') . "/$invoice->code",
 			'metadata'   => [
 				'type'      => 'invoice',
 				'invoice_id' => $invoice->id,
