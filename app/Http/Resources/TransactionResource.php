@@ -17,7 +17,7 @@ class TransactionResource extends JsonResource
     {
         $data = parent::toArray($request);
         if ($request->user() instanceof Admin) {
-            $data['user'] = $this->user->only(['id', 'name', 'email']);
+            $data['user'] = $this->user->only(['id', 'name', 'email', 'setting']);
             unset($data['user_id']);
         }
         return $data;
