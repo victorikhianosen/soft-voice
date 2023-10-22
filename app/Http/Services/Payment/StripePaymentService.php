@@ -76,7 +76,7 @@ class StripePaymentService implements PaymentGatewayInterface
 		]);
 
 		$res = $this->client()->checkout->sessions->create([
-			'success_url' => config('env.spa_url') . "/index",
+			'success_url' => config('env.spa_url') . "/membership-plans",
 			'line_items' => [
 				[
 					'price' => $plan->stripe_id,

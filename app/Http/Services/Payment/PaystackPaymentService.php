@@ -81,6 +81,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 			'email'  => request()->user()->email,
 			'amount' => $plan->amount_ngn * 100,
 			'plan'   => $plan->paystack_id,
+			'callback_url' => config('env.spa_url') . "/membership-plans",
 			'metadata'   => [
 				'type'      => 'subscription',
 				'reference' => $payment->reference,

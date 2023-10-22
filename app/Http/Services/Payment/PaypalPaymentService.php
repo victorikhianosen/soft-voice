@@ -97,7 +97,7 @@ class PaypalPaymentService implements PaymentGatewayInterface
 					'payer_selected' => 'PAYPAL',
 					'payee_preferred' => 'IMMEDIATE_PAYMENT_REQUIRED',
 				],
-				'return_url' => config('env.spa_url') . "/index",
+				'return_url' => config('env.spa_url') . "/membership-plans",
 			],
 		];
 
