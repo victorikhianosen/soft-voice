@@ -20,6 +20,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('invoices:send-overdue-emails')->daily();
 
         $schedule->command('free-subscription:create')->dailyAt('01:00');
+
+        $schedule->command('subscriptions:complete')->everyMinute();
     }
 
     /**
