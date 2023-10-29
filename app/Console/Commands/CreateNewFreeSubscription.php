@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Carbon\Carbon;
 use App\Models\Plan;
 use App\Models\Subscription;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class CreateNewFreeSubscription extends Command
@@ -30,22 +31,23 @@ class CreateNewFreeSubscription extends Command
      */
     public function handle()
     {
-        $plan = Plan::where('slug', 'basic')->first();
-        Subscription::where('plan_id', $plan->id)
-            ->where('status', 'active')
-            ->whereDate('ends_at', '>=', Carbon::now()->toDateString())
-            ->get()
-            ->each(function ($subscription) use ($plan) {
-                $subscription->update([
-                    'status' => 'expired',
-                ]);
+        $freePlan = Plan::where('slug', 'basic')->first();
 
-                $subscription->user->subscriptions()->create([
-                    'plan_id'   => $plan->id,
-                    'starts_at' => now(),
-                    'ends_at'   => now()->addMonth(),
-                    'status'    => 'active',
-                ]);
-            });
+        $usersWithoutActiveSubscription = User::whereDoesntHave('subscriptions', function ($query) {
+            $query->where('status', 'active')->where('ends_at', '>=', now());
+        })->get();
+
+        foreach ($usersWithoutActiveSubscription as $user) {
+            $user->subscriptions()->create([
+                'plan_id'   => $freePlan->id,
+                'starts_at' => now(),
+                'ends_at'   => now()->addMonth(),
+                'status'    => 'active',
+            ]);
+
+            $this->info("Assigned free subscription to User ID: {$user->id}");
+        }
+
+        $this->info('Free subscriptions have been assigned to eligible users.');
     }
 }
