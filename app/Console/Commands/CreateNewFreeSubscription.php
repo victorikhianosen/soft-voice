@@ -33,7 +33,7 @@ class CreateNewFreeSubscription extends Command
         $plan = Plan::where('slug', 'basic')->first();
         Subscription::where('plan_id', $plan->id)
             ->where('status', 'active')
-            ->whereDate('ends_at', '>=', Carbon::now()->toDateString())
+            ->whereDate('ends_at', '>', Carbon::now()->toDateString())
             ->get()
             ->each(function ($subscription) use ($plan) {
                 $subscription->update([
