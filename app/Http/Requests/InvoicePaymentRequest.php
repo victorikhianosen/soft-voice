@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\PaymentMethod;
 use Illuminate\Validation\Rule;
+use App\Enums\NotificationChannel;
 use Illuminate\Foundation\Http\FormRequest;
 
 class InvoicePaymentRequest extends FormRequest
@@ -22,6 +23,8 @@ class InvoicePaymentRequest extends FormRequest
             'method'        => ["required", "string", Rule::in(PaymentMethod::types())],
             'amount'        => ["required", "numeric"],
             'notify_client' => ["required", "boolean"],
+            'notify_channels' => ["required_if:notify_client,true", "array", "min:1"],
+            'notify_channels.*' => ['required', Rule::in(NotificationChannel::channels())],
         ];
     }
 }

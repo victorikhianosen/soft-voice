@@ -193,6 +193,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
     Route::prefix('/bank-accounts')->group(function () {
         Route::controller(BankAccountController::class)->group(function () {
             Route::get('/get-preferred', 'getPreferred');
+            Route::put('/remove-preferred', 'removePreferred');
             Route::get('', 'index');
             Route::post('', 'store');
             Route::get('/{bank_account}', 'show');

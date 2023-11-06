@@ -54,7 +54,7 @@ class BankAccountController extends Controller
     public function setPreferred(BankAccount $bankAccount)
     {
         $this->authorize('process', $bankAccount);
-        $this->bankAccountService->setAsPreferred($bankAccount->id);
+        $this->bankAccountService->setPreferred($bankAccount->id);
         return $this->success("Bank account set as preferred");
     }
 
@@ -63,5 +63,11 @@ class BankAccountController extends Controller
         $data = $this->bankAccountService->getPreferred();
         if ($data) return $this->success(data: $data);
         return $this->success("Preferred bank account not set");
+    }
+
+    public function removePreferred()
+    {
+        $data = $this->bankAccountService->setPreferred(null);
+        return $this->success("Preferred bank removed successfully");
     }
 }

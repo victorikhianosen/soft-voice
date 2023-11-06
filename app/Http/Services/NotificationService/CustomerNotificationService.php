@@ -5,6 +5,7 @@ namespace App\Http\Services\NotificationService;
 use App\Models\Invoice;
 use App\Models\Estimate;
 use App\Http\Services\NotificationBuilder\CustomerNotificationBuilder;
+use App\Models\InvoicePayment;
 
 class CustomerNotificationService extends BaseNotificationService
 {
@@ -53,6 +54,17 @@ class CustomerNotificationService extends BaseNotificationService
         $this->send(
             $invoice->customer,
             $this->customerNotificationBuilder->invoicePayment($invoice),
+            $channel
+        );
+    }
+
+    public function sendNewPaymentToCustomer(
+        InvoicePayment $invoicePayment,
+        array $channel = ['mail']
+    ) {
+        $this->send(
+            $invoicePayment->invoice->customer,
+            $this->customerNotificationBuilder->newInvoicePayment($invoicePayment),
             $channel
         );
     }

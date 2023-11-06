@@ -39,8 +39,8 @@ class UserNotificationBuilder
 			"mail"     => "Overdue Invoice - {$invoice->invoice_id}",
 			"database" => "<b>{$invoice->customer->name}'s</b> invoice is overdue <b>#{$invoice->invoice_id}</b>",
 		];
-		$body = "Dear {$invoice->user->name}! <br><br> Your invoice to {$invoice->customer->name}," .
-					"{$invoice->invoice_id} is now overdue. <br> Ensure your invoice is up to date by recording" .
+		$body = "Dear {$invoice->user->name}, <br><br> Your invoice to {$invoice->customer->name}, " .
+					"{$invoice->invoice_id} is now overdue. <br><br> Ensure your invoice is up to date by recording " .
 					"the payment or mark the invoice as paid if you have received payment from your customer.";
 		$actions = [
 			[
@@ -109,7 +109,7 @@ class UserNotificationBuilder
 			"mail" => "Payment Completed - {$invoice->invoice_id}",
 			"database" => "<b>{$invoice->customer->name}</b> invoice payment has been completed <b>#{$invoice->invoice_id}</b>",
 		];
-		$body = "Congratulations {$invoice->user->name}! <br><br> You have successfully received full payment for" .
+		$body = "Congratulations {$invoice->user->name}! <br><br> You have successfully received full payment for " .
 					"invoice {$invoice->invoice_id}. <br><br> Create more invoices to receive more payment.";
 		$actions = [
 			[
