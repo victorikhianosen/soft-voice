@@ -23,9 +23,11 @@ class InvoiceRepository extends AbstractRepository
     {
         return [
             'all'      => $this->getSummaryByStatus(),
-            'paid'     => $this->getSummaryByStatus([Status::PAID]),
+            'paid'     => $this->getSummaryByStatus([Status::PAID, STATUS::PARTIALLY_PAID]),
             'pending'  => $this->getSummaryByStatus([Status::SENT, Status::VIEWED]),
             'refunded' => $this->getSummaryByStatus([Status::REFUNDED]),
+            'draft' => $this->getSummaryByStatus([Status::DRAFT]),
+            'overdue' => $this->getSummaryByStatus([Status::OVERDUE]),
         ];
     }
 
