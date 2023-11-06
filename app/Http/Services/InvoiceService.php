@@ -159,6 +159,10 @@ class InvoiceService
         } else {
             $this->userNotificationService->sendInvoicePaymentCompletedNotification($payment->invoice);
         }
+
+        if ($payment->notify_client) {
+            $this->customerNotificationService->sendNewPaymentToCustomer($payment, $data['notify_channels']);
+        }
         return new PaymentResource($payment);
     }
 

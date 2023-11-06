@@ -4,6 +4,7 @@ namespace App\Http\Services\NotificationBuilder;
 
 use App\Models\Estimate;
 use App\Models\Invoice;
+use App\Models\InvoicePayment;
 
 class CustomerNotificationBuilder
 {
@@ -56,7 +57,7 @@ class CustomerNotificationBuilder
 	{
 		$dueDate = \Carbon\Carbon::parse($invoice->due_date);
 		$title = "Overdue Invoice - ". $invoice->invoice_id;
-		$body = "Dear " . $invoice->customer->name . ", your invoice <b>" . $invoice->invoice_id . "</b> is now overdue."
+		$body = "Dear " . $invoice->customer->name . ", <br> your invoice <b>" . $invoice->invoice_id . "</b> is now overdue."
 				 ."<br>"
 				 ."<br>"
 				 . "Your invoice has been overdue since <b>" . $dueDate->diffInDays(now()) . " Days ago\n</b>"
@@ -87,6 +88,23 @@ class CustomerNotificationBuilder
 			[
 				'text' => 'View Receipt now',
 				'url'  => config('env.spa_url') . '/' . $invoice->code . '?action=view',
+				'outlined' => false
+			]
+		];
+		return compact('title', 'body', 'actions');
+	}
+
+	public function newInvoicePayment(InvoicePayment $invoicePayment)
+	{
+		$title = "Invoice payment receipt from ". $invoicePayment->invoice->user->name ." - ". $invoicePayment->invoice->invoice_id;
+		$body = "Dear " . $invoicePayment->invoice->customer->name . ", your payment of <b>NGN " . number_format($invoicePayment->amount) . "</b> has been acknowledged and recorded."
+				 ."<br>"
+				 ."<br>"
+				 . "Please check your updated invoice for confirmation";
+		$actions = [
+			[
+				'text' => 'View Receipt now',
+				'url'  => config('env.spa_url') . '/' . $invoicePayment->invoice->code . '?action=view',
 				'outlined' => false
 			]
 		];

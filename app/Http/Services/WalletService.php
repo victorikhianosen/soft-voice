@@ -25,6 +25,9 @@ class WalletService
         if ($amount > $balance) {
             abort(400, "Insufficient wallet balance");
         }
+        if (!request()->user()->setting->preferred_bank_id) {
+            abort(400, "Preferred bank for withdrawal not set");
+        }
         $this->walletRepository->debitUserWallet($userId, $amount, $currency);
         $transaction = $this->transactionRepository->create([
             'user_id' => $userId,

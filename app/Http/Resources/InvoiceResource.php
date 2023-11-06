@@ -24,6 +24,11 @@ class InvoiceResource extends JsonResource
             if ($this->user->setting['preferred_bank_id']) {
                 $data['preferred_bank'] = BankAccount::find($this->user->setting['preferred_bank_id']);
             }
+            $data['active_payment_keys'] = [
+                'stripe' => $this->user->stripeKey?->active ?: false,
+                'paystack' => $this->user->payStackKey?->active ?: false,
+                'paypal' => $this->user->payPalKey?->active ? true : false,
+            ];
         }
 
         if (request()->user() && request()->user() instanceof Admin) {

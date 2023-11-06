@@ -126,7 +126,7 @@ class TransactionService
         ) {
             $ref = $this->getRefCode();
         }
-        return $ref;
+        return "SI-$ref";
     }
 
     private function getRefCode()
