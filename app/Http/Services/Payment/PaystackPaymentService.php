@@ -169,7 +169,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				$this->processCreateUserSubscription($data['subscription_code'], $data['customer'], $data['plan']);
 				break;
 			case 'invoice.update':
-				$this->processUpdateUserSubscription($data['customer'], $data['plan'], $data['paid']);
+				$this->processUpdateUserSubscription($data['customer'], $data['subscription'], $data['paid']);
 				break;
 			case 'charge.success':
 				$this->processChargeSuccessful($data);
@@ -206,75 +206,91 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		}
 	}
 
-	private function processUpdateUserSubscription(array $customer, array $plan, bool $paid)
+	private function processUpdateUserSubscription(array $customer, array $subscription, bool $paid)
 	{
 		$user = User::where('email', $customer['email'])->first();
-		$plan = Plan::where('paystack_id', $plan['plan_code'])->first();
-		if ($user && $plan) {
-			$this->onlinePaymentRepository->create([
-				'type'       => 'subscription_renewal',
-				'reference'  => Str::uuid()->toString(),
-				'amount'     => $plan->amount_ngn,
-				'model_type' => User::class,
+
+		if ($user) {
+			$mostRecentSubscription = $this->subscriptionRepository->getLatest([
+				'user_id'    => $user->id,
+				'gateway_id' => $subscription['subscription_code'],
 				'gateway'    => 'paystack',
-				'model_id'   => $user->id,
-				'status'     => ($paid ? PaymentStatus::SUCCESS : PaymentStatus::FAILED)
 			]);
 
+			if ($mostRecentSubscription) {
+				$plan = $mostRecentSubscription->plan;
 
-			if ($paid) {
-				$lastSubscription = $this->subscriptionRepository->getActive($user->id);
+				$this->onlinePaymentRepository->create([
+					'type'       => 'subscription_renewal',
+					'reference'  => Str::uuid()->toString(),
+					'amount'     => $plan->amount_ngn,
+					'model_type' => User::class,
+					'gateway'    => 'paystack',
+					'model_id'   => $user->id,
+					'status'     => ($paid ? PaymentStatus::SUCCESS : PaymentStatus::FAILED)
+				]);
 
-				if ($lastSubscription) {
-					$lastSubscription->update([
-						'status'  => 'expired',
-						'ends_at' => now(),
-					]);
-				} else {
-					$lastSubscription = $this->subscriptionRepository->getLatest([
-						'user_id' => $user->id,
-						'plan_id' => $plan->id,
-						'gateway' => 'paystack',
+				if ($paid) {
+					if ($mostRecentSubscription->status == 'active') {
+						$mostRecentSubscription->update([
+							'status'  => 'completed',
+							'ends_at' => now(),
+						]);
+					}
+
+					$activeSubscription = $this->subscriptionRepository->getActive($user->id);
+					if ($activeSubscription) {
+						$activeSubscription->update([
+							'status'  => 'completed',
+							'ends_at' => now(),
+						]);
+					}
+
+
+					$this->subscriptionRepository->create([
+						'user_id'    => $user->id,
+						'plan_id'    => $plan->id,
+						'starts_at'  => now(),
+						'ends_at'    => now()->addMonths($plan->duration),
+						'status'     => 'active',
+						'gateway'    => 'paystack',
+						'gateway_id' => $mostRecentSubscription->gateway_id,
 					]);
 				}
-
-				$this->subscriptionRepository->create([
-					'user_id'    => $user->id,
-					'plan_id'    => $plan->id,
-					'starts_at'  => now(),
-					'ends_at'    => now()->addMonths($plan->duration),
-					'status'     => 'active',
-					'gateway'    => 'paystack',
-					'gateway_id' => $lastSubscription->gateway_id,
-				]);
+			} else {
+				logger("Previous subscription with ID {$subscription['subscription_code']} not found");
 			}
+
 		} else {
-			logger("User or plan not found");
+			logger("User with ID {$user['email']} not found");
 		}
 	}
 
 	private function processChargeSuccessful(array $data)
 	{
-		$metadata = $data['metadata'];
-		$payment = OnlinePayment::where('reference', $metadata['reference'])->where('status', PaymentStatus::PENDING)->first();
-		if ($payment) {
-			$this->onlinePaymentRepository->update($payment, ['status' => PaymentStatus::SUCCESS]);
+		$metadata = $data['metadata'] ?? [];
+		$plan = $data['plan'] ?? null;
+		if (!$plan) {
+			$payment = OnlinePayment::where('reference', $metadata['reference'])->where('status', PaymentStatus::PENDING)->first();
+			if ($payment) {
+				$this->onlinePaymentRepository->update($payment, ['status' => PaymentStatus::SUCCESS]);
 
-			if ($metadata['type'] === 'invoice' && $payment->model_type === Invoice::class) {
-				$invoice = Invoice::find($payment->model_id);
-				$invoicePayment = $this->paymentRepository->create([
-					'invoice_id'    => $invoice->id,
-					'date'          => now()->format('Y-m-d'),
-					'method'        => 'card',
-					'amount'        => $payment->amount,
-					'notify_client' => true,
-				]);
+				if ($metadata['type'] === 'invoice' && $payment->model_type === Invoice::class) {
+					$invoice = Invoice::find($payment->model_id);
+					$invoicePayment = $this->paymentRepository->create([
+						'invoice_id'    => $invoice->id,
+						'date'          => now()->format('Y-m-d'),
+						'method'        => 'card',
+						'amount'        => $payment->amount,
+						'notify_client' => true,
+					]);
 
-				$this->invoiceService->updateInvoiceStatusByPayments($invoice->id);
-				$this->userNotificationService->sendInvoicePaymentReceivedNotification($invoicePayment);
+					$this->invoiceService->updateInvoiceStatusByPayments($invoice->id);
+					$this->userNotificationService->sendInvoicePaymentReceivedNotification($invoicePayment);
 
-				if ($metadata['auth_type'] === 'self') {
-					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount, self::CURRENCY);
+					if ($metadata['auth_type'] === 'self') {
+						$this->walletService->fundUserWallet($invoice->user->id, $payment->amount, self::CURRENCY);
+					}
 				}
 			}
 		}
@@ -283,7 +299,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 	private function processDisableSubscription(array $data): void
 	{
 		$subscription = Subscription::where('gateway_id', $data['subscription_code'])->first();
-		$this->subscriptionRepository->update($subscription, ['status'  => 'expired', 'ends_at' => now()]);
+		$this->subscriptionRepository->update($subscription, ['status'  => 'completed', 'ends_at' => now()]);
 
 		$plan = Plan::where('slug', 'basic')->first();
 		$this->subscriptionRepository->create([
