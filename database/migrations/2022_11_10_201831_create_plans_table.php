@@ -29,7 +29,7 @@ return new class extends Migration
             [
                 'name'     => 'Basic',
                 'slug'     => 'basic',
-                'duration' => -1,
+                'duration' => 1,
                 'amount'   => 0,
             ],
             [

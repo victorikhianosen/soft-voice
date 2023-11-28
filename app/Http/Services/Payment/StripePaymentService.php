@@ -229,7 +229,7 @@ class StripePaymentService implements PaymentGatewayInterface
 
 				if ($currentSubscription) {
 					$currentSubscription->update([
-						'status'  => 'expired',
+						'status'  => 'completed',
 						'ends_at' => now(),
 					]);
 				}

@@ -30,7 +30,7 @@ class MarkSubscriptionsAsCompleted extends Command
     public function handle()
     {
         Subscription::where('status', 'active')
-            ->whereDate('ends_at', '<', Carbon::now()->toDateString())
+            ->whereDate('ends_at', '<', Carbon::now()->addDay()->toDateString())
             ->get()
             ->each(function ($subscription) {
                 $subscription->update([
