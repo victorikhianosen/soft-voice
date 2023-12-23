@@ -115,6 +115,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::put('/{estimate}/mark-as', 'markAs');
             Route::post('/{estimate}/send', 'send')->middleware('throttle:3,1');
             Route::post('/export', 'export');
+            Route::post('/{estimate}/convert-to-invoice', 'convertToInvoice');
         });
     });
 
@@ -216,6 +217,8 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
 
     Route::controller(HomeController::class)->group(function () {
         Route::get('/currencies', 'getCurrencies');
+        Route::get('/bank-list', 'getBankList');
+        Route::get('/bank-account/resolve', 'resolveBankAccount');
     });
 
     Route::controller(InAppNotificationController::class)->prefix('/notifications')->group(function () {

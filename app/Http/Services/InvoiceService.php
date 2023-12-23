@@ -105,6 +105,10 @@ class InvoiceService
 
     public function duplicate(Invoice $data)
     {
+        if ($this->hasExhaustedCount('invoices')) {
+            abort(400, "You have exceeded you monthly invoice limit for your plan");
+        }
+
         $data = $data->toArray();
         Arr::forget($data, ['code', 'status', 'invoice_id', 'tax_percentage']);
         $data += [
