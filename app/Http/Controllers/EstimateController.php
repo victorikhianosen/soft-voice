@@ -91,4 +91,11 @@ class EstimateController extends Controller
             ['url' => $url]
         );
     }
+
+    public function convertToInvoice(Estimate $estimate): JsonResponse
+    {
+        $this->authorize('process', $estimate);
+        $invoice = $this->estimateService->convertToInvoice($estimate);
+        return $this->success("Estimate converted to invoice", $invoice);
+    }
 }
