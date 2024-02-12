@@ -19,7 +19,6 @@ class ExpenseResource extends JsonResource
         $data = parent::toArray($request);
         $data['customer'] = new CustomerResource($this->customer);
         Arr::forget($data, ['customer_id']);
-        $data['attachment'] = $this->attachment ? asset($this->attachment) : null;
         return $data;
     }
 }
