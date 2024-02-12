@@ -16,7 +16,7 @@ class ExpenseRequest extends FormRequest
         return [
             "customer_id" => ["required", "numeric", "exists:customers,id"],
             "date"        => ["required", "date", "date_format:Y-m-d"],
-            "notes"       => ["required", "string"],
+            "notes"       => ["nullable", "string"],
             "amount"      => ["required", "numeric"],
             "attachment"  => ["nullable", "file", "max:5120"],
             'currency'    => ["required", "string"],
