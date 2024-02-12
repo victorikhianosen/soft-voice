@@ -56,15 +56,15 @@ class UserNotificationBuilder
 	{
 		$method = str_replace('_', ' ', $payment->method->value);
 		$title = [
-			"mail"     => "Invoice payment recorded - {$payment->invoice->invoice_id}",
+			"mail"     => "Payment received from {$payment->invoice->customer->name} - {$payment->invoice->invoice_id}",
 			"database" => "<b>{$payment->invoice->customer->name}</b> invoice payment has been recorded <b>#{$payment->invoice->invoice_id}</b>",
 		];
 		$body = "Dear {$payment->invoice->user->name},<br><br> {$payment->invoice->customer->name} just made a payment of <b>" .
-						"{$payment->invoice->currency}" . number_format($payment->amount, 2) . "</b> for invoice {$payment->invoice->invoice_id} via {$method} <br><br>" .
-						"Your invoice still has a remaining balance of " . number_format($payment->invoice->amount_due, 2) . "<br><br>" .
-						"Total Amount: " . number_format($payment->invoice->amount, 2) ."<br>" .
-						"Amount Paid: " . number_format($payment->invoice->amount_paid, 2) . "<br>" .
-						"Balance: " . number_format($payment->invoice->amount_due, 2);
+						"{$payment->invoice->currency}" . ' ' . number_format($payment->amount, 2) . "</b> for invoice {$payment->invoice->invoice_id} via {$method} <br><br>" .
+						"Your invoice still has a remaining balance of " . $payment->invoice->currency . ' ' . number_format($payment->invoice->amount_due, 2) . "<br><br>" .
+						"Total Amount: " . $payment->invoice->currency . ' ' . number_format($payment->invoice->amount, 2) ."<br>" .
+						"Amount Paid: " . $payment->invoice->currency . ' ' . number_format($payment->invoice->amount_paid, 2) . "<br>" .
+						"Balance: " . $payment->invoice->currency . ' ' . number_format($payment->invoice->amount_due, 2);
 
 		$actions = [
 			[
@@ -73,7 +73,7 @@ class UserNotificationBuilder
 				'outlined' => false
 			],
 			[
-				'text' => 'View as customer',
+				'text' => 'View Invoice',
 				'url'  => config('env.spa_url') . '/' . $payment->invoice->code . '?action=view',
 				'outlined' => true
 			],
@@ -87,7 +87,7 @@ class UserNotificationBuilder
 			"mail"     => "Payment received from {$payment->invoice->customer->name} - {$payment->invoice->invoice_id}",
 			"database" => "<b>{$payment->invoice->customer->name}</b> invoice payment has been received <b>#{$payment->invoice->invoice_id}</b>",
 		];
-		$body = "Dear {$payment->invoice->user->name}, <br><br> Your payment of <b> {$payment->invoice->currency}" . number_format($payment->amount, 2) . "</b> for invoice" .
+		$body = "Dear {$payment->invoice->user->name}, <br><br> Your payment of <b> {$payment->invoice->currency}" . ' ' . number_format($payment->amount, 2) . "</b> for invoice" .
 						"{$payment->invoice->invoice_id} has been acknowledged and recorded. <br><br> Your invoice still has a remaining balance of" .
 						number_format($payment->invoice->amount_due, 2) . "<br><br>" .
 						"Total Amount: " . number_format($payment->invoice->amount, 2) . "<br>" .

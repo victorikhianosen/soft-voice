@@ -24,17 +24,27 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Admin::create([
-            'name'     => 'Invoice Solution',
-            'email'    => 'admin@gmail.com',
-            'password' => '$2y$10$HSFy8n8MJtIwxEusT5L3P.ZLXlHh78VEtZvFY1LdS1/NfgTfKq9uS'
-        ]);
+        $admins = [
+            [
+                'name'     => 'Softweb',
+                'email'    => 'softwebdigital@gmail.com',
+                'password' => '$2y$10$HSFy8n8MJtIwxEusT5L3P.ZLXlHh78VEtZvFY1LdS1/NfgTfKq9uS'
+            ],
+            [
+                'name'     => 'Invoice Solution',
+                'email'    => 'admin@softinvoice.co',
+                'password' => '$2y$10$HSFy8n8MJtIwxEusT5L3P.ZLXlHh78VEtZvFY1LdS1/NfgTfKq9uS'
+            ],
+            [
+                'name'     => 'Babatunde',
+                'email'    => 'babatundehezekiah7@gmail.com',
+                'password' => '$2y$10$HSFy8n8MJtIwxEusT5L3P.ZLXlHh78VEtZvFY1LdS1/NfgTfKq9uS'
+            ]
+        ];
 
-        Admin::create([
-            'name'     => 'Babatunde',
-            'email'    => 'babatundehezekiah7@gmail.com',
-            'password' => '$2y$10$HSFy8n8MJtIwxEusT5L3P.ZLXlHh78VEtZvFY1LdS1/NfgTfKq9uS'
-        ]);
+        foreach ($admins as $admin) {
+            Admin::create($admin);
+        }
     }
 
     /**
