@@ -124,7 +124,7 @@ class CustomerNotificationBuilder
 		$actions = [
 			[
 				'text' => 'View Estimate',
-				'url'  => config('env.spa_url') . '/' . $estimate->code . '?action=view',
+				'url'  => config('env.spa_url') . '/est/' . $estimate->code,
 				'outlined' => false
 			]
 		];
