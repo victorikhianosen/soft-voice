@@ -16,7 +16,7 @@ class UserNotificationBuilder
 		];
 
 		$body = "Dear {$invoice->user->name},<br><br>Congratulations!<br><br>" .
-			    "Your invoice, <b>{$invoice->invoice_id}</b> has been received" .
+			    "Your invoice, <b>{$invoice->invoice_id}</b> has been received " .
 					"and viewed by {$invoice->customer->name}";
 		$actions = [
 			[
