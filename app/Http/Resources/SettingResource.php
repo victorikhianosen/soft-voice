@@ -23,6 +23,10 @@ class SettingResource extends JsonResource
         $data['auto_enable_tax'] = $data['auto_enable_tax'] === 1;
         $data['auto_payment_reminder'] = $data['auto_payment_reminder'] === 1;
 
+        $data['preferred_bank'] = BankAccountResource::make(
+            request()->user()->bank_accounts()->where('id', $data['preferred_bank_id'])->first()
+        );
+
         return $data;
     }
 }

@@ -27,7 +27,6 @@ class SettingController extends Controller
     public function getSetting()
     {
         $data = $this->settingRepository->getSetting(request()->user()->id);
-        return $data;
         return $this->success(data: new SettingResource($data));
     }
 

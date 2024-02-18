@@ -153,7 +153,7 @@ class EstimateService
     public function convertToInvoice(Estimate $estimate)
     {
         $data = $estimate->toArray();
-        Arr::forget($data, ['id', 'code', 'created_at', 'updated_at']);
+        Arr::forget($data, ['id', 'code', 'status', 'created_at', 'updated_at']);
 
         $data += [
             'recurring' => false,
