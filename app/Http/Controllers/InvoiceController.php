@@ -45,7 +45,10 @@ class InvoiceController extends Controller
     public function showPublic(Request $request, Invoice $invoice): JsonResponse
     {
         if (!($request['notify'] === 'false')) {
-            $this->userNotificationService->sendInvoiceViewedNotification($invoice);
+            if (!$invoice->last_notified_at) {
+                $invoice->update(['last_notified_at' => now()]);
+                $this->userNotificationService->sendInvoiceViewedNotification($invoice);
+            }
         }
         return $this->success(data: new InvoiceResource($invoice));
     }
