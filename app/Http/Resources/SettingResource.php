@@ -18,11 +18,6 @@ class SettingResource extends JsonResource
         $data = parent::toArray($request);
         Arr::forget($data, ['id', 'user_id', 'updated_at', 'created_at']);
 
-        $data['auto_enable_bank_account'] = $data['auto_enable_bank_account'] === 1;
-        $data['payment_history_on_invoice_page'] = $data['payment_history_on_invoice_page'] === 1;
-        $data['auto_enable_tax'] = $data['auto_enable_tax'] === 1;
-        $data['auto_payment_reminder'] = $data['auto_payment_reminder'] === 1;
-
         $data['preferred_bank'] = BankAccountResource::make(
             request()->user()->bank_accounts()->where('id', $data['preferred_bank_id'])->first()
         );
