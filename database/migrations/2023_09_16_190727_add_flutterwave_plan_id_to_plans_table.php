@@ -17,9 +17,6 @@ return new class extends Migration
             $table->string('stripe_id')->after('paystack_id')->nullable();
             $table->string('paypal_id')->after('stripe_id')->nullable();
             $table->string('flutterwave_id')->after('paypal_id')->nullable();
-            $table->double('amount_ngn')->after('duration')->default(0);
-            $table->double('amount_usd')->after('amount_ngn')->default(0);
-            $table->dropColumn('amount');
         });
     }
 
@@ -31,8 +28,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('plans', function (Blueprint $table) {
-            $table->dropColumn(['stripe_id', 'paypal_id', 'flutterwave_id', 'amount_ngn', 'amount_usd']);
-            $table->double('amount')->after('duration')->default(0);
+            $table->dropColumn(['stripe_id', 'paypal_id', 'flutterwave_id']);
         });
     }
 };

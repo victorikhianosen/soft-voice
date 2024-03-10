@@ -17,7 +17,9 @@ class Plan extends Model
         'duration',
         'amount',
         'active',
-        'paystack_id'
+        'paystack_id',
+        'amount_ngn',
+        'amount_usd',
     ];
 
     public function subscriptions(): HasMany
