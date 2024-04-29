@@ -34,15 +34,15 @@ class InvoiceRequest extends FormRequest
                 Rule::unique('invoices')->where('user_id', $this->user()->id)->ignore(optional($this->invoice)->id, 'id'),
             ],
             "customer_id" => [
-                "required", 
-                "numeric", 
+                "required",
+                "numeric",
                 Rule::exists('customers', 'id')->where(fn (Builder $query) => $query->where('user_id', $this->user()->id))
             ],
             "date"           => ["required", "date", "date_format:Y-m-d"],
             "due_date"       => ["required", "date", "date_format:Y-m-d"],
             "tax_enabled"    => ["required", "boolean"],
             "terms"          => ["nullable", "string"],
-            "notes"          => ["required", "string"],
+            "notes"          => ["nullable", "string"],
             "currency"       => ["required", "string"],
             "signatory_name" => ["nullable", "string"],
             "signature"      => ["nullable", "file", "max:2048"],
