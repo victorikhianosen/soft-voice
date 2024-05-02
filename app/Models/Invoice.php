@@ -37,6 +37,7 @@ class Invoice extends FinancialDocument
         'status',
         'tax_percentage',
         'overdue_email_sent',
+        'last_notified_at',
     ];
 
     public function payments(): HasMany

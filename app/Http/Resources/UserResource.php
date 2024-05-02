@@ -17,6 +17,7 @@ class UserResource extends JsonResource
     {
         $data = parent::toArray($request);
         $data['active'] = $data['active'] === 1;
+        $data['email_verified'] = !!$data['email_verified_at'];
         Arr::forget($data, [
             'email_verified_at', 'email_verification_token',
             'email_verification_token_expiry', 'updated_at'

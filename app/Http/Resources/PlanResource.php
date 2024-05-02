@@ -19,7 +19,7 @@ class PlanResource extends JsonResource
         Arr::forget($data, ['created_at', 'updated_at']);
         Arr::set($data, 'active', $data['active'] === 1);
         Arr::set($data, 'duration', $data['duration'] === -1 ? 'unlimited' : $data['duration']);
-        Arr::set($data, 'restrictions', RestrictionResource::collection($this->restrictions));
+        Arr::set($data, 'restrictions', RestrictionResource::collection($this->restrictions->where('name', '!=', 'whatsapp-messaging')));
         return $data;
     }
 }

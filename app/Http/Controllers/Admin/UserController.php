@@ -3,31 +3,37 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
+use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Services\UserService;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ExportRequest;
+use App\Http\Services\ExpenseService;
+use App\Http\Services\InvoiceService;
+use App\Traits\RespondWithHttpStatus;
 use App\Http\Requests\ListUserRequest;
 use App\Http\Services\CustomerService;
+use App\Http\Services\EstimateService;
+use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\SettingResource;
 use App\Http\Resources\ListUserResource;
 use App\Http\Repositories\UserRepository;
+use App\Http\Requests\ListExpenseRequest;
+use App\Http\Requests\ListInvoiceRequest;
 use App\Http\Services\TransactionService;
 use App\Http\Requests\ListCustomerRequest;
-use App\Traits\RespondWithHttpStatus;
+use App\Http\Requests\ListEstimateRequest;
 use App\Http\Resources\BankAccountResource;
 use App\Http\Repositories\SettingRepository;
 use App\Http\Resources\SubscriptionResource;
 use App\Http\Requests\ListTransactionRequest;
 use App\Http\Repositories\BankAccountRepository;
 use App\Http\Repositories\SubscriptionRepository;
-use App\Http\Requests\ExportRequest;
-use App\Http\Requests\ListEstimateRequest;
-use App\Http\Requests\ListExpenseRequest;
-use App\Http\Requests\ListInvoiceRequest;
-use App\Http\Services\EstimateService;
-use App\Http\Services\ExpenseService;
-use App\Http\Services\InvoiceService;
+use App\Http\Resources\EstimateResource;
+use App\Http\Resources\ExpenseResource;
+use App\Models\Estimate;
+use App\Models\Expense;
 
 class UserController extends Controller
 {
@@ -116,15 +122,30 @@ class UserController extends Controller
         return $this->success(data: $result['data'], meta: $result['meta']);
     }
 
+    public function getInvoiceById(User $user, Invoice $invoice)
+    {
+        return $this->success(data: new InvoiceResource($invoice));
+    }
+
     public function estimates(ListEstimateRequest $request, User $user)
     {
         $result = $this->estimateService->getAll($request->all(), $user->id);
         return $this->success(data: $result['data'], meta: $result['meta']);
     }
 
+    public function getEstimateById(User $user, Estimate $estimate)
+    {
+        return $this->success(data: new EstimateResource($estimate));
+    }
+
     public function expenses(ListExpenseRequest $request, User $user)
     {
         $result = $this->expenseService->getAll($request->all(), $user->id);
         return $this->success(data: $result['data'], meta: $result['meta']);
+    }
+
+    public function getExpenseById(User $user, Expense $expense)
+    {
+        return $this->success(data: new ExpenseResource($expense));
     }
 }

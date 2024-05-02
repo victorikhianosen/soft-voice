@@ -22,6 +22,7 @@ class TransactionFactory extends Factory
             'type' => fake()->randomElement(['deposit', 'withdrawal', 'others']),
             'amount' => fake()->randomNumber(6),
             'description' => fake()->sentence(),
+            'currency' => 'USD',
             'method' => fake()->randomElement(['wallet', 'card', 'deposit']),
             'status' => fake()->randomElement(['pending', 'approved', 'declined']),
         ];

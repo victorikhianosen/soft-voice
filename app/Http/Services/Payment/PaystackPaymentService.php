@@ -28,6 +28,8 @@ class PaystackPaymentService implements PaymentGatewayInterface
 	const PERCENTAGE_FEE = 1.5 / 100;
 	const FEE_WAIVER_THRESHOLD = 2500;
 
+	const CURRENCY = "NGN";
+
 	public function __construct(
 		protected WalletService $walletService,
 		protected InvoiceService $invoiceService,
@@ -69,7 +71,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		$payment = $this->onlinePaymentRepository->create([
 			'type'       => 'subscription',
 			'reference'  => Str::uuid()->toString(),
-			'amount'     => $plan->amount,
+			'amount'     => $plan->amount_ngn,
 			'model_type' => User::class,
 			'gateway'    => 'paystack',
 			'model_id'   => request()->user()->id,
@@ -77,8 +79,9 @@ class PaystackPaymentService implements PaymentGatewayInterface
 
 		$res = $this->client()->post('/transaction/initialize', [
 			'email'  => request()->user()->email,
-			'amount' => $plan->amount * 100,
+			'amount' => $plan->amount_ngn * 100,
 			'plan'   => $plan->paystack_id,
+			'callback_url' => config('env.spa_url') . "/membership-plans",
 			'metadata'   => [
 				'type'      => 'subscription',
 				'reference' => $payment->reference,
@@ -116,7 +119,8 @@ class PaystackPaymentService implements PaymentGatewayInterface
 
 		$res = $this->client($data['wallet'] ? null : $invoice->user)->post('/transaction/initialize', [
 			'email'  => $invoice->customer->email,
-			'amount' => ($data['amount'] + $this->getPaystackCharge($data['amount'])) * 100,
+			'amount' => intval(($data['amount'] + $this->getCharge($data['amount'])) * 100),
+			'callback_url' => config('env.spa_url') . "/$invoice->code",
 			'metadata'   => [
 				'type'      => 'invoice',
 				'invoice_id' => $invoice->id,
@@ -165,14 +169,14 @@ class PaystackPaymentService implements PaymentGatewayInterface
 				$this->processCreateUserSubscription($data['subscription_code'], $data['customer'], $data['plan']);
 				break;
 			case 'invoice.update':
-				$this->processUpdateUserSubscription($data['customer'], $data['plan'], $data['paid']);
+				$this->processUpdateUserSubscription($data['customer'], $data['subscription'], $data['paid']);
 				break;
 			case 'charge.success':
 				$this->processChargeSuccessful($data);
 				break;
-			case 'subscription.disable':
-				$this->processDisableSubscription($data);
-				break;
+			// case 'subscription.disable':
+			// 	$this->processDisableSubscription($data);
+			// 	break;
 		}
 
 		http_response_code(200);
@@ -202,48 +206,91 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		}
 	}
 
-	private function processUpdateUserSubscription(array $customer, array $plan, bool $paid)
+	private function processUpdateUserSubscription(array $customer, array $subscription, bool $paid)
 	{
 		$user = User::where('email', $customer['email'])->first();
-		$plan = Plan::where('paystack_id', $plan['plan_code'])->first();
-		if ($user && $plan) {
-			$this->onlinePaymentRepository->create([
-				'type'       => 'subscription_renewal',
-				'reference'  => Str::uuid()->toString(),
-				'amount'     => $plan->amount,
-				'model_type' => User::class,
+
+		if ($user) {
+			$mostRecentSubscription = $this->subscriptionRepository->getLatest([
+				'user_id'    => $user->id,
+				'gateway_id' => $subscription['subscription_code'],
 				'gateway'    => 'paystack',
-				'model_id'   => $user->id,
-				'status'     => ($paid ? PaymentStatus::SUCCESS : PaymentStatus::FAILED)
 			]);
-			$currentSubscription = $this->subscriptionRepository->getActive($user->id);
-			$currentSubscription->ends_at = now()->addMonths($plan->duration);
-			$currentSubscription->save();
+
+			if ($mostRecentSubscription) {
+				$plan = $mostRecentSubscription->plan;
+
+				$this->onlinePaymentRepository->create([
+					'type'       => 'subscription_renewal',
+					'reference'  => Str::uuid()->toString(),
+					'amount'     => $plan->amount_ngn,
+					'model_type' => User::class,
+					'gateway'    => 'paystack',
+					'model_id'   => $user->id,
+					'status'     => ($paid ? PaymentStatus::SUCCESS : PaymentStatus::FAILED)
+				]);
+
+				if ($paid) {
+					if ($mostRecentSubscription->status == 'active') {
+						$mostRecentSubscription->update([
+							'status'  => 'completed',
+							'ends_at' => now(),
+						]);
+					}
+
+					$activeSubscription = $this->subscriptionRepository->getActive($user->id);
+					if ($activeSubscription) {
+						$activeSubscription->update([
+							'status'  => 'completed',
+							'ends_at' => now(),
+						]);
+					}
+
+
+					$this->subscriptionRepository->create([
+						'user_id'    => $user->id,
+						'plan_id'    => $plan->id,
+						'starts_at'  => now(),
+						'ends_at'    => now()->addMonths($plan->duration),
+						'status'     => 'active',
+						'gateway'    => 'paystack',
+						'gateway_id' => $mostRecentSubscription->gateway_id,
+					]);
+				}
+			} else {
+				logger("Previous subscription with ID {$subscription['subscription_code']} not found");
+			}
+
+		} else {
+			logger("User with ID {$user['email']} not found");
 		}
 	}
 
 	private function processChargeSuccessful(array $data)
 	{
-		$metadata = $data['metadata'];
-		$payment = OnlinePayment::where('reference', $metadata['reference'])->where('status', PaymentStatus::PENDING)->first();
-		if ($payment) {
-			$this->onlinePaymentRepository->update($payment, ['status' => PaymentStatus::SUCCESS]);
+		$metadata = $data['metadata'] ?? [];
+		$plan = $data['plan'] ?? null;
+		if (!$plan) {
+			$payment = OnlinePayment::where('reference', $metadata['reference'])->where('status', PaymentStatus::PENDING)->first();
+			if ($payment) {
+				$this->onlinePaymentRepository->update($payment, ['status' => PaymentStatus::SUCCESS]);
 
-			if ($metadata['type'] === 'invoice' && $payment->model_type === Invoice::class) {
-				$invoice = Invoice::find($payment->model_id);
-				$invoicePayment = $this->paymentRepository->create([
-					'invoice_id'    => $invoice->id,
-					'date'          => now()->format('Y-m-d'),
-					'method'        => 'card',
-					'amount'        => $payment->amount,
-					'notify_client' => true,
-				]);
+				if ($metadata['type'] === 'invoice' && $payment->model_type === Invoice::class) {
+					$invoice = Invoice::find($payment->model_id);
+					$invoicePayment = $this->paymentRepository->create([
+						'invoice_id'    => $invoice->id,
+						'date'          => now()->format('Y-m-d'),
+						'method'        => 'card',
+						'amount'        => $payment->amount,
+						'notify_client' => true,
+					]);
 
-				$this->invoiceService->updateInvoiceStatusByPayments($invoice->id);
-				$this->userNotificationService->sendInvoicePaymentReceivedNotification($invoicePayment);
+					$this->invoiceService->updateInvoiceStatusByPayments($invoice->id);
+					$this->userNotificationService->sendInvoicePaymentReceivedNotification($invoicePayment);
 
-				if ($metadata['auth_type'] === 'self') {
-					$this->walletService->fundUserWallet($invoice->user->id, $payment->amount);
+					if ($metadata['auth_type'] === 'self') {
+						$this->walletService->fundUserWallet($invoice->user->id, $payment->amount, self::CURRENCY);
+					}
 				}
 			}
 		}
@@ -264,7 +311,7 @@ class PaystackPaymentService implements PaymentGatewayInterface
 		]);
 	}
 
-	private function getPaystackCharge(float $amount)
+	private function getCharge(float $amount)
 	{
 		$charge = ($amount * self::PERCENTAGE_FEE) + self::FIXED_FEE;
 

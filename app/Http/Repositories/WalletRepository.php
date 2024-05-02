@@ -16,18 +16,22 @@ class WalletRepository extends AbstractRepository
         return app(Wallet::class);
     }
 
-    public function getUserBalance(int $userId): float
+    public function getUserBalance(int $userId): array
     {
-        return $this->model()->where('user_id', $userId)->first()->balance;
+        $wallet = $this->model()->where('user_id', $userId)->first();
+        return [
+            'USD' => $wallet->usd_balance,
+            'NGN' => $wallet->ngn_balance,
+        ];
     }
 
-    public function creditUserWallet(int $userId, float $amount): float
+    public function creditUserWallet(int $userId, float $amount, string $currency): float
     {
-        return $this->model()->where('user_id', $userId)->first()->increment('balance', $amount);
+        return $this->model()->where('user_id', $userId)->first()->increment("{$currency}_balance", $amount);
     }
 
-    public function debitUserWallet(int $userId, float $amount): float
+    public function debitUserWallet(int $userId, float $amount, string $currency): float
     {
-        return $this->model()->where('user_id', $userId)->first()->decrement('balance', $amount);
+        return $this->model()->where('user_id', $userId)->first()->decrement("{$currency}_balance", $amount);
     }
 }

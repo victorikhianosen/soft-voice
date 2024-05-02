@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\BankAccount;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,10 +19,9 @@ class SettingResource extends JsonResource
         $data = parent::toArray($request);
         Arr::forget($data, ['id', 'user_id', 'updated_at', 'created_at']);
 
-        $data['auto_enable_bank_account'] = $data['auto_enable_bank_account'] === 1;
-        $data['payment_history_on_invoice_page'] = $data['payment_history_on_invoice_page'] === 1;
-        $data['auto_enable_tax'] = $data['auto_enable_tax'] === 1;
-        $data['auto_payment_reminder'] = $data['auto_payment_reminder'] === 1;
+        $data['preferred_bank'] = BankAccountResource::make(
+            $this->user->bank_accounts()->where('id', $data['preferred_bank_id'])->first()
+        );
 
         return $data;
     }

@@ -54,7 +54,7 @@ abstract class FinancialDocument extends Model
 
 		$newId = null;
 		do {
-			$newId = $prefix . str_pad(++$count, 6, '0', STR_PAD_LEFT);
+			$newId = $prefix . str_pad(++$count, 4, '0', STR_PAD_LEFT);
 		} while (static::where('user_id', $user->id)->where($modelName.'_id', $newId)->exists());
 		return trim($newId);
 	}

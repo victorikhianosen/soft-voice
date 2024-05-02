@@ -13,8 +13,10 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "maatwebsite/excel": "^3.1",
+        "opcodesio/log-viewer": "^3.1",
         "psr/simple-cache": "^2.0",
         "spatie/laravel-permission": "^5.9",
+        "stripe/stripe-php": "^12.3",
         "twilio/sdk": "^7.7"
     },
     "require-dev": {

@@ -12,7 +12,6 @@ class PaymentApiService
         return [
             'paystack' => new PaymentKeyResource($user->payStackKey),
             'stripe' => new PaymentKeyResource($user->stripeKey),
-            'flutterwave' => new PaymentKeyResource($user->flutterwaveKey),
             'paypal' => new PaymentKeyResource($user->payPalKey),
         ];
     }

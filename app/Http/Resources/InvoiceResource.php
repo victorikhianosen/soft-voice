@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Admin;
 use App\Models\BankAccount;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,7 +24,19 @@ class InvoiceResource extends JsonResource
             if ($this->user->setting['preferred_bank_id']) {
                 $data['preferred_bank'] = BankAccount::find($this->user->setting['preferred_bank_id']);
             }
+            $data['active_payment_keys'] = [
+                'stripe' => $this->user->stripeKey?->active ?: false,
+                'paystack' => $this->user->payStackKey?->active ?: false,
+                'paypal' => $this->user->payPalKey?->active ? true : false,
+            ];
         }
+
+        if (request()->user() && request()->user() instanceof Admin) {
+            if ($this->user->setting['preferred_bank_id']) {
+                $data['preferred_bank'] = BankAccount::find($this->user->setting['preferred_bank_id']);
+            }
+        }
+
         Arr::forget($data, ['customer_id']);
         $data['signature'] = $this->signature ? asset($this->signature) : null;
         return $data;

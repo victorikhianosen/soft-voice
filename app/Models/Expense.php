@@ -39,6 +39,11 @@ class Expense extends Model
         return json_decode($this->attributes['recurring_duration'], true) ?? [];
     }
 
+    public function getAttachmentAttribute(): string|null
+    {
+        return $this->attributes['attachment'] ? asset($this->attributes['attachment']) : null;
+    }
+
     public function scopeSearch($q, $query)
     {
         return $q->where('amount', 'LIKE', '%'.$query.'%')

@@ -105,6 +105,10 @@ class InvoiceService
 
     public function duplicate(Invoice $data)
     {
+        if ($this->hasExhaustedCount('invoices')) {
+            abort(400, "You have exceeded you monthly invoice limit for your plan");
+        }
+
         $data = $data->toArray();
         Arr::forget($data, ['code', 'status', 'invoice_id', 'tax_percentage']);
         $data += [
@@ -128,7 +132,9 @@ class InvoiceService
 
     public function send(Invoice $invoice)
     {
-        $this->invoiceRepository->update($invoice, ['status' => 'sent']);
+        if ($invoice->status === 'draft') {
+            $this->invoiceRepository->update($invoice, ['status' => 'sent']);
+        }
         $this->customerNotificationService->sendInvoiceToCustomer($invoice);
     }
 
@@ -156,6 +162,10 @@ class InvoiceService
             $this->userNotificationService->sendInvoicePaymentRecordedNotification($payment);
         } else {
             $this->userNotificationService->sendInvoicePaymentCompletedNotification($payment->invoice);
+        }
+
+        if ($payment->notify_client) {
+            $this->customerNotificationService->sendNewPaymentToCustomer($payment, $data['notify_channels']);
         }
         return new PaymentResource($payment);
     }

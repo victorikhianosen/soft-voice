@@ -115,6 +115,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
             Route::put('/{estimate}/mark-as', 'markAs');
             Route::post('/{estimate}/send', 'send')->middleware('throttle:3,1');
             Route::post('/export', 'export');
+            Route::post('/{estimate}/convert-to-invoice', 'convertToInvoice');
         });
     });
 
@@ -153,7 +154,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
         Route::controller(SubscriptionController::class)->group(function () {
             Route::get('', 'index');
             Route::get('/active', 'getActive');
-            Route::post('/plan/{plan}/get-link', 'getPaymentLink');
+            Route::post('/get-link', 'getPaymentLink');
         });
     });
 
@@ -193,6 +194,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
     Route::prefix('/bank-accounts')->group(function () {
         Route::controller(BankAccountController::class)->group(function () {
             Route::get('/get-preferred', 'getPreferred');
+            Route::put('/remove-preferred', 'removePreferred');
             Route::get('', 'index');
             Route::post('', 'store');
             Route::get('/{bank_account}', 'show');
@@ -215,6 +217,8 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
 
     Route::controller(HomeController::class)->group(function () {
         Route::get('/currencies', 'getCurrencies');
+        Route::get('/bank-list', 'getBankList');
+        Route::get('/bank-account/resolve', 'resolveBankAccount');
     });
 
     Route::controller(InAppNotificationController::class)->prefix('/notifications')->group(function () {
@@ -225,5 +229,7 @@ Route::middleware(['auth:sanctum', 'ability:user'])->group(function () {
 });
 
 Route::controller(WebhookController::class)->prefix('/webhook')->group(function () {
-    Route::post('/paystack', 'handlePaystackWebook');
+    Route::post('/paystack', 'handlePaystackWebhook');
+    Route::post('/stripe', 'handleStripeWebhook');
+    Route::post('/paypal', 'handlePaypalWebhook');
 });

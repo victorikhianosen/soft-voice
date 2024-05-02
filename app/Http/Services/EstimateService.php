@@ -3,23 +3,26 @@
 namespace App\Http\Services;
 
 use App\Enums\Status;
+use App\Models\Invoice;
 use App\Models\Estimate;
 use App\Traits\Paginatable;
 use App\Traits\UploadsFile;
 use Illuminate\Support\Arr;
 use App\Exports\EstimateExport;
+use App\Traits\HasRestrictions;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\InvoiceRequest;
 use App\Http\Resources\EstimateResource;
 use App\Http\Repositories\EstimateRepository;
 use App\Http\Services\NotificationService\CustomerNotificationService;
-use App\Traits\HasRestrictions;
 
 class EstimateService
 {
     use Paginatable, UploadsFile, HasRestrictions;
 
     public function __construct(
+        protected InvoiceService $invoiceService,
         protected EstimateRepository $estimateRepository,
         protected CustomerNotificationService $customerNotificationService
     )
@@ -83,6 +86,10 @@ class EstimateService
 
     public function duplicate(Estimate $data)
     {
+        if ($this->hasExhaustedCount('estimates')) {
+            abort(400, "You have exceeded you monthly estimate limit for your plan");
+        }
+
         $data = $data->toArray();
         Arr::forget($data, ['code', 'status', 'estimate_id', 'tax_percentage']);
         $data += [
@@ -141,5 +148,18 @@ class EstimateService
             $this->closeXML($xml);
         }
         return asset("/storage/{$userDirectory}/{$file}");
+    }
+
+    public function convertToInvoice(Estimate $estimate)
+    {
+        $data = $estimate->toArray();
+        Arr::forget($data, ['id', 'code', 'status', 'created_at', 'updated_at']);
+
+        $data += [
+            'recurring' => false,
+            'invoice_id' => Invoice::nextId(),
+        ];
+
+        return $this->invoiceService->store(new InvoiceRequest($data));
     }
 }

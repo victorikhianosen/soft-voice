@@ -54,8 +54,12 @@ class TransactionService
         }
 
         if ($transaction->type === 'deposit') {
-            $this->walletRepository->creditUserWallet($transaction->user->id, $transaction->amount);
-            $this->userNotificationService->sendWalletCreditNotification($transaction->user, $transaction->amount);
+            $this->walletRepository->creditUserWallet(
+                $transaction->user->id,
+                $transaction->amount,
+                $transaction->currency
+            );
+            $this->userNotificationService->sendWalletCreditNotification($transaction);
         }
 
         $this->transactionRepository->update($transaction, ['status' => Status::APPROVED]);
@@ -67,7 +71,11 @@ class TransactionService
             abort(400, "Transaction already processed");
         }
         if ($transaction->type === 'withdrawal') {
-            $this->walletRepository->creditUserWallet($transaction->user->id, $transaction->amount);
+            $this->walletRepository->creditUserWallet(
+                $transaction->user->id,
+                $transaction->amount,
+                $transaction->currency
+            );
         }
         $this->transactionRepository->update($transaction, ['status' => Status::DECLINED]);
     }
@@ -118,7 +126,7 @@ class TransactionService
         ) {
             $ref = $this->getRefCode();
         }
-        return $ref;
+        return "SI-$ref";
     }
 
     private function getRefCode()

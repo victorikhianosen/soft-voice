@@ -14,13 +14,13 @@ class PaymentKeyRequest extends FormRequest
     public function rules()
     {
         return [
-            'type' => ['required', 'string', 'in:paystack,stripe,flutterwave,paypal'],
+            'type' => ['required', 'string', 'in:paystack,stripe,paypal'],
             'public_key' => ['required_unless:type,paypal'],
             'secret_key' => ['required_unless:type,paypal'],
-            'encryption_key' => ['required_if:type,flutterwave'],
-            'username' => ['required_if:type,paypal'],
-            'password' => ['required_if:type,paypal'],
-            'signature' => ['required_if:type,paypal'],
+            'webhook_id' => ['required_if:type,stripe,paypal'],
+            'client_id' => ['required_if:type,paypal'],
+            'client_secret' => ['required_if:type,paypal'],
+            'active' => ['required', 'boolean'],
         ];
     }
 }

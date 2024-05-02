@@ -15,6 +15,8 @@ class StripeKey extends Model
         'user_id',
         'public_key',
         'secret_key',
+        'webhook_id',
+        'active',
     ];
 
     public function setPublicKeyAttribute(?string $value)
@@ -45,6 +47,23 @@ class StripeKey extends Model
     {
         try {
             $decrypted = Crypt::decryptString($this->attributes['secret_key']);
+        } catch (Throwable $e) {
+            $decrypted = "";
+        }
+        return $decrypted;
+    }
+
+    public function setWebhookIdAttribute(?string $value)
+    {
+        if ($value) {
+            $this->attributes['webhook_id'] = Crypt::encryptString($value);
+        }
+    }
+
+    public function getWebhookIdAttribute()
+    {
+        try {
+            $decrypted = Crypt::decryptString($this->attributes['webhook_id']);
         } catch (Throwable $e) {
             $decrypted = "";
         }

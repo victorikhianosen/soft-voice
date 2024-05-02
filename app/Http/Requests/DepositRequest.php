@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\Currency;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DepositRequest extends FormRequest
@@ -14,7 +15,8 @@ class DepositRequest extends FormRequest
     public function rules()
     {
         return [
-            'amount' => ['required', 'numeric', 'gt:0']
+            'amount' => ['required', 'numeric', 'gt:0'],
+            'currency' => ['required', 'in:'. implode(',', Currency::currencies())]
         ];
     }
 }

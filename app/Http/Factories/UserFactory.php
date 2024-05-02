@@ -22,12 +22,12 @@ class UserFactory
         $user->subscriptions()->create([
             'plan_id'   => $plan->id,
             'starts_at' => now(),
-            'ends_at'   => now()->addDecade(),
+            'ends_at'   => now()->addMonth(),
             'status'    => 'active',
         ]);
 
         $user->wallet()->create();
-        $user->setting()->create();
+        $user->setting()->create(['currency' => $data['currency']]);
 
         $user->payStackKey()->create();
         $user->stripeKey()->create();

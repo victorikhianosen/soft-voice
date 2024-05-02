@@ -16,6 +16,7 @@ class FlutterwaveKey extends Model
         'public_key',
         'secret_key',
         'encryption_key',
+        'active',
     ];
 
     public function setPublicKeyAttribute(?string $value)

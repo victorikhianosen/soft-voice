@@ -26,7 +26,7 @@ class AdminService
             $data['current_page'] ?? 1,
             $data['per_page'] ?? 50,
             $data['query'] ?? '',
-            [],
+            [['email', '!=', Admin::HIDDEN_ADMIN_EMAIL]],
             $data['sort']['column'] ?? 'created_at',
             $data['sort']['dir'] ?? 'desc',
         );
