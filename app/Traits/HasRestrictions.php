@@ -34,7 +34,7 @@ trait HasRestrictions
     private function getRestriction(string $type, User $user = null): ?Restriction
     {
         $user = $user ?? request()->user();
-        $restrictions = $user->active_subscription?->plan?->restrictions;
+        $restrictions = $user->active_subscription->plan->restrictions;
         $restriction = Arr::first($restrictions, fn ($r) => $r['name'] == $type);
 
         if (! $restriction) {
