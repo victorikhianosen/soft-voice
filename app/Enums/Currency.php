@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use App\Enums\Currency;
+
 enum Currency: string
 {
     case NGN = 'Nigeria Naira';
